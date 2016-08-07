@@ -7,7 +7,7 @@ import TileMap.TileMap;
  */
 public abstract class Enemy extends ActiveMapObject {
 
-    protected boolean dead;
+    private boolean dead;
     protected int damage;
 
     protected boolean agressive;
@@ -26,7 +26,7 @@ public abstract class Enemy extends ActiveMapObject {
     }
 
     public boolean isDead(){return dead;}
-    public int getDamage(){return damage;}
+    int getDamage(){return damage;}
 
     public void hit(int damage){
         if (dead) return;
@@ -42,13 +42,13 @@ public abstract class Enemy extends ActiveMapObject {
 
     public void punch(double power, int x){
         if (dead) return;
-        if (x>this.x){
+        if (x>this.x && !punched){
             speedX.set(2,-power);
-            speedY.set(1,speedY.get(1)-power);
+            speedY.set(1,0d);
             punched=true;
         }else{
             speedX.set(2,power);
-            speedY.set(1,speedY.get(1)-power);
+            speedY.set(0,0d);
             punched=true;
         }
     }
@@ -63,12 +63,12 @@ public abstract class Enemy extends ActiveMapObject {
         }
     }
 
-    int range (){return (int)(Math.random()*(250-50));}
+    private int range(){return (int)(Math.random()*(250-50));}
 
-    protected int range;
-    protected boolean decide;
+    private int range;
+    private boolean decide;
     protected void direction(){
-        switch((int)Math.random()*2){
+        switch((int) (Math.random() * (2))){
             case 0:
                 left=true;
                 right=false;

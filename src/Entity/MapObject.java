@@ -20,8 +20,8 @@ public abstract class MapObject {
 	protected double y;
 	protected double dx;
 	protected double dy;
-	protected ArrayList<Double> speedX = new ArrayList<>();
-	protected ArrayList<Double> speedY = new ArrayList<>();
+	ArrayList<Double> speedX = new ArrayList<>();
+	ArrayList<Double> speedY = new ArrayList<>();
 	
 	// dimensions
 	protected int width;
@@ -30,7 +30,7 @@ public abstract class MapObject {
 	// collision box
 	protected int cwidth;
 	protected int cheight;
-	protected Rectangle rectangle;
+	Rectangle rectangle;
 	
 	// collision
 	protected int currRow;
@@ -46,29 +46,29 @@ public abstract class MapObject {
 	
 	// animation
 	protected Animation animation;
-	protected int currentAction;
+	int currentAction;
 	protected int previousAction;
 	protected boolean facingRight;
 	
 	// movement
 	protected boolean left;
 	protected boolean right;
-	protected boolean up;
-	protected boolean down;
-	protected boolean jumping;
-	protected boolean inAir;
+	private boolean up;
+	private boolean down;
+	boolean jumping;
+	boolean inAir;
 	protected boolean falling;
-	protected boolean pik;
+	boolean pik;
 	
 	// movement attributes
 	protected double moveSpeed;
-	protected double fallSpeed;
+	double fallSpeed;
 	protected double maxFallSpeed;
-	protected double jumpStart;
-	protected double gravityDown;
+	double jumpStart;
+	double gravityDown;
 
 	//action with map
-	protected boolean jumper;
+	boolean jumper;
 	private boolean topMiddle;
 	private boolean bottomMiddle;
 	private boolean middleRight;
@@ -85,7 +85,7 @@ public abstract class MapObject {
 		return rectangle.intersects(o.getRectangle());
 	}
 
-	public Rectangle getRectangle() {
+	Rectangle getRectangle() {
 		return new Rectangle(
 				(int)(x+xmap),
 				(int)(y+ymap-height),
@@ -101,7 +101,7 @@ public abstract class MapObject {
 	private int middleH = 2;
 	private int middleW = 2;
 
-	public void calculateCorners(double x, double y) {
+	protected void calculateCorners(double x, double y) {
 		leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
 		rightTile = (int)((x + width + 1) / (tileSize*GamePanel.SCALE));
 		topTile = (int)((y - height - 1) / (tileSize*GamePanel.SCALE));
@@ -110,17 +110,14 @@ public abstract class MapObject {
 		middleW = (int)((x+width/2)/(tileSize*GamePanel.SCALE));
 
 
-		if (topTile<0){
-			topTile=1;
-			System.out.println("SUUUUKA");
-		}
+		//if (topTile<0){
+		//	topTile=1;
+		//}
 		if (leftTile<0){
 			leftTile=1;
-			System.out.println("SUUUUKA");
 		}
 		if (middleH<0){
 			middleH=2;
-			System.out.println("SUUUUKA");
 		}
 
 		int tl = tileMap.getType(topTile+1-1, leftTile+1-1);
@@ -144,20 +141,13 @@ public abstract class MapObject {
 		middleRight = mr!= Tile.FREE;
 		middleLeft = ml!= Tile.FREE;
 
-
-
-
-
-
-		if (bm == Tile.JUMP){
-			jumper=true;
-		}else{
-			jumper=false;
-		}
+		jumper = bm == Tile.JUMP;
 		
 	}
+
+	protected boolean fallable;
 	
-	public void checkTileMapCollision() {
+	protected void checkTileMapCollision() {
 
 		currCol = (int)(x / (tileSize*GamePanel.SCALE));
 		currRow = (int)(y / (tileSize*GamePanel.SCALE));
@@ -236,7 +226,7 @@ public abstract class MapObject {
 		this.dy = dy;
 	}
 	
-	public void setMapPosition() {
+	protected void setMapPosition() {
 		xmap = tileMap.getx();
 		ymap = tileMap.gety();
 	}

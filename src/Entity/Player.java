@@ -53,7 +53,7 @@ public class Player extends ActiveMapObject {
 	private static final int SCRATCHING = 6;
 
 	// time
-	private long lastTime;
+
 
     //trace
     private Trace trace;
@@ -144,9 +144,11 @@ public class Player extends ActiveMapObject {
 
         trace = new Trace();
         rectangle=getRectangle();
-		
+
+		fallable=false;
 	}
-	
+
+
 	public int getHealth() { return health.getHealth(); }
 	public int getMaxHealth() { return health.getMaxHealth(); }
 	public int getFire() { return fire; }
@@ -220,7 +222,7 @@ public class Player extends ActiveMapObject {
 		}
 	}
 
-    public void useSpells(){
+    private void useSpells(){
         if (spell1 && currentAction!=FIREBALL){
             Spell s = sm.use(tileMap,facingRight,0);
             if (mana.use(s.cooldown,s.manacost )){

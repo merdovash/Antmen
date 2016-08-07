@@ -15,8 +15,6 @@ import java.awt.image.BufferedImage;
  */
 public class Ant extends Enemy {
 
-    private long delta;
-    private long lastTime;
 
     BufferedImage[] sprites;
 
@@ -28,7 +26,7 @@ public class Ant extends Enemy {
         x=0;
         y=0;
 
-        moveSpeed = 20*GamePanel.SCALE;
+        moveSpeed = 15*GamePanel.SCALE;
 
         width = 71;
         height=135;
@@ -58,9 +56,11 @@ public class Ant extends Enemy {
         animation.setDelay(300);
 
         right= true;
+        left = false;
         lastTime=System.nanoTime();
-    }
 
+        fallable=true;
+    }
 
 
 
@@ -97,7 +97,7 @@ public class Ant extends Enemy {
                 dx = 0;
             }
             else {
-                calculateCorners(xdest, y+1);
+                calculateCorners(xdest, y+25);
                 if (!bottomLeft){
                     dx=0;
                 }
@@ -108,7 +108,7 @@ public class Ant extends Enemy {
                 dx = 0;
             }
             else {
-                calculateCorners(xdest, y+1);
+                calculateCorners(xdest, y+25);
                 if (!bottomRight){
                     dx=0;
                 }
@@ -126,13 +126,14 @@ public class Ant extends Enemy {
     }
 
     public void update(TileMap tm){
+        delta=System.nanoTime()-lastTime;
+        lastTime=System.nanoTime();
+
         this.tileMap=tm;
         //update position
 
         getNextPosition();
-        System.out.println(speedX.get(0));
         checkTileMapCollision();
-        System.out.println(x+ " "+xtemp);
         setPosition(xtemp,ytemp);
 
         //move();

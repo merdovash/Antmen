@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * Created by MERDovashkinar on 8/3/2016.
  */
-public abstract class ActiveMapObject extends MapObject {
+abstract class ActiveMapObject extends MapObject {
 
     protected Health health;
     boolean dead;
@@ -19,7 +19,7 @@ public abstract class ActiveMapObject extends MapObject {
     Energy energy;
 
     // time
-    long delta;
+    protected long delta;
 
     ActiveMapObject(TileMap tm) {
         super(tm);
@@ -36,28 +36,36 @@ public abstract class ActiveMapObject extends MapObject {
         health = new Health(10);
     }
 
-    long punchTimer;
+    private long punchTimer;
     boolean punched=false;
-    protected void calculateDX(){
+    protected long lastTime;
+
+
+
+    private void calculateDX(){
         double ms = delta/100000000d;
+
         if (!punched){
             if(left) {
                 if (boost && !energy.isEmpty()){
                     energy.consump(delta);
                     speedX.set(0,-moveSpeed*boostSpeed);
+
                 }else{
                     speedX.set(0,-moveSpeed);
                 }
+                speedX.set(1,0d);
 
-            }
-            else if(right) {
+            } else if(right) {
                 if(boost && !energy.isEmpty()){
                     energy.consump(delta);
                     speedX.set(1, moveSpeed*boostSpeed) ;
 
+
                 }else{
                     speedX.set(1, moveSpeed);
                 }
+                speedX.set(0,0d);
             }
             else {
                 if(speedX.get(0) != 0) {
@@ -79,7 +87,6 @@ public abstract class ActiveMapObject extends MapObject {
 
         }
         // movement
-
         int temp=0;
         for (int i=0;i<speedX.size();i++){
             temp+=speedX.get(i);
@@ -87,7 +94,7 @@ public abstract class ActiveMapObject extends MapObject {
         dx=temp*ms;
     }
 
-    protected void calculateDY(){
+    private void calculateDY(){
         double ms = delta/100000000d;
 
         boolean save=jumper;
