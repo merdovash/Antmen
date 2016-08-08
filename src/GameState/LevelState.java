@@ -21,7 +21,7 @@ abstract class LevelState extends GameState {
     LevelState(GameStateManager gsm){
 
         this.gsm = gsm;
-        pause=true;
+        menu =true;
         init();
         gui = new GUI(player);
     }
@@ -37,7 +37,7 @@ abstract class LevelState extends GameState {
 
     private GUI gui;
 
-    boolean pause;
+    boolean menu;
 
 
     private void addEnemy(){
@@ -65,7 +65,7 @@ abstract class LevelState extends GameState {
 private boolean paused;
     public void update(){
         fps.update();
-        if (pause) {
+        if (menu) {
             paused=true;
             gui.update();
             return;
@@ -134,12 +134,18 @@ private boolean paused;
     }
 
     private void setPause(){
-        pause = !pause;
+        menu = !menu;
+    }
+
+    private void menuAction() {
+        if (gui.getCurrentAction()==3){
+            setPause();
+        }else if (gui.getCurrentAction()==0){
+            gui.openInventory();
+        }
     }
 
     public void keyPressed(int k) {
-        if(k == KeyEvent.VK_W) gui.setCurrentAction(-1);
-        if(k == KeyEvent.VK_S) gui.setCurrentAction(1);
         if (!paused){
             if(k == KeyEvent.VK_A) player.setLeft(true);
             if(k == KeyEvent.VK_D) player.setRight(true);
@@ -153,8 +159,27 @@ private boolean paused;
             if(k == KeyEvent.VK_2) player.use2spell(true);
             if(k == KeyEvent.VK_3) player.use3spell(true);
         }
-        if(k == KeyEvent.VK_ENTER) setPause();
+        if (!menu){
+            if(k == KeyEvent.VK_ENTER) setPause();
+        }else{
+            if (gui.isInventory()){
+                if(k == KeyEvent.VK_W) gui.inventoryMove(0,-1);
+                if(k == KeyEvent.VK_S) gui.inventoryMove(0,1);
+                if(k == KeyEvent.VK_A) gui.inventoryMove(-1,0);
+                if(k == KeyEvent.VK_D) gui.inventoryMove(1,0);
+                if(k == KeyEvent.VK_BACK_SPACE) gui.openInventory();
+            }else{
+                if(k == KeyEvent.VK_ENTER) menuAction();
+                if(k == KeyEvent.VK_W) gui.setCurrentAction(-1);
+                if(k == KeyEvent.VK_S) gui.setCurrentAction(1);
+            }
+        }
+
+
+
     }
+
+
 
     public void keyReleased(int k) {
         if (!paused){
@@ -202,7 +227,7 @@ private boolean paused;
 
         fps.draw(g);
 
-        if (pause){
+        if (menu){
             gui.draw(g);
         }
     }

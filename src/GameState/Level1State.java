@@ -1,10 +1,8 @@
 package GameState;
 
-import Entity.Enemies.Ant;
 import Entity.FPS;
 import Entity.Player;
 import Entity.SpawnArea;
-import Main.GamePanel;
 import TileMap.Background;
 import TileMap.TileMap;
 
@@ -46,7 +44,7 @@ class Level1State extends LevelState {
 		spawnArea.add( new SpawnArea (tileMap,900,100,150,150));
 		//spawnArea.add (new SpawnArea (tileMap.))
 
-		pause=false;
+		menu =false;
 
 	}
 
