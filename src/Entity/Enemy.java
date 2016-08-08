@@ -1,12 +1,12 @@
 package Entity;
 
+
 import TileMap.TileMap;
 
 import java.awt.image.BufferedImage;
 
-/**
- * Created by MERDovashkinar on 8/1/2016.
- */
+
+
 public abstract class Enemy extends ActiveMapObject {
 
     private boolean dead;
@@ -23,13 +23,16 @@ public abstract class Enemy extends ActiveMapObject {
 
     protected BufferedImage[] sprites;
 
+    //loot
+    public DropList loot;
+
     public Enemy(TileMap tm) {
         super(tm);
         dx=0;
         dy=0;
     }
 
-    public boolean isDead(){return dead;}
+    public boolean isDead(){return health.dead;}
     int getDamage(){return damage;}
 
     public void hit(int damage){

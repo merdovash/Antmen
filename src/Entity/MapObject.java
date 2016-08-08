@@ -11,7 +11,7 @@ public abstract class MapObject {
 	
 	// tile stuff
 	protected TileMap tileMap;
-	protected int tileSize;
+	private int tileSize;
 	protected double xmap;
 	protected double ymap;
 	
@@ -19,7 +19,7 @@ public abstract class MapObject {
 	protected double x;
 	protected double y;
 	protected double dx;
-	protected double dy;
+	double dy;
 	ArrayList<Double> speedX = new ArrayList<>();
 	ArrayList<Double> speedY = new ArrayList<>();
 	
@@ -33,16 +33,16 @@ public abstract class MapObject {
 	Rectangle rectangle;
 	
 	// collision
-	protected int currRow;
-	protected int currCol;
-	protected double xdest;
-	protected double ydest;
+	private int currRow;
+	private int currCol;
+	private double xdest;
+	private double ydest;
 	protected double xtemp;
 	protected double ytemp;
-	protected boolean topLeft;
-	protected boolean topRight;
-	protected boolean bottomLeft;
-	protected boolean bottomRight;
+	private boolean topLeft;
+	private boolean topRight;
+	private boolean bottomLeft;
+	private boolean bottomRight;
 	
 	// animation
 	protected Animation animation;
@@ -57,7 +57,7 @@ public abstract class MapObject {
 	private boolean down;
 	boolean jumping;
 	boolean inAir;
-	protected boolean falling;
+	boolean falling;
 	boolean pik;
 	
 	// movement attributes
@@ -85,7 +85,7 @@ public abstract class MapObject {
 		return rectangle.intersects(o.getRectangle());
 	}
 
-	Rectangle getRectangle() {
+	protected Rectangle getRectangle() {
 		return new Rectangle(
 				(int)(x+xmap),
 				(int)(y+ymap-height),
@@ -211,7 +211,7 @@ public abstract class MapObject {
 		xtemp+=dx;
 
 		if(!falling) {
-			calculateCorners(x, ydest + 1);
+			calculateCorners(x, ydest+1);
 			if(!bottomLeft && !bottomRight && !bottomMiddle) {
 				falling = true;
 			}

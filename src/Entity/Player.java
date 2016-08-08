@@ -1,5 +1,6 @@
 package Entity;
 
+import Entity.Items.MapItem;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Main.GamePanel;
@@ -52,8 +53,8 @@ public class Player extends ActiveMapObject {
 	private static final int FIREBALL = 5;
 	private static final int SCRATCHING = 6;
 
-	// time
-
+	// inventory
+	private int[] inventory = new int[40];
 
     //trace
     private Trace trace;
@@ -94,7 +95,7 @@ public class Player extends ActiveMapObject {
 
 
 
-		// load sprites
+		// load sprite
 		try {
 			
 			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/murisprites.gif"));
@@ -248,7 +249,7 @@ public class Player extends ActiveMapObject {
 		x=200;
 		y=200;
 		health.heal(health.getMaxHealth());
-
+		dead=false;
 	}
 
 	public void update() {
@@ -403,5 +404,18 @@ public class Player extends ActiveMapObject {
 
 
 	}
-	
+
+    public boolean addItem(MapItem mapItem) {
+    	for (int i=0;i<inventory.length;i++){
+    		if (inventory[i]==0){
+    			inventory[i]=mapItem.getID();
+				return true;
+			}
+		}
+		return false;
+    }
+
+    public int[] getItems(){
+    	return inventory;
+	}
 }

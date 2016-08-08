@@ -1,8 +1,10 @@
 package Entity.Enemies;
 
 import Entity.Animation;
+import Entity.DropList;
 import Entity.Enemy;
 import Entity.Health;
+import Entity.Items.Loot.Branch;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -11,9 +13,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Ant extends Enemy {
-
-
-
 
     public Ant(TileMap tm) {
 
@@ -29,12 +28,13 @@ public class Ant extends Enemy {
 
         health = new Health(6);
         damage = 1;
+        weight=5;
 
         agressive=true;
         visionX=400;
         visionY=100;
 
-        //load sprites
+        //load sprite
         try{
             BufferedImage spritesheets = ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/ant.gif"));
 
@@ -56,9 +56,16 @@ public class Ant extends Enemy {
         lastTime=System.nanoTime();
 
         fallable=true;
+
+        //add loot
+        loot = new DropList();
+        loot.add(1d,new Branch(tileMap));
+
+
     }
 
     public void update(TileMap tm){
+        super.update();
         delta=System.nanoTime()-lastTime;
         lastTime=System.nanoTime();
 

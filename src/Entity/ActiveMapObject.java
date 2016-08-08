@@ -5,13 +5,12 @@ import TileMap.TileMap;
 
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 8/3/2016.
- */
+
 abstract class ActiveMapObject extends MapObject {
 
     protected Health health;
     boolean dead;
+    protected int weight;
 
     // boost
     boolean boost;
@@ -47,7 +46,6 @@ abstract class ActiveMapObject extends MapObject {
 
     private void calculateDX(){
         double ms = delta/100000000d;
-
         if (!punched){
             if(left) {
                 if (boost && !energy.isEmpty()){
@@ -79,10 +77,13 @@ abstract class ActiveMapObject extends MapObject {
                 }
             }
         }else{
-            if (System.currentTimeMillis()-punchTimer<1000 || speedX.get(2)>0){
+            if (speedX.get(2)!=0){
                 speedX.set(0,0d);
                 speedX.set(1,0d);
-                speedX.set(2,speedX.get(2)-1*ms);
+                speedX.set(2,speedX.get(2)-weight*ms*speedX.get(2)/Math.abs(speedX.get(2)));
+                if (Math.abs(speedX.get(2))<0.5*weight){
+                    speedX.set(2,0d);
+                }
             }else{
                 punched=false;
             }
@@ -152,9 +153,9 @@ abstract class ActiveMapObject extends MapObject {
 
     }
 
-    protected void respawn(SpawnArea a){
-        x=a.getx();
-        y=a.gety();
+    protected void respawn(){
+        x=100;
+        y=200;
         health.heal(health.getMaxHealth());
         dead=false;
     }

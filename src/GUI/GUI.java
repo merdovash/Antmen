@@ -3,11 +3,12 @@ package GUI;
 import Entity.Player;
 import Main.GamePanel;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by vlad on 08.08.16.
@@ -18,6 +19,7 @@ public class GUI {
 
     private Rectangle[] button;
     private String[] name = {"Inventory >", "blabla" , "blabla" ,"Back to game"};
+    private Map<Integer, String> map;
 
     private int currentAction;
 
@@ -30,14 +32,19 @@ public class GUI {
         for (int i =0; i<button.length;i++){
             button[i]= new Rectangle(200,100+i*150,300,100);
         }
+        initMapItems();
+    }
 
+    private void initMapItems() {
+        map = new HashMap<Integer,String>();
+        map.put(1,"/Items/Loot/branch.gif");
     }
 
     public void update(){
 
     }
 
-    public void draw(Graphics2D g){
+    public void draw(Graphics2D g, int[] items){
         g.setColor(new Color (0,0,0, 0.75f));
         g.fillRect(0,0, GamePanel.WIDTH,GamePanel.HEIGHT);
         for (int i =0; i<button.length;i++){
@@ -64,6 +71,15 @@ public class GUI {
                     g.fillRect(600+71*j,350+i*70,60,60);
                     g.setColor(Color.cyan);
                     g.drawRect(600+71*j,350+i*70,60,60);
+                    if (items[i*4+j]!=0){
+                        BufferedImage ico = null;
+                        try {
+                             ico = ImageIO.read(getClass().getResourceAsStream(map.get(items[i*4+j])));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        g.drawImage(ico, 600+71*j,350+i*70,60,60,null);
+                    }
                 }
             }
             g.setColor(Color.WHITE);

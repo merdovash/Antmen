@@ -2,6 +2,7 @@ package GameState;
 
 import Entity.Enemies.Ant;
 import Entity.Enemy;
+import Entity.Items.MapItem;
 import Entity.Player;
 import Entity.SpawnArea;
 import Main.GamePanel;
@@ -35,9 +36,34 @@ abstract class LevelState extends GameState {
 
     ArrayList<SpawnArea> spawnArea;
 
+    ArrayList<MapItem> loot;
+
     private GUI gui;
 
     boolean menu;
+
+    private void addLoot(Enemy e){
+        double chance = Math.random()*(1);
+        for (int i = 0; i<e.loot.size();i++){
+            if (chance<=e.loot.getChance(i)){
+                loot.add(e.loot.getMapItem(i));
+                loot.get(loot.size()-1).setPosition(e.getx(), e.gety());
+            }
+        }
+
+    }
+
+    private void getLoot(){
+        System.out.println(loot.size());
+        for (int i=0; i<loot.size();i++){
+            System.out.println(player.gety()-50<=loot.get(i).gety());
+            if (player.getx()>=loot.get(i).getx() && player.getx()<=loot.get(i).getx()+50 && player.gety()-50<=loot.get(i).gety() && player.gety()>=loot.get(i).gety()){
+                if (player.addItem(loot.get(i))){
+                    loot.remove(i);
+                }
+            }
+        }
+    }
 
 
     private void addEnemy(){
@@ -119,10 +145,6 @@ private boolean paused;
         //enemies get attacked from spells
         for (int i=0; i<enemies.size();i++){
             enemies.get(i).update(tileMap);
-            if (enemies.get(i).isDead()){
-                enemies.remove(i);
-                i--;
-            }
             for (int j=0; j<player.spells.size();j++){
                 if (enemies.get(i).intersects(player.spells.get(j)) && !player.spells.get(j).isHit()){
                     player.spells.get(j).setHit();
@@ -130,7 +152,24 @@ private boolean paused;
                     enemies.get(i).punch(player.spells.get(j).getPower(),player.spells.get(j).getx());
                 }
             }
+            if (enemies.get(i).isDead()){
+                addLoot(enemies.get(i));
+                enemies.remove(i);
+                if (i==enemies.size()){
+                    break;
+                }else{
+                    i--;
+                }
+            }
+
         }
+
+        //update loot
+        for (int i=0; i<loot.size();i++){
+            loot.get(i).update();
+        }
+
+        getLoot();
     }
 
     private void setPause(){
@@ -217,18 +256,19 @@ private boolean paused;
         if (enemies.size()>0){
             for (int i=0; i<enemies.size();i++){
                 enemies.get(i).draw(g);
-                if (enemies.get(i).isDead()){
-                    enemies.remove(i);
-                    i--;
-                }
             }
+        }
+
+        //draw items
+        for (int i=0;i<loot.size();i++){
+            loot.get(i).draw(g);
         }
 
 
         fps.draw(g);
 
         if (menu){
-            gui.draw(g);
+            gui.draw(g,player.getItems());
         }
     }
 }

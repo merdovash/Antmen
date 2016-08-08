@@ -42,9 +42,11 @@ class Level1State extends LevelState {
 		spawnArea = new ArrayList<>();
 		spawnArea.add( new SpawnArea (tileMap,645,151,150,150));
 		spawnArea.add( new SpawnArea (tileMap,900,100,150,150));
+		spawnArea.add( new SpawnArea (tileMap,645,450,150,150));
 		//spawnArea.add (new SpawnArea (tileMap.))
 
 		menu =false;
+		loot= new ArrayList<>();
 
 	}
 
