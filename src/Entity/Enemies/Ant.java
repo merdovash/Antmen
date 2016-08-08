@@ -62,69 +62,6 @@ public class Ant extends Enemy {
         fallable=true;
     }
 
-
-
-    public void checkTileMapCollision2() {
-
-        currCol = (int)(x / (tileSize* GamePanel.SCALE));
-        currRow = (int)(y / (tileSize*GamePanel.SCALE));
-
-
-        xdest = x + dx;
-        ydest = y + dy;
-
-        xtemp = x;
-        ytemp = y;
-
-        calculateCorners(x, ydest);
-        if(dy < 0) {
-            if(topLeft || topRight) {
-                dy = 0;
-            }
-        }
-        if(dy > 0) {
-            if(bottomLeft || bottomRight) {
-                dy = 0;
-                falling = false;
-            }
-        }
-        ytemp+=dy;
-
-        calculateCorners(xdest, y);
-        if(dx < 0) {
-            if(topLeft || bottomLeft) {
-
-                dx = 0;
-            }
-            else {
-                calculateCorners(xdest, y+25);
-                if (!bottomLeft){
-                    dx=0;
-                }
-            }
-        }
-        if(dx > 0) {
-            if(topRight || bottomRight) {
-                dx = 0;
-            }
-            else {
-                calculateCorners(xdest, y+25);
-                if (!bottomRight){
-                    dx=0;
-                }
-            }
-        }
-        xtemp+=dx;
-
-        if(!falling) {
-            calculateCorners(x, ydest + 1);
-            if(!bottomLeft && !bottomRight) {
-                falling = true;
-            }
-        }
-
-    }
-
     public void update(TileMap tm){
         delta=System.nanoTime()-lastTime;
         lastTime=System.nanoTime();
@@ -134,6 +71,18 @@ public class Ant extends Enemy {
 
         getNextPosition();
         checkTileMapCollision();
+
+        if(dx==0){
+            if (!enemy){
+                if (right){
+                    setLeft();
+                }else{
+                    setRight();
+                }
+            }
+
+        }
+
         setPosition(xtemp,ytemp);
 
         //move();
@@ -147,16 +96,7 @@ public class Ant extends Enemy {
         }
 
         //change direction
-        if(dx==0){
-            if (!enemy){
-                if (right){
-                    setLeft();
-                }else{
-                    setRight();
-                }
-            }
 
-        }
 
 
         animation.update();

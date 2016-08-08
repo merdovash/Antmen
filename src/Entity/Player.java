@@ -83,7 +83,7 @@ public class Player extends ActiveMapObject {
 		health =new Health(10);
 		fire = maxFire = 2500;
 
-		spells = new ArrayList<Spell>();
+		spells = new ArrayList<>();
         sm = new SpellsManager();
 
 		
@@ -99,7 +99,7 @@ public class Player extends ActiveMapObject {
 			
 			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/murisprites.gif"));
 			
-			sprites = new ArrayList<BufferedImage[]>();
+			sprites = new ArrayList<>();
 			for(int i = 0; i < 7; i++) {
 				
 				BufferedImage[] bi =

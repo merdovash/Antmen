@@ -201,6 +201,13 @@ public abstract class MapObject {
 				dx=0;
 			}
 		}
+
+		if (fallable){
+			calculateCorners(xdest, y+1);
+			if (!bottomRight || !bottomLeft){
+				dx=0;
+			}
+		}
 		xtemp+=dx;
 
 		if(!falling) {
