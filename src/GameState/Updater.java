@@ -16,7 +16,7 @@ import java.util.ArrayList;
 /**
  * Created by MERDovashkinar on 8/5/2016.
  */
-public class Updater extends GameState implements MouseListener{
+class Updater extends GameState{
 
     private String ftpURL_map = "ftp://%s:%s@%s/%s";
     private String server = "node0.net2ftp.ru";
@@ -26,28 +26,26 @@ public class Updater extends GameState implements MouseListener{
     private String ftpURL;
     private int state;
     private ArrayList<String> output;
-    URL url;
+    private URL url;
 
-    URLConnection conn;
-    InputStream inputStream;
-    FileOutputStream outputStream;
+    private URLConnection conn;
+    private InputStream inputStream;
+    private FileOutputStream outputStream;
 
-    byte[] buffer = new byte[8192];
-    int bytesRead1;
+    private byte[] buffer = new byte[8192];
+    private int bytesRead1;
     boolean bytesRead = true;
 
-    File file;
-    FileReader fileReader;
-    BufferedReader bufferedReader;
+    private File file;
+    private FileReader fileReader;
+    private BufferedReader bufferedReader;
 
     private String version;
 
     private long progress;
 
-    Font font;
+    private Font font;
 
-    //buttons
-    private Color[] color;
     private ArrayList<Rectangle> buttons;
     private String[] text;
     private int currentState;
@@ -60,7 +58,7 @@ public class Updater extends GameState implements MouseListener{
 
 
 
-    public Updater (GameStateManager gsm){
+    Updater(GameStateManager gsm){
         this.gsm =gsm;
         init();
     }
@@ -91,14 +89,13 @@ public class Updater extends GameState implements MouseListener{
         }
         currentState=0;
 
-        color = new Color[3];
+        Color[] color = new Color[3];
         color[0] = Color.ORANGE;
         color[1] = Color.CYAN;
         color[2] = Color.BLUE;
 
         action=0;
         location = MouseInfo.getPointerInfo().getLocation();
-        press=false;
     }
 
     @Override
@@ -283,31 +280,5 @@ public class Updater extends GameState implements MouseListener{
         if (k==KeyEvent.VK_ENTER){
             choose=false;
         }
-    }
-
-    private boolean press;
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        press=true;
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        press=false;
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
     }
 }

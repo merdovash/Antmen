@@ -12,9 +12,9 @@ public class GameStateManager {
     private ArrayList<GameState> gameStates;
     private int currentState;
 
-    public static final int MENUSTATE = 0;
-    public static final int LEVEL1STATE=2;
-    public static final int UPDATER = 1;
+    static final int MENUSTATE = 0;
+    static final int LEVEL1STATE=2;
+    static final int UPDATER = 1;
 
     public GameStateManager(){
 
@@ -28,7 +28,7 @@ public class GameStateManager {
 
     }
 
-    public void setState(int state){
+    void setState(int state){
         currentState = state;
         gameStates.get(currentState).init();
     }
@@ -49,9 +49,5 @@ public class GameStateManager {
     public void keyReleased(int k){
 
         gameStates.get(currentState).keyReleased(k);
-    }
-
-    public void mouseClicked(int mouse) {
-
     }
 }

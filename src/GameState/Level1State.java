@@ -11,7 +11,7 @@ import TileMap.TileMap;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Level1State extends LevelState {
+class Level1State extends LevelState {
 
 
 
@@ -46,44 +46,13 @@ public class Level1State extends LevelState {
 		spawnArea.add( new SpawnArea (tileMap,900,100,150,150));
 		//spawnArea.add (new SpawnArea (tileMap.))
 
+		pause=false;
+
 	}
 
 
 	
 	public void update() {
-
-		fps.update();
-
-		addEnemy();
-
-		// update player
-		player.update();
-		tileMap.setPosition(
-			GamePanel.WIDTH /2  - player.getx(),
-			GamePanel.HEIGHT /2 - player.gety()+50
-		);
-		//bg moves
-		//bg.setPosition(tileMap.getx(),tileMap.gety());
-
-		player.checkAtack(enemies);
-
-
-
-		for (int i=0; i<enemies.size();i++){
-		//	enemies.get(i).checkEnemy(player);
-			enemies.get(i).update(tileMap);
-			if (enemies.get(i).isDead()){
-				enemies.remove(i);
-				i--;
-			}
-			for (int j=0; j<player.spells.size();j++){
-				if (enemies.get(i).intersects(player.spells.get(j)) && !player.spells.get(j).isHit()){
-					player.spells.get(j).setHit();
-					enemies.get(i).hit(player.spells.get(j).getDamage());
-					enemies.get(i).punch(player.spells.get(j).getPower(),player.spells.get(j).getx());
-				}
-			}
-		}
 
 		super.update();
 	}

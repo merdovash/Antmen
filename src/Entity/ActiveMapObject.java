@@ -40,6 +40,9 @@ abstract class ActiveMapObject extends MapObject {
     boolean punched=false;
     protected long lastTime;
 
+    public void setLastTime(long l){
+        lastTime=l;
+    }
 
 
     private void calculateDX(){
