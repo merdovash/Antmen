@@ -10,13 +10,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-/**
- * Created by MERDovashkinar on 8/1/2016.
- */
 public class Ant extends Enemy {
 
 
-    BufferedImage[] sprites;
 
 
     public Ant(TileMap tm) {
@@ -97,7 +93,7 @@ public class Ant extends Enemy {
 
         //change direction
 
-
+        facingRight = right;
 
         animation.update();
     }

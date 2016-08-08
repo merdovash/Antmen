@@ -2,6 +2,8 @@ package Entity;
 
 import TileMap.TileMap;
 
+import java.awt.image.BufferedImage;
+
 /**
  * Created by MERDovashkinar on 8/1/2016.
  */
@@ -18,6 +20,8 @@ public abstract class Enemy extends ActiveMapObject {
     protected long flinchTimer;
 
     protected boolean enemy;
+
+    protected BufferedImage[] sprites;
 
     public Enemy(TileMap tm) {
         super(tm);
