@@ -112,5 +112,8 @@ public class Energy {
         g.fillRect(1000, 25+number*35, (int)percent*3, 30);
     }
 
+    public void setRefillSpeed(double refillSpeed) {
+        this.refillSpeed = refillSpeed;
+    }
 }
 

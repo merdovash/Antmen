@@ -20,7 +20,7 @@ public class FireBall extends Spell {
     public FireBall(TileMap tm, boolean right, int level) {
         super(tm , right);
 
-        power =level*20;
+        power =level*5;
 
         this.level=level;
         k=level/3d;

@@ -13,6 +13,8 @@ public abstract class ActiveMapObject extends MapObject {
     protected Health health;
     protected boolean dead;
     protected int weight;
+    protected boolean flinching;
+    protected long flinchTimer;
 
     // boost
     protected boolean boost;
@@ -44,7 +46,6 @@ public abstract class ActiveMapObject extends MapObject {
     public void setLastTime(long l){
         lastTime=l;
     }
-
 
     private void calculateDX(){
         double ms = delta/100000000d;
@@ -150,11 +151,6 @@ public abstract class ActiveMapObject extends MapObject {
         dy=temp*ms;
     }
 
-    protected void move(){
-        checkTileMapCollision();
-
-    }
-
     protected void respawn(){
         x=100;
         y=200;
@@ -163,20 +159,48 @@ public abstract class ActiveMapObject extends MapObject {
     }
 
     protected void getNextPosition(){
+
         // movement
         calculateDX();
 
         calculateDY();
     }
 
-    public void update(){
-        if (!(health.getHealth()>0)){
-            dead=true;
+    protected void checkFlinching() {
+        if (flinching){
+            long elapsed =(System.nanoTime()-flinchTimer)/1000000;
+            if (elapsed>1000){
+                flinching=false;
+            }
         }
     }
 
+    public void update(){
+        //time
+        delta=System.nanoTime()-lastTime;
+        lastTime=System.nanoTime();
+
+        //is dead
+        if (!(health.getHealth()>0)){
+            dead=true;
+        }
+
+        //moving
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp, ytemp);
+
+        //check flinching
+        checkFlinching();
+
+        animation.update();
+
+    }
+
     public void draw(Graphics2D g){
-            super.draw(g);
+
+        setMapPosition();
+        super.draw(g);
     }
 }
 

@@ -10,17 +10,19 @@ import java.awt.*;
 public class SpawnArea extends MapObject {
     private TileMap tileMap;
     private boolean active =true;
+    private int enemyID;
 
     private long cooldown;
     private Rectangle rectangle;
     private long lastTime;
 
-    public SpawnArea(TileMap tm, int x, int y, int width, int height){
+    public SpawnArea(TileMap tm, int x, int y, int width, int height, int enemyID){
         super(tm);
         this.x=x;
         this.y=y;
         this.width=width;
         this.height=height;
+        this.enemyID = enemyID;
         cooldown = 1000;
 
         rectangle = new Rectangle(x,y,width,height);
@@ -34,12 +36,7 @@ public class SpawnArea extends MapObject {
 
     public int getx(){return (int)(x)+5;}
     public int gety(){return (int)(y)+height-5;}
-
     public boolean isActive(){return active;}
-    public void setActive(boolean b){
-        active =b;
-    }
-    public void setCooldown(long c){cooldown = c;}
     public boolean isReady(){
         if (lastTime==-1){
             lastTime = System.currentTimeMillis();
@@ -51,6 +48,13 @@ public class SpawnArea extends MapObject {
             return  false;
         }
     }
+    public int getID(){return enemyID;}
+
+    public void setActive(boolean b){
+        active =b;
+    }
+    public void setCooldown(long c){cooldown = c;}
+
 
     public void draw(Graphics2D g){
         setMapPosition();

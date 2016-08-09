@@ -11,17 +11,20 @@ import java.awt.image.BufferedImage;
 
 public class Ant extends Enemy {
 
+
     public Ant(TileMap tm) {
 
         super(tm);
 
-        x=0;
-        y=0;
+        adress = "/Sprites/Enemies/ant.gif";
+        width = 71;
+        height=135;
+
+        loadSprites(3);
 
         moveSpeed = 15*GamePanel.SCALE;
 
-        width = 71;
-        height=135;
+
 
         health = new Health(6);
         damage = 1;
@@ -31,18 +34,6 @@ public class Ant extends Enemy {
         visionX=400;
         visionY=100;
 
-        //load sprite
-        try{
-            BufferedImage spritesheets = ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/ant.gif"));
-
-            sprites = new BufferedImage[3];
-
-            for (int i=0;i<sprites.length;i++){
-                sprites[i]=spritesheets.getSubimage(i*width,0,width, height);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
         animation = new Animation();
         animation.setFrames(sprites);
@@ -63,14 +54,9 @@ public class Ant extends Enemy {
 
     public void update(TileMap tm){
         super.update();
-        delta=System.nanoTime()-lastTime;
-        lastTime=System.nanoTime();
 
         this.tileMap=tm;
         //update position
-
-        getNextPosition();
-        checkTileMapCollision();
 
         if(dx==0){
             if (!enemy){
@@ -80,32 +66,16 @@ public class Ant extends Enemy {
                     setRight();
                 }
             }
-
-        }
-
-        setPosition(xtemp,ytemp);
-
-        //move();
-
-        //check flinching
-        if (flinching){
-            long elapsed=(System.nanoTime()-flinchTimer)/1000000;
-            if (elapsed>400){
-                flinching=false;
-            }
         }
 
         //change direction
-
         facingRight = right;
 
-        animation.update();
     }
 
     public void draw(Graphics2D g){
         setMapPosition();
 
-        //if (notOnScreen())return;
         super.draw(g);
     }
 

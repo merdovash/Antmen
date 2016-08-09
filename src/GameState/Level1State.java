@@ -40,12 +40,12 @@ class Level1State extends LevelState {
 
 		//init spawn Areas
 		spawnArea = new ArrayList<>();
-		spawnArea.add( new SpawnArea (tileMap,645,151,100,150));
-		spawnArea.add( new SpawnArea (tileMap,900,100,100,150));
-		spawnArea.add( new SpawnArea (tileMap,645,500,100,150));
-		spawnArea.add( new SpawnArea (tileMap,695,700,100,150));
-		spawnArea.add( new SpawnArea (tileMap,600,950,100,150));
-		spawnArea.add( new SpawnArea (tileMap,100,1100,100,150));
+		spawnArea.add( new SpawnArea (tileMap,645,151,100,150,1));
+		spawnArea.add( new SpawnArea (tileMap,900,100,100,150,1));
+		spawnArea.add( new SpawnArea (tileMap,645,500,100,150,1));
+		spawnArea.add( new SpawnArea (tileMap,695,700,100,150,1));
+		spawnArea.add( new SpawnArea (tileMap,600,950,100,150,1));
+		spawnArea.add( new SpawnArea (tileMap,100,1100,100,150,2));
 		//spawnArea.add (new SpawnArea (tileMap.))
 
 		menu =false;

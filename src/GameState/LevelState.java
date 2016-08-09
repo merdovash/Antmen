@@ -2,6 +2,7 @@ package GameState;
 
 import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
+import Entity.Enemies.Spider;
 import Entity.Items.MapItem;
 import Entity.Player.Player;
 import Entity.SpawnArea;
@@ -86,7 +87,15 @@ public abstract class LevelState extends GameState {
 
                 if (empty && enemies.size()<spawnArea.size()){
                     if (spawnArea.get(i).isReady()){
-                        enemies.add(new Ant(tileMap));
+                        switch (spawnArea.get(i).getID()){
+                            case 1:
+                                enemies.add(new Ant(tileMap));
+                                break;
+                            case 2:
+                                enemies.add(new Spider(tileMap));
+                                break;
+                        }
+
                         enemies.get(enemies.size()-1).setPosition(spawnArea.get(i).getx(),spawnArea.get(i).gety());
                     }
                 }
@@ -129,6 +138,17 @@ private boolean paused;
         //bg moves
         //bg.setPosition(tileMap.getx(),tileMap.gety());
 
+        updateEnemies();
+
+        //update mapLoot
+        for (int i = 0; i< mapLoot.size(); i++){
+            mapLoot.get(i).update();
+        }
+
+        getLoot();
+    }
+
+    private void updateEnemies(){
         //enemies search player
         for (int i=0; i<enemies.size();i++){
             Enemy e = enemies.get(i);
@@ -169,13 +189,6 @@ private boolean paused;
             }
 
         }
-
-        //update mapLoot
-        for (int i = 0; i< mapLoot.size(); i++){
-            mapLoot.get(i).update();
-        }
-
-        getLoot();
     }
 
     private void setPause(){

@@ -22,8 +22,6 @@ public class Player extends ActiveMapObject {
 	// player stuff
 	private int fire;
 	private int maxFire;
-	private boolean flinching;
-	private long flinchTimer;
 
 
     //spells
@@ -80,11 +78,12 @@ public class Player extends ActiveMapObject {
 		jumpStart = -55* GamePanel.SCALE;
 		boostSpeed = 2.5;
 
-		energy = new Energy(200);
+		energy = new Energy(400);
         energy.setConsumption(15);
 
         mana = new Energy(200);
         mana.setUsable(true);
+		mana.setRefillSpeed(0.1);
 		
 		facingRight = true;
 		
@@ -268,20 +267,15 @@ public class Player extends ActiveMapObject {
 
 	public void update() {
 
-		delta=System.nanoTime()-lastTime;
-		lastTime=System.nanoTime();
+		super.update();
 
+		//trace
         trace.addPlace((int)(x+width/2),(int)(y-25),tileMap);
-		// update position
-		getNextPosition();
-		checkTileMapCollision();
-		setPosition(xtemp, ytemp);
-		//move();
 
+		//refill energy
 		if(!boost|| energy.isEmpty()) energy.refill(delta);
 
-
-		//check atcke has stoped
+		//check attack has stopped
 		if (currentAction==SCRATCHING){
 			if (animation.hasPlayedOnce()) scratching=false;
 		}
@@ -293,8 +287,6 @@ public class Player extends ActiveMapObject {
 		mana.refill(delta);
         useSpells();
 
-
-
 		//update firebals
 		for (int i = 0; i< spells.size(); i++){
 			spells.get(i).update();
@@ -304,13 +296,19 @@ public class Player extends ActiveMapObject {
 			}
 		}
 
-        if (flinching){
-            long elapsed =(System.nanoTime()-flinchTimer)/1000000;
-            if (elapsed>1000){
-                flinching=false;
-            }
-        }
+		//set animation
 		firing =spell1||spell2||spell3;
+		setAnimation();
+		
+		// set direction
+		if(currentAction != SCRATCHING && currentAction != FIREBALL) {
+			if(right) facingRight = true;
+			if(left) facingRight = false;
+		}
+	}
+
+
+	private void setAnimation(){
 		// set animation
 		if(scratching) {
 			if(currentAction != SCRATCHING) {
@@ -375,16 +373,6 @@ public class Player extends ActiveMapObject {
 				width = 82;
 			}
 		}
-
-		animation.update();
-		
-		// set direction
-		if(currentAction != SCRATCHING && currentAction != FIREBALL) {
-			if(right) facingRight = true;
-			if(left) facingRight = false;
-		}
-
-		super.update();
 	}
 	
 	public void draw(Graphics2D g) {
@@ -423,11 +411,9 @@ public class Player extends ActiveMapObject {
 	}
 
     public boolean addItem(int id) {
-    	System.out.println("hi");
     	for (int i=0;i<inventory.length;i++){
     		if (inventory[i]==0){
     			inventory[i]=id;
-				System.out.println("hi2" + id);
 				return true;
 			}
 		}
@@ -439,6 +425,7 @@ public class Player extends ActiveMapObject {
 	}
 
 	private BufferedImage ico = null;
+
 	public void equip(int i) {
 
 		try {
