@@ -1,23 +1,19 @@
 package Entity.Items.Loot;
 
 
+import Entity.Items.Item;
 import Entity.Items.MapItem;
 import TileMap.TileMap;
 
 import java.awt.*;
 
 
-public class Branch extends MapItem {
+public class Branch extends Loot {
 
-    public Branch(TileMap tm) {
-        super(tm);
-        adress+="Loot/branch.gif";
-        super.init();
+    public Branch() {
+        super();
+        adress="/Items/Loot/branch.gif";
         ID=1;
-    }
-
-    public void draw(Graphics2D g){
-        super.draw(g);
     }
 
 }

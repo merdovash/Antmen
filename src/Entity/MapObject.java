@@ -19,9 +19,9 @@ public abstract class MapObject {
 	protected double x;
 	protected double y;
 	protected double dx;
-	double dy;
-	ArrayList<Double> speedX = new ArrayList<>();
-	ArrayList<Double> speedY = new ArrayList<>();
+	protected double dy;
+	protected ArrayList<Double> speedX = new ArrayList<>();
+	protected ArrayList<Double> speedY = new ArrayList<>();
 	
 	// dimensions
 	protected int width;
@@ -30,7 +30,7 @@ public abstract class MapObject {
 	// collision box
 	protected int cwidth;
 	protected int cheight;
-	Rectangle rectangle;
+	protected Rectangle rectangle;
 	
 	// collision
 	private int currRow;
@@ -46,7 +46,7 @@ public abstract class MapObject {
 	
 	// animation
 	protected Animation animation;
-	int currentAction;
+	protected int currentAction;
 	protected int previousAction;
 	protected boolean facingRight;
 	
@@ -55,16 +55,16 @@ public abstract class MapObject {
 	protected boolean right;
 	private boolean up;
 	private boolean down;
-	boolean jumping;
+	protected boolean jumping;
 	boolean inAir;
-	boolean falling;
-	boolean pik;
+	protected boolean falling;
+	protected boolean pik;
 	
 	// movement attributes
 	protected double moveSpeed;
 	double fallSpeed;
 	protected double maxFallSpeed;
-	double jumpStart;
+	protected double jumpStart;
 	double gravityDown;
 
 	//action with map
@@ -85,7 +85,7 @@ public abstract class MapObject {
 		return rectangle.intersects(o.getRectangle());
 	}
 
-	protected Rectangle getRectangle() {
+	public Rectangle getRectangle() {
 		return new Rectangle(
 				(int)(x+xmap),
 				(int)(y+ymap-height),

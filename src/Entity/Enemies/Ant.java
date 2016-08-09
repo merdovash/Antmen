@@ -1,10 +1,7 @@
 package Entity.Enemies;
 
 import Entity.Animation;
-import Entity.DropList;
-import Entity.Enemy;
-import Entity.Health;
-import Entity.Items.Loot.Branch;
+import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -59,7 +56,7 @@ public class Ant extends Enemy {
 
         //add loot
         loot = new DropList();
-        loot.add(1d,new Branch(tileMap));
+        loot.add(1d,1);
 
 
     }

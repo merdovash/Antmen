@@ -1,6 +1,8 @@
 package GUI;
 
-import Entity.Player;
+import Entity.Items.ItemList;
+import Entity.Player.Player;
+import GameState.LevelState;
 import Main.GamePanel;
 
 import javax.imageio.ImageIO;
@@ -13,21 +15,29 @@ import java.util.Map;
 /**
  * Created by vlad on 08.08.16.
  */
-public class GUI {
+public class GUI extends LevelState{
 
     private final Font font = new Font("Courier New", Font.PLAIN,18);
 
     private Rectangle[] button;
     private String[] name = {"Inventory >", "blabla" , "blabla" ,"Back to game"};
-    private Map<Integer, String> map;
 
     private int currentAction;
 
     private Player player;
     private boolean inventory;
 
-    public GUI(Player p){
-        player=p;
+    private int[] listInventory;
+
+    public GUI(){
+        init();
+    }
+
+    private void initMapItems() {
+    }
+
+    @Override
+    public void init() {
         button = new Rectangle[4];
         for (int i =0; i<button.length;i++){
             button[i]= new Rectangle(200,100+i*150,300,100);
@@ -35,16 +45,24 @@ public class GUI {
         initMapItems();
     }
 
-    private void initMapItems() {
-        map = new HashMap<Integer,String>();
-        map.put(1,"/Items/Loot/branch.gif");
-    }
-
     public void update(){
 
     }
 
+    @Override
+    public void draw(Graphics2D g) {
+    }
+
+    @Override
+    public void keyPressed(int k) {
+    }
+
+    @Override
+    public void keyReleased(int k) {
+    }
+
     public void draw(Graphics2D g, int[] items){
+        listInventory=items;
         g.setColor(new Color (0,0,0, 0.75f));
         g.fillRect(0,0, GamePanel.WIDTH,GamePanel.HEIGHT);
         for (int i =0; i<button.length;i++){
@@ -71,10 +89,10 @@ public class GUI {
                     g.fillRect(600+71*j,350+i*70,60,60);
                     g.setColor(Color.cyan);
                     g.drawRect(600+71*j,350+i*70,60,60);
-                    if (items[i*4+j]!=0){
+                    if (listInventory[i*4+j]!=0){
                         BufferedImage ico = null;
                         try {
-                             ico = ImageIO.read(getClass().getResourceAsStream(map.get(items[i*4+j])));
+                             ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getString(items[i*4+j])));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -122,6 +140,12 @@ public class GUI {
             inventoryPlace[1]=3;
         }else if(inventoryPlace[1]>3){
             inventoryPlace[1]=0;
+        }
+    }
+
+    public void select() {
+        if (listInventory[inventoryPlace[1]*4+inventoryPlace[0]]!=0){
+            super.equip(listInventory[inventoryPlace[1]*4+inventoryPlace[0]]);
         }
     }
 }

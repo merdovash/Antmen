@@ -1,26 +1,28 @@
 package Entity;
 
+import Entity.States.Energy;
+import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
 
 
-abstract class ActiveMapObject extends MapObject {
+public abstract class ActiveMapObject extends MapObject {
 
     protected Health health;
-    boolean dead;
+    protected boolean dead;
     protected int weight;
 
     // boost
-    boolean boost;
-    double boostSpeed;
-    Energy energy;
+    protected boolean boost;
+    protected double boostSpeed;
+    protected Energy energy;
 
     // time
     protected long delta;
 
-    ActiveMapObject(TileMap tm) {
+    protected ActiveMapObject(TileMap tm) {
         super(tm);
 
         speedX.add(0d); //right
@@ -36,7 +38,7 @@ abstract class ActiveMapObject extends MapObject {
     }
 
     private long punchTimer;
-    boolean punched=false;
+    protected boolean punched=false;
     protected long lastTime;
 
     public void setLastTime(long l){

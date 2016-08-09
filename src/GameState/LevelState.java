@@ -1,9 +1,9 @@
 package GameState;
 
 import Entity.Enemies.Ant;
-import Entity.Enemy;
+import Entity.Enemies.Enemy;
 import Entity.Items.MapItem;
-import Entity.Player;
+import Entity.Player.Player;
 import Entity.SpawnArea;
 import Main.GamePanel;
 import TileMap.TileMap;
@@ -17,14 +17,18 @@ import java.util.ArrayList;
 /**
  * Created by MERDovashkinar on 8/6/2016.
  */
-abstract class LevelState extends GameState {
+public abstract class LevelState extends GameState {
+
+    public LevelState(){
+
+    }
 
     LevelState(GameStateManager gsm){
 
         this.gsm = gsm;
         menu =true;
         init();
-        gui = new GUI(player);
+        gui = new GUI();
     }
 
     TileMap tileMap;
@@ -36,7 +40,7 @@ abstract class LevelState extends GameState {
 
     ArrayList<SpawnArea> spawnArea;
 
-    ArrayList<MapItem> loot;
+    ArrayList<MapItem> mapLoot;
 
     private GUI gui;
 
@@ -46,20 +50,22 @@ abstract class LevelState extends GameState {
         double chance = Math.random()*(1);
         for (int i = 0; i<e.loot.size();i++){
             if (chance<=e.loot.getChance(i)){
-                loot.add(e.loot.getMapItem(i));
-                loot.get(loot.size()-1).setPosition(e.getx(), e.gety());
+                mapLoot.add(new MapItem(tileMap, e.loot.getID(i)));
+                mapLoot.get(mapLoot.size()-1).setPosition(e.getx(), e.gety());
             }
         }
 
     }
 
     private void getLoot(){
-        System.out.println(loot.size());
-        for (int i=0; i<loot.size();i++){
-            System.out.println(player.gety()-50<=loot.get(i).gety());
-            if (player.getx()>=loot.get(i).getx() && player.getx()<=loot.get(i).getx()+50 && player.gety()-50<=loot.get(i).gety() && player.gety()>=loot.get(i).gety()){
-                if (player.addItem(loot.get(i))){
-                    loot.remove(i);
+        for (int i = 0; i< mapLoot.size(); i++){
+            if (    player.getx()>= mapLoot.get(i).getx()
+                    && player.getx()<= mapLoot.get(i).getx()+50
+                    && player.gety()-50<= mapLoot.get(i).gety()
+                    && player.gety()>= mapLoot.get(i).gety()) {
+
+                if (player.addItem(mapLoot.get(i).getID())){
+                    mapLoot.remove(i);
                 }
             }
         }
@@ -164,9 +170,9 @@ private boolean paused;
 
         }
 
-        //update loot
-        for (int i=0; i<loot.size();i++){
-            loot.get(i).update();
+        //update mapLoot
+        for (int i = 0; i< mapLoot.size(); i++){
+            mapLoot.get(i).update();
         }
 
         getLoot();
@@ -207,6 +213,7 @@ private boolean paused;
                 if(k == KeyEvent.VK_A) gui.inventoryMove(-1,0);
                 if(k == KeyEvent.VK_D) gui.inventoryMove(1,0);
                 if(k == KeyEvent.VK_BACK_SPACE) gui.openInventory();
+                if(k == KeyEvent.VK_ENTER) gui.select();
             }else{
                 if(k == KeyEvent.VK_ENTER) menuAction();
                 if(k == KeyEvent.VK_W) gui.setCurrentAction(-1);
@@ -260,8 +267,8 @@ private boolean paused;
         }
 
         //draw items
-        for (int i=0;i<loot.size();i++){
-            loot.get(i).draw(g);
+        for (int i = 0; i< mapLoot.size(); i++){
+            mapLoot.get(i).draw(g);
         }
 
 
@@ -270,5 +277,9 @@ private boolean paused;
         if (menu){
             gui.draw(g,player.getItems());
         }
+    }
+
+    public void equip(int i) {
+        player.equip(i);
     }
 }
