@@ -1,7 +1,7 @@
 package GameState;
 
 import Entity.FPS;
-import Entity.Player.Player;
+import Entity.Players.Player;
 import Entity.SpawnArea;
 import TileMap.Background;
 import TileMap.TileMap;
@@ -45,8 +45,9 @@ class Level1State extends LevelState {
 		spawnArea.add( new SpawnArea (tileMap,645,500,100,150,1));
 		spawnArea.add( new SpawnArea (tileMap,695,700,100,150,1));
 		spawnArea.add( new SpawnArea (tileMap,600,950,100,150,1));
-		spawnArea.add( new SpawnArea (tileMap,100,1100,100,150,2));
-		//spawnArea.add (new SpawnArea (tileMap.))
+        //
+        // spawnArea.add( new SpawnArea (tileMap,100,1100,100,150,2));
+        //spawnArea.add (new SpawnArea (tileMap.))
 
 		menu =false;
 		mapLoot = new ArrayList<>();

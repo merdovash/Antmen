@@ -2,7 +2,7 @@ package Entity.Enemies;
 
 
 import Entity.ActiveMapObject;
-import Entity.Player.Player;
+import Entity.Players.Player;
 import TileMap.TileMap;
 
 import javax.imageio.ImageIO;

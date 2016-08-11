@@ -1,7 +1,7 @@
 package GUI;
 
 import Entity.Items.ItemList;
-import Entity.Player.Player;
+import Entity.Players.Player;
 import GameState.LevelState;
 import Main.GamePanel;
 
@@ -9,8 +9,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by vlad on 08.08.16.

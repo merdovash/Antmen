@@ -4,12 +4,12 @@ import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
 import Entity.Items.MapItem;
-import Entity.Player.Player;
+import Entity.Players.Player;
 import Entity.SpawnArea;
-import Main.GamePanel;
-import TileMap.TileMap;
-import TileMap.Background;
 import GUI.GUI;
+import Main.GamePanel;
+import TileMap.Background;
+import TileMap.TileMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -95,8 +95,9 @@ public abstract class LevelState extends GameState {
                                 enemies.add(new Spider(tileMap));
                                 break;
                         }
-
-                        enemies.get(enemies.size()-1).setPosition(spawnArea.get(i).getx(),spawnArea.get(i).gety());
+                        if (enemies.size() != 0) {
+                            enemies.get(enemies.size() - 1).setPosition(spawnArea.get(i).getx(), spawnArea.get(i).gety());
+                        }
                     }
                 }
             }
@@ -178,14 +179,17 @@ private boolean paused;
                     enemies.get(i).punch(player.spells.get(j).getPower(),player.spells.get(j).getx());
                 }
             }
-            if (enemies.get(i).isDead()){
-                addLoot(enemies.get(i));
-                enemies.remove(i);
-                if (i==enemies.size()){
-                    break;
-                }else{
-                    i--;
+            if (enemies.size() > 0) {
+                if (enemies.get(i).isDead()) {
+                    addLoot(enemies.get(i));
+                    enemies.remove(i);
+                    if (i == enemies.size()) {
+                        break;
+                    } else {
+                        i--;
+                    }
                 }
+
             }
 
         }

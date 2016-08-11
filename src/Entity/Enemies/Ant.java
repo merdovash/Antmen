@@ -5,12 +5,11 @@ import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Ant extends Enemy {
 
+    private Vision v;
 
     public Ant(TileMap tm) {
 
@@ -49,6 +48,7 @@ public class Ant extends Enemy {
         loot = new DropList();
         loot.add(1d,1);
 
+        //v=new Vision(400,100);
 
     }
 
@@ -71,12 +71,15 @@ public class Ant extends Enemy {
         //change direction
         facingRight = right;
 
+        //v.update((int)x+width/2,(int)y-height+25,tileMap);
+
     }
 
     public void draw(Graphics2D g){
         setMapPosition();
 
         super.draw(g);
+        //v.draw(g);
     }
 
 
