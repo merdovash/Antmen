@@ -20,6 +20,8 @@ import java.util.ArrayList;
  */
 public abstract class LevelState extends GameState {
 
+    public static int HEIGHT;
+
     public LevelState(){
 
     }
@@ -214,7 +216,6 @@ private boolean paused;
             if(k == KeyEvent.VK_UP) player.setUp(true);
             if(k == KeyEvent.VK_DOWN) player.setDown(true);
             if(k == KeyEvent.VK_SPACE) player.setJumping(true);
-            if(k == KeyEvent.VK_E) player.setGliding(true);
             if(k == KeyEvent.VK_S) player.setScratching();
             if(k == KeyEvent.VK_SHIFT) player.setBoost(true);
             if(k == KeyEvent.VK_1) player.use1spell(true);
@@ -251,7 +252,6 @@ private boolean paused;
             if(k == KeyEvent.VK_UP) player.setUp(false);
             if(k == KeyEvent.VK_DOWN) player.setDown(false);
             if(k == KeyEvent.VK_SPACE) player.setJumping(false);
-            if(k == KeyEvent.VK_E) player.setGliding(false);
             if(k == KeyEvent.VK_Q) player.respawn();
             if(k == KeyEvent.VK_SHIFT) player.setBoost(false);
             if(k == KeyEvent.VK_1) player.use1spell(false);

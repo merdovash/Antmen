@@ -3,36 +3,32 @@ package Entity.Items;
 import Entity.MapObject;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 
 public class MapItem extends MapObject {
 
-    private Rectangle rectangle;
-    private BufferedImage sprite;
-    private String adress;
     private int id;
 
     public MapItem(TileMap tm,int id) {
         super(tm);
-        System.out.println(id);
-        adress = ItemList.getString(id);
+
+
         this.id=id;
-        init();
-    }
+        adressImage = ItemList.getString(id);
+        facingRight = true;
+        width = 96;
+        height = 96;
+        numFrames = new int[]{1};
+        loadSprites();
+        animation.setFrames(sprites.get(0));
+        animation.setDelay(-1);
 
-    public void init() {
-        try{
-            sprite = ImageIO.read(getClass().getResourceAsStream(adress));
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         width = 50;
-        height= 50;
+        height = 50;
+
     }
+
 
     public void update() {
 
@@ -40,17 +36,7 @@ public class MapItem extends MapObject {
 
     @Override
     public void draw(Graphics2D g) {
-        setMapPosition();
-        g.drawImage(sprite,
-                (int)(x+xmap),
-                (int)(y+ymap-height),
-                width,
-                height,
-                null);
-
-        rectangle=getRectangle();
-        g.setColor(Color.GREEN);
-        g.draw(rectangle);
+        super.draw(g);
     }
 
     public int getID(){

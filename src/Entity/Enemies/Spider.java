@@ -13,11 +13,11 @@ public class Spider extends Enemy {
     public Spider(TileMap tm) {
         super(tm);
 
-        adress = "/Sprites/Enemies/spider.gif";
+        adressImage = "/Sprites/Enemies/spider.gif";
         width = 300;
         height=150;
 
-        loadSprites(1);
+        //loadSprites(1);
 
         moveSpeed = 25* GamePanel.SCALE;
 
@@ -33,7 +33,7 @@ public class Spider extends Enemy {
 
 
         animation = new Animation();
-        animation.setFrames(sprites);
+        animation.setFrames(sprites.get(0));
         animation.setDelay(300);
 
         right= true;

@@ -1,5 +1,7 @@
 package Entity.States;
 
+import Main.GamePanel;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -109,7 +111,7 @@ public class Energy {
     public void draw(Graphics2D g, int number,Color c){
         percent=opacity/maxOpacity*100;
         g.setColor(c);
-        g.fillRect(1000, 25+number*35, (int)percent*3, 30);
+        g.fillRect((int) (GamePanel.WIDTH - (350) * GamePanel.SCALE), (int) ((25 + number * 35) * GamePanel.SCALE), (int) ((int) percent * 3 * GamePanel.SCALE), (int) (30 * GamePanel.SCALE));
     }
 
     public void setRefillSpeed(double refillSpeed) {

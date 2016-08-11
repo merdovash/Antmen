@@ -1,5 +1,6 @@
 package Entity;
 
+import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
@@ -18,10 +19,10 @@ public class SpawnArea extends MapObject {
 
     public SpawnArea(TileMap tm, int x, int y, int width, int height, int enemyID){
         super(tm);
-        this.x=x;
-        this.y=y;
-        this.width=width;
-        this.height=height;
+        this.x = x * GamePanel.SCALE;
+        this.y = y * GamePanel.SCALE;
+        this.width = (int) (width * GamePanel.SCALE);
+        this.height = (int) (height * GamePanel.SCALE);
         this.enemyID = enemyID;
         cooldown = 1000;
 

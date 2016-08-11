@@ -35,7 +35,7 @@ public abstract class ActiveMapObject extends MapObject {
         speedY.add(0d); //jump
         speedY.add(0d); //jump square
 
-        fallSpeed = 24* GamePanel.SCALE;
+        gravity = 24 * GamePanel.SCALE;
         health = new Health(10);
     }
 
@@ -109,7 +109,7 @@ public abstract class ActiveMapObject extends MapObject {
         // falling
         if(falling) {
 
-            speedY.set(0, speedY.get(0) + fallSpeed*ms);
+            speedY.set(0, speedY.get(0) + gravity * ms);
             if (speedY.get(0)>-speedY.get(1) || speedY.get(0)>-speedY.get(2)){
                 pik=true;
             }
@@ -121,7 +121,7 @@ public abstract class ActiveMapObject extends MapObject {
                 pik=false;
             }
             if (!save){
-                health.atacked((int) (gravityDown/130));
+                health.atacked((int) ((gravityDown / (gravity * 5.5))));
             }
         }
 
@@ -149,13 +149,6 @@ public abstract class ActiveMapObject extends MapObject {
             temp+=speedY.get(i);
         }
         dy=temp*ms;
-    }
-
-    protected void respawn(){
-        x=100;
-        y=200;
-        health.heal(health.getMaxHealth());
-        dead=false;
     }
 
     protected void getNextPosition(){
@@ -187,8 +180,19 @@ public abstract class ActiveMapObject extends MapObject {
 
         //moving
         getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp, ytemp);
+        try {
+            checkTileMapCollision();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            dead = true;
+            health.setDead();
+        }
+
+        if (ytemp > (26 * 50 * GamePanel.SCALE) - 5) {
+            health.setDead();
+        } else {
+            setPosition(xtemp, ytemp);
+        }
+
 
         //check flinching
         checkFlinching();

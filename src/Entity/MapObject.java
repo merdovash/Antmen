@@ -1,10 +1,12 @@
 package Entity;
 
 import Main.GamePanel;
-import TileMap.TileMap;
 import TileMap.Tile;
+import TileMap.TileMap;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public abstract class MapObject {
@@ -62,8 +64,8 @@ public abstract class MapObject {
 	
 	// movement attributes
 	protected double moveSpeed;
-	double fallSpeed;
-	protected double maxFallSpeed;
+    double gravity;
+    protected double maxFallSpeed;
 	protected double jumpStart;
 	double gravityDown;
 
@@ -73,27 +75,65 @@ public abstract class MapObject {
 	private boolean bottomMiddle;
 	private boolean middleRight;
 	private boolean middleLeft;
+    protected ArrayList<BufferedImage[]> sprites;
+    protected String adressImage;
+    protected int[] numFrames;
 
-	// constructor
-	public MapObject(TileMap tm) {
+    // constructor
+    public MapObject(TileMap tm) {
 		tileMap = tm;
 		tileSize = tm.getTileSize();
 		rectangle = getRectangle();
 	}
-	
-	public boolean intersects(MapObject o) {
+
+    protected void loadSprites() {
+        //load sprite
+        try {
+
+            BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(adressImage));
+
+            sprites = new ArrayList<>();
+            for (int i = 0; i < numFrames.length; i++) {
+
+                BufferedImage[] bi = new BufferedImage[numFrames[i]];
+
+                for (int j = 0; j < numFrames[i]; j++) {
+
+                    bi[j] = spritesheet.getSubimage(
+                            j * width,
+                            i * height,
+                            width,
+                            height
+                    );
+                }
+
+                sprites.add(bi);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        animation = new Animation();
+        animation.setFrame(0);
+    }
+
+    public boolean intersects(MapObject o) {
 		return rectangle.intersects(o.getRectangle());
 	}
 
 	public Rectangle getRectangle() {
 		return new Rectangle(
 				(int)(x+xmap),
-				(int)(y+ymap-height),
-				width,
-				height
-		);
+                (int) (y + ymap - height * scale),
+                (int) (width * scale),
+                (int) (height * scale)
+        );
 	}
-	private int leftTile =2;
+
+
+    private int leftTile =2;
 	private int rightTile = 2;
 	private int topTile = 2;
 	private int bottomTile = 2;
@@ -103,25 +143,25 @@ public abstract class MapObject {
 
 	protected void calculateCorners(double x, double y) {
 		leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
-		rightTile = (int)((x + width + 1) / (tileSize*GamePanel.SCALE));
-		topTile = (int)((y - height - 1) / (tileSize*GamePanel.SCALE));
-		bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
-		middleH = (int)((y-height/2)/(tileSize*GamePanel.SCALE));
-		middleW = (int)((x+width/2)/(tileSize*GamePanel.SCALE));
+        rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
+        topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
+        bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
+        middleH = (int) ((y - height * scale / 2) / (tileSize * GamePanel.SCALE));
+        middleW = (int) ((x + width * scale / 2) / (tileSize * GamePanel.SCALE));
 
 
 		//if (topTile<0){
 		//	topTile=1;
 		//}
-		if (leftTile<0){
-			leftTile=1;
-		}
-		if (middleH<0){
-			middleH=2;
-		}
+        //if (leftTile<0){
+        //	leftTile=1;
+        //}
+        //if (middleH<0){
+        //	middleH=2;
+        //}
 
-		int tl = tileMap.getType(topTile+1-1, leftTile+1-1);
-		int tr = tileMap.getType(topTile, rightTile);
+        int tl = tileMap.getType(topTile, leftTile);
+        int tr = tileMap.getType(topTile, rightTile);
 		int bl = tileMap.getType(bottomTile, leftTile);
 		int br = tileMap.getType(bottomTile, rightTile);
 
@@ -251,26 +291,31 @@ public abstract class MapObject {
 			y + ymap - height > GamePanel.HEIGHT;
 	}
 
-	public void draw(Graphics2D g){
+    private double scale;
 
-		if(facingRight) {
+    public void draw(Graphics2D g){
+        setMapPosition();
+        if (scale != GamePanel.SCALE) {
+            scale = GamePanel.SCALE;
+        }
+        if(facingRight) {
 			g.drawImage(
 					animation.getImage(),
 					(int)(x + xmap  ),
-					(int)(y + ymap -height),
-					width,
-					height,
-					null
+                    (int) (y + ymap - height * scale),
+                    (int) (width * scale),
+                    (int) (height * scale),
+                    null
 			);
 		}
 		else {
 			g.drawImage(
 					animation.getImage(),
-					(int)(x + xmap+width),
-					(int)(y + ymap-height),
-					-width,
-					height,
-					null
+                    (int) (x + xmap + width * scale),
+                    (int) (y + ymap - height * scale),
+                    (int) (-width * scale),
+                    (int) (height * scale),
+                    null
 			);
 
 		}

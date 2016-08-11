@@ -61,5 +61,15 @@ public class Health {
             g.drawImage(tileset,10+i*55,10, null);
         }
     }
+
+    public void setDead() {
+        dead = true;
+        health = 0;
+    }
+
+    public void setAlive() {
+        dead = false;
+        health = maxHealth;
+    }
 }
 

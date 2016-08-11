@@ -1,7 +1,6 @@
 package Entity.Players;
 
 import Entity.ActiveMapObject;
-import Entity.Animation;
 import Entity.Enemies.Enemy;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
@@ -41,11 +40,6 @@ public class Player extends ActiveMapObject {
     // gliding
     private boolean gliding;
 
-    // animations
-    private ArrayList<BufferedImage[]> sprites;
-    private final int[] numFrames = {
-            2, 6, 1, 1, 1, 1, 3
-    };
 
     // animation actions
     private static final int IDLE = 0;
@@ -100,45 +94,10 @@ public class Player extends ActiveMapObject {
 
 
         // load sprite
-        try {
+        numFrames = new int[]{2, 6, 1, 1, 1, 1, 3};
+        adressImage = "/Sprites/Player/murisprites.gif";
+        loadSprites();
 
-            BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/murisprites.gif"));
-
-            sprites = new ArrayList<>();
-            for (int i = 0; i < 7; i++) {
-
-                BufferedImage[] bi =
-                        new BufferedImage[numFrames[i]];
-
-                for (int j = 0; j < numFrames[i]; j++) {
-
-                    if (i != 7) {
-                        bi[j] = spritesheet.getSubimage(
-                                j * width,
-                                i * height,
-                                width,
-                                height
-                        );
-                    } else {
-                        bi[j] = spritesheet.getSubimage(
-                                j * width * 2,
-                                i * height,
-                                width * 2,
-                                height
-                        );
-                    }
-
-                }
-
-                sprites.add(bi);
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        animation = new Animation();
         currentAction = IDLE;
         animation.setFrames(sprites.get(IDLE));
         animation.setDelay(400);
@@ -150,12 +109,6 @@ public class Player extends ActiveMapObject {
 
         fallable = false;
 
-
-    }
-
-    private void initMapItems() {
-        map = new HashMap<Integer, String>();
-        map.put(1, "/Items/Loot/branch.gif");
     }
 
 
@@ -167,24 +120,8 @@ public class Player extends ActiveMapObject {
         return health.getMaxHealth();
     }
 
-    public int getFire() {
-        return fire;
-    }
-
-    public int getMaxFire() {
-        return maxFire;
-    }
-
-    public void setFiring() {
-        firing = true;
-    }
-
     public void setScratching() {
         scratching = true;
-    }
-
-    public void setGliding(boolean b) {
-        gliding = b;
     }
 
     public void setBoost(boolean b) {
@@ -226,7 +163,7 @@ public class Player extends ActiveMapObject {
             for (int j = 0; j < spells.size(); j++) {
                 if (spells.get(j).intersects(e)) {
                     e.hit(spells.get(j).getDamage());
-                    spells.get(i).setHit();
+                    spells.get(j).setHit();
                     break;
                 }
 
@@ -282,50 +219,56 @@ public class Player extends ActiveMapObject {
     public void respawn() {
         x = 200;
         y = 200;
-        health.heal(health.getMaxHealth());
+        health.setAlive();
         dead = false;
     }
 
     public void update() {
+        if (!dead) {
+            super.update();
 
-        super.update();
+            //trace
+            trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
 
-        //trace
-        trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
+            //refill energy
+            if (!boost || energy.isEmpty()) energy.refill(delta);
 
-        //refill energy
-        if (!boost || energy.isEmpty()) energy.refill(delta);
-
-        //check attack has stopped
-        if (currentAction == SCRATCHING) {
-            if (animation.hasPlayedOnce()) scratching = false;
-        }
-        if (currentAction == FIREBALL) {
-            if (animation.hasPlayedOnce()) firing = false;
-        }
-
-        //spell atack;
-        mana.refill(delta);
-        useSpells();
-
-        //update firebals
-        for (int i = 0; i < spells.size(); i++) {
-            spells.get(i).update();
-            if (spells.get(i).checkRemove()) {
-                spells.remove(i);
-                i--;
+            //check attack has stopped
+            if (currentAction == SCRATCHING) {
+                if (animation.hasPlayedOnce()) scratching = false;
             }
-        }
+            if (currentAction == FIREBALL) {
+                if (animation.hasPlayedOnce()) firing = false;
+            }
 
-        //set animation
-        firing = spell1 || spell2 || spell3;
+            //spell atack;
+            mana.refill(delta);
+            useSpells();
+
+            //update firebals
+            for (int i = 0; i < spells.size(); i++) {
+                spells.get(i).update();
+                if (spells.get(i).checkRemove()) {
+                    spells.remove(i);
+                    i--;
+                }
+            }
+
+            //set animation
+            firing = spell1 || spell2 || spell3;
+
+
+            // set direction
+            if (currentAction != SCRATCHING && currentAction != FIREBALL) {
+                if (right) facingRight = true;
+                if (left) facingRight = false;
+            }
+        } else {
+            //time
+            delta = System.nanoTime() - lastTime;
+            lastTime = System.nanoTime();
+        }
         setAnimation();
-
-        // set direction
-        if (currentAction != SCRATCHING && currentAction != FIREBALL) {
-            if (right) facingRight = true;
-            if (left) facingRight = false;
-        }
     }
 
 
@@ -398,7 +341,6 @@ public class Player extends ActiveMapObject {
         }
 
         health.draw(g);
-
         energy.draw(g, 0, energy.GREEN_RED);
         mana.draw(g, 1, energy.RED_BLUE);
 

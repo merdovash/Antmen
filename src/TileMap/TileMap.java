@@ -211,7 +211,10 @@ public class TileMap {
 		}
 		
 	}
-	
+
+	public int getNumRows() {
+		return numRows;
+	}
 }
 
 

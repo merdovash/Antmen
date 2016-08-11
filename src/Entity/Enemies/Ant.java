@@ -15,15 +15,18 @@ public class Ant extends Enemy {
 
         super(tm);
 
-        adress = "/Sprites/Enemies/ant.gif";
         width = 71;
         height=135;
 
-        loadSprites(3);
+        //load Sprites
+        numFrames = new int[]{3};
+        adressImage = "/Sprites/Enemies/ant.gif";
+        loadSprites();
+        animation = new Animation();
+        animation.setFrames(sprites.get(0));
+        animation.setDelay(300);
 
         moveSpeed = 15*GamePanel.SCALE;
-
-
 
         health = new Health(6);
         damage = 1;
@@ -32,11 +35,6 @@ public class Ant extends Enemy {
         agressive=true;
         visionX=400;
         visionY=100;
-
-
-        animation = new Animation();
-        animation.setFrames(sprites);
-        animation.setDelay(300);
 
         right= true;
         left = false;
@@ -56,7 +54,6 @@ public class Ant extends Enemy {
         super.update();
 
         this.tileMap=tm;
-        //update position
 
         if(dx==0){
             if (!enemy){

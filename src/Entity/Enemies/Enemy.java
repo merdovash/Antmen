@@ -5,9 +5,6 @@ import Entity.ActiveMapObject;
 import Entity.Players.Player;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-
 
 
 public abstract class Enemy extends ActiveMapObject {
@@ -23,10 +20,6 @@ public abstract class Enemy extends ActiveMapObject {
     protected long flinchTimer;
 
     protected boolean enemy;
-
-    protected BufferedImage[] sprites;
-
-    protected String adress;
 
     //loot
     public DropList loot;
@@ -51,21 +44,6 @@ public abstract class Enemy extends ActiveMapObject {
         flinching =true;
         flinchTimer = System.nanoTime();
 
-    }
-
-    protected void loadSprites(int size){
-        //load sprite
-        try{
-            BufferedImage spritesheets = ImageIO.read(getClass().getResourceAsStream(adress));
-
-            sprites = new BufferedImage[size];
-
-            for (int i=0;i<sprites.length;i++){
-                sprites[i]=spritesheets.getSubimage(i*width,0,width-1, height);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
 

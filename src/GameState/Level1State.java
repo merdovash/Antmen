@@ -27,6 +27,8 @@ class Level1State extends LevelState {
 		tileMap.setPosition(0, 0);
 		tileMap.setTween(1);
 
+		HEIGHT = tileMap.getNumRows();
+
 
 
 		bg = new Background("/Backgrounds/bglvl1.gif", 0.1);
@@ -40,7 +42,7 @@ class Level1State extends LevelState {
 
 		//init spawn Areas
 		spawnArea = new ArrayList<>();
-		spawnArea.add( new SpawnArea (tileMap,645,151,100,150,1));
+		spawnArea.add(new SpawnArea(tileMap, 645, 151, 100, 150, 1));
 		spawnArea.add( new SpawnArea (tileMap,900,100,100,150,1));
 		spawnArea.add( new SpawnArea (tileMap,645,500,100,150,1));
 		spawnArea.add( new SpawnArea (tileMap,695,700,100,150,1));

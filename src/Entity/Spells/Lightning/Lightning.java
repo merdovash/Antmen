@@ -22,7 +22,7 @@ public abstract class Lightning extends Spell {
 
     public Lightning(TileMap tm, boolean right) {
         super(tm, right);
-        loadAnimation();
+        //loadAnimation();
         lastTime=System.nanoTime();
         l=0;
     }

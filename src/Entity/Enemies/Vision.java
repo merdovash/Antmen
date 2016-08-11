@@ -32,7 +32,6 @@ public class Vision {
         visionY = y / 5;
         c = new Color(1f, 1f, 1f, 0.5f);
         r = new Rectangle[visionY];
-        System.out.println(r.length);
     }
 
     public void update(int x, int y, TileMap tm) {
