@@ -10,7 +10,7 @@ import java.awt.*;
 
 public abstract class ActiveMapObject extends MapObject {
 
-    protected Health health;
+    public Health health;
     protected boolean dead;
     protected int weight;
     protected boolean flinching;
@@ -27,13 +27,13 @@ public abstract class ActiveMapObject extends MapObject {
     protected ActiveMapObject(TileMap tm) {
         super(tm);
 
-        speedX.add(0d); //right
-        speedX.add(0d); //left
-        speedX.add(0d); //punch
+        speedsX.add(0d); //right
+        speedsX.add(0d); //left
+        speedsX.add(0d); //punch
 
-        speedY.add(0d); //grivity
-        speedY.add(0d); //jump
-        speedY.add(0d); //jump square
+        speedsY.add(0d); //grivity
+        speedsY.add(0d); //jump
+        speedsY.add(0d); //jump square
 
         gravity = 24 * GamePanel.SCALE;
         health = new Health(10);
@@ -53,39 +53,38 @@ public abstract class ActiveMapObject extends MapObject {
             if(left) {
                 if (boost && !energy.isEmpty()){
                     energy.consump(delta);
-                    speedX.set(0,-moveSpeed*boostSpeed);
+                    speedsX.set(0, -moveSpeed * boostSpeed);
 
                 }else{
-                    speedX.set(0,-moveSpeed);
+                    speedsX.set(0, -moveSpeed);
                 }
-                speedX.set(1,0d);
+                speedsX.set(1, 0d);
 
             } else if(right) {
                 if(boost && !energy.isEmpty()){
                     energy.consump(delta);
-                    speedX.set(1, moveSpeed*boostSpeed) ;
+                    speedsX.set(1, moveSpeed * boostSpeed);
 
 
                 }else{
-                    speedX.set(1, moveSpeed);
+                    speedsX.set(1, moveSpeed);
                 }
-                speedX.set(0,0d);
+                speedsX.set(0, 0d);
             }
             else {
-                if(speedX.get(0) != 0) {
-                    speedX.set(0,0d);
-                }
-                else if(speedX.get(1) != 0) {
-                    speedX.set(1,0d);
+                if (speedsX.get(0) != 0) {
+                    speedsX.set(0, 0d);
+                } else if (speedsX.get(1) != 0) {
+                    speedsX.set(1, 0d);
                 }
             }
         }else{
-            if (speedX.get(2)!=0){
-                speedX.set(0,0d);
-                speedX.set(1,0d);
-                speedX.set(2,speedX.get(2)-weight*ms*speedX.get(2)/Math.abs(speedX.get(2)));
-                if (Math.abs(speedX.get(2))<0.5*weight){
-                    speedX.set(2,0d);
+            if (speedsX.get(2) != 0) {
+                speedsX.set(0, 0d);
+                speedsX.set(1, 0d);
+                speedsX.set(2, speedsX.get(2) - weight * ms * speedsX.get(2) / Math.abs(speedsX.get(2)));
+                if (Math.abs(speedsX.get(2)) < 0.5 * weight) {
+                    speedsX.set(2, 0d);
                 }
             }else{
                 punched=false;
@@ -95,8 +94,8 @@ public abstract class ActiveMapObject extends MapObject {
         }
         // movement
         int temp=0;
-        for (int i=0;i<speedX.size();i++){
-            temp+=speedX.get(i);
+        for (Double SpeedX : speedsX) {
+            temp += SpeedX;
         }
         dx=temp*ms;
     }
@@ -109,31 +108,34 @@ public abstract class ActiveMapObject extends MapObject {
         // falling
         if(falling) {
 
-            speedY.set(0, speedY.get(0) + gravity * ms);
-            if (speedY.get(0)>-speedY.get(1) || speedY.get(0)>-speedY.get(2)){
+            speedsY.set(0, speedsY.get(0) + gravity * ms);
+            if (speedsY.get(0) > -speedsY.get(1) || speedsY.get(0) > -speedsY.get(2)) {
                 pik=true;
             }
 
         }else{
-            gravityDown=speedY.get(0)+speedY.get(2);
-            for (int i=0; i<speedY.size();i++){
-                speedY.set(i,0d);
+            gravityDown = speedsY.get(0) + speedsY.get(1);
+            for (int i = 0; i < speedsY.size(); i++) {
+                speedsY.set(i, 0d);
                 pik=false;
             }
             if (!save){
-                health.atacked((int) ((gravityDown / (gravity * 5.5))));
+                int damage = (int) (gravityDown / (gravity * 5.5));
+                if (damage > 0) {
+                    hit(damage);
+                }
             }
         }
 
         // jumper
         if (jumper && !inAir) {
-            speedY.set(2, jumpStart*1.4 - gravityDown/8);
+            speedsY.set(2, jumpStart * 1.4 - gravityDown / 8);
             inAir =true;
         }
 
         // jumping
         if(jumping && !falling) {
-            speedY.set(1, jumpStart);
+            speedsY.set(1, jumpStart);
             inAir = true;
             jumping = false;
         }
@@ -145,8 +147,8 @@ public abstract class ActiveMapObject extends MapObject {
         }
 
         double temp=0;
-        for (int i=0;i<speedY.size();i++){
-            temp+=speedY.get(i);
+        for (Double SpeedY : speedsY) {
+            temp += SpeedY;
         }
         dy=temp*ms;
     }
@@ -159,7 +161,17 @@ public abstract class ActiveMapObject extends MapObject {
         calculateDY();
     }
 
-    protected void checkFlinching() {
+    public void hit(int damage) {
+        if (flinching) return;
+        health.atacked(damage);
+        flinching = true;
+        flinchTimer = System.nanoTime();
+        if (health.getHealth() == 0) {
+            dead = true;
+        }
+    }
+
+    private void checkFlinching() {
         if (flinching){
             long elapsed =(System.nanoTime()-flinchTimer)/1000000;
             if (elapsed>1000){

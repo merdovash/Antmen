@@ -147,39 +147,31 @@ public class Player extends ActiveMapObject {
     public void checkAtack(ArrayList<Enemy> enemies) {
 
 
-        for (int i = 0; i < enemies.size(); i++) {
-            Enemy e = enemies.get(i);
+        for (Enemy enemy : enemies) {
             if (scratching) {
                 if (facingRight) {
-                    if (e.getx() > x && e.getx() < x + scratchRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
-                        e.hit(scratchDamage);
+                    if (enemy.getx() > x && enemy.getx() < x + scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
+                        enemy.hit(scratchDamage);
                     }
                 } else {
-                    if (e.getx() < x && e.getx() > x - scratchRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
-                        e.hit(scratchDamage);
+                    if (enemy.getx() < x && enemy.getx() > x - scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
+                        enemy.hit(scratchDamage);
                     }
                 }
             }
-            for (int j = 0; j < spells.size(); j++) {
-                if (spells.get(j).intersects(e)) {
-                    e.hit(spells.get(j).getDamage());
-                    spells.get(j).setHit();
+            for (Spell spell : spells) {
+                if (spell.intersects(enemy)) {
+                    enemy.hit(spell.getDamage());
+                    spell.setHit();
                     break;
                 }
 
             }
 
-            if (rectangle.intersects(e.getRectangle())) {
-                hit(e.getDamage());
+            if (rectangle.intersects(enemy.getRectangle())) {
+                hit(enemy.getDamage());
             }
         }
-    }
-
-    private void hit(int damage) {
-        if (flinching) return;
-        health.atacked(damage);
-        flinching = true;
-        flinchTimer = System.nanoTime();
     }
 
 
@@ -336,8 +328,8 @@ public class Player extends ActiveMapObject {
     public void draw(Graphics2D g) {
         setMapPosition();
 
-        for (int i = 0; i < spells.size(); i++) {
-            spells.get(i).draw(g);
+        for (Spell spell : spells) {
+            spell.draw(g);
         }
 
         health.draw(g);

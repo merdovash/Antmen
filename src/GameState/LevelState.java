@@ -15,14 +15,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-/**
- * Created by MERDovashkinar on 8/6/2016.
- */
 public abstract class LevelState extends GameState {
 
-    public static int HEIGHT;
+    static int HEIGHT;
 
-    public LevelState(){
+    protected LevelState() {
 
     }
 
@@ -41,9 +38,9 @@ public abstract class LevelState extends GameState {
 
     ArrayList<Enemy> enemies;
 
-    ArrayList<SpawnArea> spawnArea;
+    ArrayList<SpawnArea> spawnAreas;
 
-    ArrayList<MapItem> mapLoot;
+    ArrayList<MapItem> mapLoots;
 
     private GUI gui;
 
@@ -53,22 +50,22 @@ public abstract class LevelState extends GameState {
         double chance = Math.random()*(1);
         for (int i = 0; i<e.loot.size();i++){
             if (chance<=e.loot.getChance(i)){
-                mapLoot.add(new MapItem(tileMap, e.loot.getID(i)));
-                mapLoot.get(mapLoot.size()-1).setPosition(e.getx(), e.gety());
+                mapLoots.add(new MapItem(tileMap, e.loot.getID(i)));
+                mapLoots.get(mapLoots.size() - 1).setPosition(e.getx(), e.gety());
             }
         }
 
     }
 
     private void getLoot(){
-        for (int i = 0; i< mapLoot.size(); i++){
-            if (    player.getx()>= mapLoot.get(i).getx()
-                    && player.getx()<= mapLoot.get(i).getx()+50
-                    && player.gety()-50<= mapLoot.get(i).gety()
-                    && player.gety()>= mapLoot.get(i).gety()) {
+        for (int i = 0; i < mapLoots.size(); i++) {
+            if (player.getx() >= mapLoots.get(i).getx()
+                    && player.getx() <= mapLoots.get(i).getx() + 50
+                    && player.gety() - 50 <= mapLoots.get(i).gety()
+                    && player.gety() >= mapLoots.get(i).gety()) {
 
-                if (player.addItem(mapLoot.get(i).getID())){
-                    mapLoot.remove(i);
+                if (player.addItem(mapLoots.get(i).getID())) {
+                    mapLoots.remove(i);
                 }
             }
         }
@@ -76,20 +73,20 @@ public abstract class LevelState extends GameState {
 
 
     private void addEnemy(){
-        for (int i = 0; i< spawnArea.size(); i++){
-            if (spawnArea.get(i).isActive()){
+        for (int i = 0; i < spawnAreas.size(); i++) {
+            if (spawnAreas.get(i).isActive()) {
                 boolean empty =true;
-                for (int j=0; j<enemies.size();j++){
-                    if (spawnArea.get(i).contains(enemies.get(j))){
-                        empty=false;
+                for (Enemy enemy : enemies) {
+                    if (spawnAreas.get(i).contains(enemy)) {
+                        empty = false;
                         break;
                     }
 
                 }
 
-                if (empty && enemies.size()<spawnArea.size()){
-                    if (spawnArea.get(i).isReady()){
-                        switch (spawnArea.get(i).getID()){
+                if (empty && enemies.size() < spawnAreas.size()) {
+                    if (spawnAreas.get(i).isReady()) {
+                        switch (spawnAreas.get(i).getID()) {
                             case 1:
                                 enemies.add(new Ant(tileMap));
                                 break;
@@ -98,7 +95,7 @@ public abstract class LevelState extends GameState {
                                 break;
                         }
                         if (enemies.size() != 0) {
-                            enemies.get(enemies.size() - 1).setPosition(spawnArea.get(i).getx(), spawnArea.get(i).gety());
+                            enemies.get(enemies.size() - 1).setPosition(spawnAreas.get(i).getx(), spawnAreas.get(i).gety());
                         }
                     }
                 }
@@ -111,15 +108,15 @@ private boolean paused;
         fps.update();
         if (menu) {
             paused=true;
-            gui.update();
+            gui.update(player.getItems());
             return;
         }
         if (paused){
             paused=false;
             long l=System.nanoTime();
             player.setLastTime(l);
-            for (int i =0; i<enemies.size();i++){
-                enemies.get(i).setLastTime(l);
+            for (Enemy enemy : enemies) {
+                enemy.setLastTime(l);
             }
         }
         // refresh fps
@@ -143,9 +140,9 @@ private boolean paused;
 
         updateEnemies();
 
-        //update mapLoot
-        for (int i = 0; i< mapLoot.size(); i++){
-            mapLoot.get(i).update();
+        //update mapLoots
+        for (MapItem mapLoot : mapLoots) {
+            mapLoot.update();
         }
 
         getLoot();
@@ -153,21 +150,20 @@ private boolean paused;
 
     private void updateEnemies(){
         //enemies search player
-        for (int i=0; i<enemies.size();i++){
-            Enemy e = enemies.get(i);
-            if (player.getx()<e.getx()+e.visionX && e.getx()-e.visionX<player.getx()){
-                if (player.gety()< e.gety()+e.visionY && player.gety()> e.gety()-e.visionY){
-                    enemies.get(i).setEnemy(true);
-                    if (player.getx()>e.getx()){
-                        enemies.get(i).setRight();
-                    }else{
-                        enemies.get(i).setLeft();
+        for (Enemy enemy : enemies) {
+            if (player.getx() < enemy.getx() + enemy.visionX && enemy.getx() - enemy.visionX < player.getx()) {
+                if (player.gety() < enemy.gety() + enemy.visionY && player.gety() > enemy.gety() - enemy.visionY) {
+                    enemy.setAgressive(true);
+                    if (player.getx() > enemy.getx()) {
+                        enemy.setRight();
+                    } else {
+                        enemy.setLeft();
                     }
-                }else{
-                    enemies.get(i).setEnemy(false);
+                } else {
+                    enemy.setAgressive(false);
                 }
-            }else{
-                enemies.get(i).setEnemy(false);
+            } else {
+                enemy.setAgressive(false);
             }
         }
 
@@ -175,7 +171,10 @@ private boolean paused;
         for (int i=0; i<enemies.size();i++){
             enemies.get(i).update(tileMap);
             for (int j=0; j<player.spells.size();j++){
-                if (enemies.get(i).intersects(player.spells.get(j)) && !player.spells.get(j).isHit()){
+                if (i == 0) {
+                    System.out.println(player.spells.get(j).isHit() + " " + enemies.get(i).health.getHealth());
+                }
+                if (!(player.spells.get(j).isHit()) && enemies.get(i).intersects(player.spells.get(j))) {
                     player.spells.get(j).setHit();
                     enemies.get(i).hit(player.spells.get(j).getDamage());
                     enemies.get(i).punch(player.spells.get(j).getPower(),player.spells.get(j).getx());
@@ -213,8 +212,6 @@ private boolean paused;
         if (!paused){
             if(k == KeyEvent.VK_A) player.setLeft(true);
             if(k == KeyEvent.VK_D) player.setRight(true);
-            if(k == KeyEvent.VK_UP) player.setUp(true);
-            if(k == KeyEvent.VK_DOWN) player.setDown(true);
             if(k == KeyEvent.VK_SPACE) player.setJumping(true);
             if(k == KeyEvent.VK_S) player.setScratching();
             if(k == KeyEvent.VK_SHIFT) player.setBoost(true);
@@ -249,8 +246,6 @@ private boolean paused;
         if (!paused){
             if(k == KeyEvent.VK_A) player.setLeft(false);
             if(k == KeyEvent.VK_D) player.setRight(false);
-            if(k == KeyEvent.VK_UP) player.setUp(false);
-            if(k == KeyEvent.VK_DOWN) player.setDown(false);
             if(k == KeyEvent.VK_SPACE) player.setJumping(false);
             if(k == KeyEvent.VK_Q) player.respawn();
             if(k == KeyEvent.VK_SHIFT) player.setBoost(false);
@@ -266,8 +261,8 @@ private boolean paused;
         bg.draw(g);
 
         //draw spawn areas
-        for(int i = 0; i < spawnArea.size(); i++){
-            spawnArea.get(i).draw(g);
+        for (SpawnArea spawnArea : spawnAreas) {
+            spawnArea.draw(g);
         }
 
         // draw tilemap
@@ -278,25 +273,25 @@ private boolean paused;
 
         //enemies draw
         if (enemies.size()>0){
-            for (int i=0; i<enemies.size();i++){
-                enemies.get(i).draw(g);
+            for (Enemy enemy : enemies) {
+                enemy.draw(g);
             }
         }
 
         //draw items
-        for (int i = 0; i< mapLoot.size(); i++){
-            mapLoot.get(i).draw(g);
+        for (MapItem aMapLoot : mapLoots) {
+            aMapLoot.draw(g);
         }
 
 
         fps.draw(g);
 
         if (menu){
-            gui.draw(g,player.getItems());
+            gui.draw(g);
         }
     }
 
-    public void equip(int i) {
+    protected void equip(int i) {
         player.equip(i);
     }
 }

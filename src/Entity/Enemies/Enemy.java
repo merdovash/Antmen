@@ -10,21 +10,21 @@ import TileMap.TileMap;
 public abstract class Enemy extends ActiveMapObject {
 
     private boolean dead;
-    protected int damage;
+    int damage;
 
-    protected boolean agressive;
+    boolean agressive;
     public int visionX;
     public int visionY;
 
     protected boolean flinching;
     protected long flinchTimer;
 
-    protected boolean enemy;
+    boolean enemy;
 
     //loot
     public DropList loot;
 
-    public Enemy(TileMap tm) {
+    Enemy(TileMap tm) {
         super(tm);
         dx=0;
         dy=0;
@@ -35,27 +35,16 @@ public abstract class Enemy extends ActiveMapObject {
     public boolean isDead(){return health.dead;}
     public int getDamage(){return damage;}
 
-    public void hit(int damage){
-        if (dead) return;
-        health.atacked(damage);
-        if (health.getHealth()<0) {
-            dead=true;
-        }
-        flinching =true;
-        flinchTimer = System.nanoTime();
-
-    }
-
 
     public void punch(double power, int x){
         if (dead) return;
         if (x>this.x && !punched){
-            speedX.set(2,-power);
-            speedY.set(1,0d);
+            speedsX.set(2, -power * scale);
+            speedsY.set(1, 0d);
             punched=true;
         }else{
-            speedX.set(2,power);
-            speedY.set(0,0d);
+            speedsX.set(2, power * scale);
+            speedsY.set(0, 0d);
             punched=true;
         }
     }
@@ -94,7 +83,7 @@ public abstract class Enemy extends ActiveMapObject {
         right=false;
     }
 
-    public void setEnemy(boolean b){
+    public void setAgressive(boolean b) {
         enemy=b;
     }
 

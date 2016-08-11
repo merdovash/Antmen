@@ -22,12 +22,12 @@ public abstract class MapObject {
 	protected double y;
 	protected double dx;
 	protected double dy;
-	protected ArrayList<Double> speedX = new ArrayList<>();
-	protected ArrayList<Double> speedY = new ArrayList<>();
-	
-	// dimensions
-	protected int width;
-	protected int height;
+    protected ArrayList<Double> speedsX = new ArrayList<>();
+    protected ArrayList<Double> speedsY = new ArrayList<>();
+
+    // dimensions
+    protected int width;
+    protected int height;
 	
 	// collision box
 	protected int cwidth;
@@ -55,8 +55,6 @@ public abstract class MapObject {
 	// movement
 	protected boolean left;
 	protected boolean right;
-	private boolean up;
-	private boolean down;
 	protected boolean jumping;
 	boolean inAir;
 	protected boolean falling;
@@ -65,7 +63,6 @@ public abstract class MapObject {
 	// movement attributes
 	protected double moveSpeed;
     double gravity;
-    protected double maxFallSpeed;
 	protected double jumpStart;
 	double gravityDown;
 
@@ -123,9 +120,9 @@ public abstract class MapObject {
 		return rectangle.intersects(o.getRectangle());
 	}
 
-	public Rectangle getRectangle() {
-		return new Rectangle(
-				(int)(x+xmap),
+    public Rectangle getRectangle() {
+        return new Rectangle(
+                (int)(x+xmap),
                 (int) (y + ymap - height * scale),
                 (int) (width * scale),
                 (int) (height * scale)
@@ -141,8 +138,8 @@ public abstract class MapObject {
 	private int middleH = 2;
 	private int middleW = 2;
 
-	protected void calculateCorners(double x, double y) {
-		leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
+    private void calculateCorners(double x, double y) {
+        leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
         rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
         topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
         bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
@@ -202,11 +199,11 @@ public abstract class MapObject {
 		if(dy < 0) {
 			if(topLeft || topRight || topMiddle) {
 				dy = 0;
-				speedY.set(1,0d);
-				speedY.set(2,0d);
-			}
-		}
-		if(dy > 0) {
+                speedsY.set(1, 0d);
+                speedsY.set(2, 0d);
+            }
+        }
+        if(dy > 0) {
 			if(bottomLeft || bottomRight || bottomMiddle) {
 				dy = 0;
 				falling = false;
@@ -280,8 +277,6 @@ public abstract class MapObject {
 	
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
-	public void setUp(boolean b) { up = b; }
-	public void setDown(boolean b) { down = b; }
 	public void setJumping(boolean b) { jumping = b; }
 	
 	public boolean notOnScreen() {
@@ -291,7 +286,7 @@ public abstract class MapObject {
 			y + ymap - height > GamePanel.HEIGHT;
 	}
 
-    private double scale;
+    protected double scale;
 
     public void draw(Graphics2D g){
         setMapPosition();

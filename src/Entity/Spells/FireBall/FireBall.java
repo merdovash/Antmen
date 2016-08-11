@@ -1,13 +1,11 @@
 package Entity.Spells.FireBall;
 
 import Entity.Spells.Spell;
+import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 7/30/2016.
- */
 public class FireBall extends Spell {
 
     public FireBall(TileMap tm, boolean right, int level) {
@@ -16,7 +14,6 @@ public class FireBall extends Spell {
         power =level*5;
 
         this.level=level;
-        double k = level / 3d;
         moveSpeed=2+level;
         manacost = 10*level;
         damage = level;
@@ -37,6 +34,8 @@ public class FireBall extends Spell {
         numFrames = new int[]{4, 3};
         loadSprites();
         animation.setFrames(sprites.get(0));
+        width = (int) ((10 + 5 * level) * GamePanel.SCALE);
+        height = (int) ((10 + 5 * level) * GamePanel.SCALE);
 
 
     }

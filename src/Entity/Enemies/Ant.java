@@ -28,7 +28,7 @@ public class Ant extends Enemy {
 
         moveSpeed = 15*GamePanel.SCALE;
 
-        health = new Health(6);
+        health = new Health(5);
         damage = 1;
         weight=5;
 

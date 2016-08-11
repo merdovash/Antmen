@@ -10,9 +10,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-/**
- * Created by vlad on 08.08.16.
- */
 public class GUI extends LevelState{
 
     private final Font font = new Font("Courier New", Font.PLAIN,18);
@@ -27,7 +24,14 @@ public class GUI extends LevelState{
 
     private int[] listInventory;
 
+    private double scale;
+
+    //box
+    private int size;
+
     public GUI(){
+        scale = GamePanel.SCALE;
+        size = (int) (60 * scale);
         init();
     }
 
@@ -38,18 +42,16 @@ public class GUI extends LevelState{
     public void init() {
         button = new Rectangle[4];
         for (int i =0; i<button.length;i++){
-            button[i]= new Rectangle(200,100+i*150,300,100);
+            button[i] = new Rectangle((int) (GamePanel.WIDTH / 2 - 500 * scale), (int) ((100 + i * 150) * scale), (int) (300 * scale), (int) (100 * scale));
         }
         initMapItems();
     }
 
-    public void update(){
-
+    public void update(int[] items) {
+        listInventory = items;
     }
 
-    @Override
-    public void draw(Graphics2D g) {
-    }
+
 
     @Override
     public void keyPressed(int k) {
@@ -59,8 +61,9 @@ public class GUI extends LevelState{
     public void keyReleased(int k) {
     }
 
-    public void draw(Graphics2D g, int[] items){
-        listInventory=items;
+    @Override
+    public void draw(Graphics2D g) {
+
         g.setColor(new Color (0,0,0, 0.75f));
         g.fillRect(0,0, GamePanel.WIDTH,GamePanel.HEIGHT);
         for (int i =0; i<button.length;i++){
@@ -71,12 +74,12 @@ public class GUI extends LevelState{
             }
             g.fill(button[i]);
             g.setColor(Color.WHITE);
-            g.drawString(name[i],(int)button[i].getX()+5,(int)button[i].getY()+50);
+            g.drawString(name[i], (int) (button[i].getX() + 5 * scale), (int) (button[i].getY() + 50 * scale));
         }
 
         if (inventory){
             g.setColor (Color.DARK_GRAY);
-            g.fillRect (550, 100, 800, 550);
+            g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
             for (int i=0;i<4;i++){
                 for (int j=0;j<10;j++){
                     if (inventoryPlace[0]==j && inventoryPlace[1]==i){
@@ -84,22 +87,24 @@ public class GUI extends LevelState{
                     }else{
                         g.setColor(Color.WHITE);
                     }
-                    g.fillRect(600+71*j,350+i*70,60,60);
+                    g.fillRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
                     g.setColor(Color.cyan);
-                    g.drawRect(600+71*j,350+i*70,60,60);
-                    if (listInventory[i*4+j]!=0){
-                        BufferedImage ico = null;
-                        try {
-                             ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getString(items[i*4+j])));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        g.drawImage(ico, 600+71*j,350+i*70,60,60,null);
+                    g.drawRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
+                }
+            }
+            for (int i = 0; i < listInventory.length; i++) {
+                if (listInventory[i] != 0) {
+                    BufferedImage ico = null;
+                    try {
+                        ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getString(listInventory[i])));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    g.drawImage(ico, (int) (GamePanel.WIDTH / 2 + (-150 + 71 * i / 10) * scale), (int) ((350 + i % 10 * 70) * scale), size, size, null);
                 }
             }
             g.setColor(Color.WHITE);
-            g.drawString("Backspace to Back", 530, 150);
+            g.drawString("Backspace to Back", (int) (530 * scale), (int) (150 * scale));
         }
     }
 

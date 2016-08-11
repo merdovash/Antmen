@@ -3,9 +3,6 @@ package Entity.States;
 import javax.imageio.ImageIO;
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 7/28/2016.
- */
 public class Health {
     private int health;
     private int maxHealth;
@@ -31,7 +28,7 @@ public class Health {
     public void atacked(int power){
         health-=power;
         if (health<=0){
-            dead=true;
+            setDead();
         }
     }
 
