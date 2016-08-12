@@ -1,19 +1,20 @@
 package GameState;
 
 
+import GameState.Levels.Level1State;
+import GameState.Levels.Level2State;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Created by MERDovashkinar on 7/29/2016.
- */
 public class GameStateManager {
 
     private ArrayList<GameState> gameStates;
     private int currentState;
 
     static final int MENUSTATE = 0;
-    static final int LEVEL1STATE=2;
+    static final int LEVEL1STATE = 2;
+    static final int LEVEL2STATE = 3;
     static final int UPDATER = 1;
 
     public GameStateManager(){
@@ -25,6 +26,7 @@ public class GameStateManager {
         gameStates.add(new MenuState(this));
         gameStates.add(new Updater(this));
         gameStates.add(new Level1State(this));
+        gameStates.add(new Level2State(this));
 
     }
 

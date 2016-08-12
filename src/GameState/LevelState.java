@@ -16,39 +16,40 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+
 public abstract class LevelState extends GameState {
 
-    static int HEIGHT;
+    protected static int HEIGHT;
 
     protected LevelState() {
 
     }
 
-    LevelState(GameStateManager gsm){
+    protected LevelState(GameStateManager gsm) {
 
         this.gsm = gsm;
         menu =true;
-        init();
         gui = new GUI();
+        init();
     }
 
-    TileMap tileMap;
-    Background bg;
+    protected TileMap tileMap;
+    protected Background bg;
 
-    Player player;
+    protected Player player;
 
-    ArrayList<Enemy> enemies;
+    protected ArrayList<Enemy> enemies;
 
-    ArrayList<SpawnArea> spawnAreas;
+    protected ArrayList<SpawnArea> spawnAreas;
 
-    ArrayList<Place> savePoints;
-    ArrayList<Place> nextLevel;
+    protected ArrayList<Place> savePoints;
+    protected ArrayList<Place> nextLevel;
 
-    ArrayList<MapItem> mapLoots;
+    protected ArrayList<MapItem> mapLoots;
 
     private GUI gui;
 
-    boolean menu;
+    protected boolean menu;
 
     private void addLoot(Enemy e){
         double chance = Math.random()*(1);
@@ -148,6 +149,8 @@ private boolean paused;
         getLoot();
 
         checkSavePoint();
+
+        checkNextLevel();
     }
 
     private void checkSavePoint() {
@@ -159,7 +162,11 @@ private boolean paused;
     }
 
     private void checkNextLevel() {
-
+        for (Place place : nextLevel) {
+            if (player.getRectangle().intersects(place.getRectangle())) {
+                gsm.setState(place.getId() + 1);
+            }
+        }
     }
 
     private void updateEnemies(){
@@ -224,14 +231,16 @@ private boolean paused;
 
     public void keyPressed(int k) {
         if (!paused){
-            if(k == KeyEvent.VK_A) player.setLeft(true);
-            if(k == KeyEvent.VK_D) player.setRight(true);
-            if(k == KeyEvent.VK_SPACE) player.setJumping(true);
-            if(k == KeyEvent.VK_S) player.setScratching();
-            if(k == KeyEvent.VK_SHIFT) player.setBoost(true);
-            if(k == KeyEvent.VK_1) player.use1spell(true);
-            if(k == KeyEvent.VK_2) player.use2spell(true);
-            if(k == KeyEvent.VK_3) player.use3spell(true);
+            if (player != null) {
+                if (k == KeyEvent.VK_A) player.setLeft(true);
+                if (k == KeyEvent.VK_D) player.setRight(true);
+                if (k == KeyEvent.VK_SPACE) player.setJumping(true);
+                if (k == KeyEvent.VK_S) player.setScratching();
+                if (k == KeyEvent.VK_SHIFT) player.setBoost(true);
+                if (k == KeyEvent.VK_1) player.use1spell(true);
+                if (k == KeyEvent.VK_2) player.use2spell(true);
+                if (k == KeyEvent.VK_3) player.use3spell(true);
+            }
         }
         if (!menu){
             if(k == KeyEvent.VK_ENTER) setPause();
