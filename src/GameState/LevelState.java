@@ -5,6 +5,7 @@ import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
 import Entity.Items.MapItem;
 import Entity.Players.Player;
+import Entity.Players.SavePoint;
 import Entity.SpawnArea;
 import GUI.GUI;
 import Main.GamePanel;
@@ -39,6 +40,7 @@ public abstract class LevelState extends GameState {
     ArrayList<Enemy> enemies;
 
     ArrayList<SpawnArea> spawnAreas;
+    ArrayList<SavePoint> savePoints;
 
     ArrayList<MapItem> mapLoots;
 
@@ -142,6 +144,16 @@ private boolean paused;
         }
 
         getLoot();
+
+        checkSavePoint();
+    }
+
+    private void checkSavePoint() {
+        for (SavePoint savePoint : savePoints) {
+            if (player.getRectangle().intersects(savePoint.getRectangle())) {
+                player.setRespawn(savePoint.getx(), savePoint.gety());
+            }
+        }
     }
 
     private void updateEnemies(){
@@ -259,6 +271,9 @@ private boolean paused;
         //draw spawn areas
         for (SpawnArea spawnArea : spawnAreas) {
             spawnArea.draw(g);
+        }
+        for (SavePoint savePoint : savePoints) {
+            savePoint.draw(g);
         }
 
         // draw tilemap

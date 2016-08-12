@@ -2,6 +2,7 @@ package GameState;
 
 import Entity.FPS;
 import Entity.Players.Player;
+import Entity.Players.SavePoint;
 import Entity.SpawnArea;
 import TileMap.Background;
 import TileMap.TileMap;
@@ -50,6 +51,10 @@ class Level1State extends LevelState {
 		//
 		// spawnAreas.add( new SpawnArea (tileMap,100,1100,100,150,2));
 		//spawnAreas.add (new SpawnArea (tileMap.))
+
+		//save points
+		savePoints = new ArrayList<>();
+		savePoints.add(new SavePoint(tileMap, 4500, 950));
 
 		menu =false;
 		mapLoots = new ArrayList<>();

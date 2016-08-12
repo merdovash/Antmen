@@ -18,10 +18,13 @@ import java.util.HashMap;
 
 public class Player extends ActiveMapObject {
 
+    //respawn
+    private int respawnX;
+    private int respawnY;
+
     // player stuff
     private int fire;
     private int maxFire;
-
 
     //spells
     private SpellsManager sm;
@@ -56,6 +59,7 @@ public class Player extends ActiveMapObject {
     //trace
     private Trace trace;
     private HashMap<Integer, String> map;
+
 
     public Player(TileMap tm) {
 
@@ -108,6 +112,9 @@ public class Player extends ActiveMapObject {
         rectangle = getRectangle();
 
         fallable = false;
+
+        respawnX = 200;
+        respawnY = 200;
 
     }
 
@@ -209,8 +216,8 @@ public class Player extends ActiveMapObject {
     }
 
     public void respawn() {
-        x = 200;
-        y = 200;
+        x = respawnX;
+        y = respawnY;
         health.setAlive();
         dead = false;
     }
@@ -380,5 +387,10 @@ public class Player extends ActiveMapObject {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setRespawn(int x, int y) {
+        respawnX = x;
+        respawnY = y;
     }
 }
