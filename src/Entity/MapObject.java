@@ -81,7 +81,9 @@ public abstract class MapObject {
 		tileMap = tm;
 		tileSize = tm.getTileSize();
 		rectangle = getRectangle();
-	}
+        scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
+        System.out.println(scale);
+    }
 
     protected void loadSprites() {
         //load sprite
@@ -290,9 +292,6 @@ public abstract class MapObject {
 
     public void draw(Graphics2D g){
         setMapPosition();
-        if (scale != GamePanel.SCALE) {
-            scale = GamePanel.SCALE;
-        }
         if(facingRight) {
 			g.drawImage(
 					animation.getImage(),

@@ -1,7 +1,10 @@
 package Entity.States;
 
+import Main.GamePanel;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Health {
     private int health;
@@ -9,7 +12,11 @@ public class Health {
     private int deffaultMaxHealth;
     private double x;
     public boolean dead;
-    private Image tileset;
+    private BufferedImage tileset;
+
+    //image
+    private int width;
+    private int height;
 
     public Health(int size){
         deffaultMaxHealth=size;
@@ -23,6 +30,9 @@ public class Health {
         }catch(Exception e){
             e.printStackTrace();
         }
+        width = (int) (tileset.getWidth() * GamePanel.SCALE);
+        height = (int) (tileset.getHeight() * GamePanel.SCALE);
+
     }
 
     public void atacked(int power){
@@ -55,7 +65,7 @@ public class Health {
 
     public void draw(Graphics2D g){
         for (int i=0;i<health;i++){
-            g.drawImage(tileset,10+i*55,10, null);
+            g.drawImage(tileset, (int) ((10 + i * 55) * GamePanel.SCALE), (int) (10 * GamePanel.SCALE), width, height, null);
         }
     }
 

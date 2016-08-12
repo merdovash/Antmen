@@ -40,45 +40,44 @@ public abstract class ActiveMapObject extends MapObject {
     }
 
     private long punchTimer;
-    protected boolean punched=false;
+    protected boolean punched = false;
     protected long lastTime;
 
-    public void setLastTime(long l){
-        lastTime=l;
+    public void setLastTime(long l) {
+        lastTime = l;
     }
 
-    private void calculateDX(){
-        double ms = delta/100000000d;
-        if (!punched){
-            if(left) {
-                if (boost && !energy.isEmpty()){
+    private void calculateDX() {
+        double ms = delta / 100000000d;
+        if (!punched) {
+            if (left) {
+                if (boost && !energy.isEmpty()) {
                     energy.consump(delta);
                     speedsX.set(0, -moveSpeed * boostSpeed);
 
-                }else{
+                } else {
                     speedsX.set(0, -moveSpeed);
                 }
                 speedsX.set(1, 0d);
 
-            } else if(right) {
-                if(boost && !energy.isEmpty()){
+            } else if (right) {
+                if (boost && !energy.isEmpty()) {
                     energy.consump(delta);
                     speedsX.set(1, moveSpeed * boostSpeed);
 
 
-                }else{
+                } else {
                     speedsX.set(1, moveSpeed);
                 }
                 speedsX.set(0, 0d);
-            }
-            else {
+            } else {
                 if (speedsX.get(0) != 0) {
                     speedsX.set(0, 0d);
                 } else if (speedsX.get(1) != 0) {
                     speedsX.set(1, 0d);
                 }
             }
-        }else{
+        } else {
             if (speedsX.get(2) != 0) {
                 speedsX.set(0, 0d);
                 speedsX.set(1, 0d);
@@ -86,40 +85,40 @@ public abstract class ActiveMapObject extends MapObject {
                 if (Math.abs(speedsX.get(2)) < 0.5 * weight) {
                     speedsX.set(2, 0d);
                 }
-            }else{
-                punched=false;
+            } else {
+                punched = false;
             }
 
 
         }
         // movement
-        int temp=0;
+        int temp = 0;
         for (Double SpeedX : speedsX) {
             temp += SpeedX;
         }
-        dx=temp*ms;
+        dx = temp * ms;
     }
 
-    private void calculateDY(){
-        double ms = delta/100000000d;
+    private void calculateDY() {
+        double ms = delta / 100000000d;
 
-        boolean save=jumper;
+        boolean save = jumper;
 
         // falling
-        if(falling) {
+        if (falling) {
 
             speedsY.set(0, speedsY.get(0) + gravity * ms);
             if (speedsY.get(0) > -speedsY.get(1) || speedsY.get(0) > -speedsY.get(2)) {
-                pik=true;
+                pik = true;
             }
 
-        }else{
+        } else {
             gravityDown = speedsY.get(0) + speedsY.get(1);
             for (int i = 0; i < speedsY.size(); i++) {
                 speedsY.set(i, 0d);
-                pik=false;
+                pik = false;
             }
-            if (!save){
+            if (!save) {
                 int damage = (int) (gravityDown / (gravity * 5.5));
                 if (damage > 0) {
                     hit(damage);
@@ -130,30 +129,30 @@ public abstract class ActiveMapObject extends MapObject {
         // jumper
         if (jumper && !inAir) {
             speedsY.set(2, jumpStart * 1.4 - gravityDown / 8);
-            inAir =true;
+            inAir = true;
         }
 
         // jumping
-        if(jumping && !falling) {
+        if (jumping && !falling) {
             speedsY.set(1, jumpStart);
             inAir = true;
             jumping = false;
         }
 
-        if (inAir){
-            falling=true;
-            jumping=false;
-            jumper=false;
+        if (inAir) {
+            falling = true;
+            jumping = false;
+            jumper = false;
         }
 
-        double temp=0;
+        double temp = 0;
         for (Double SpeedY : speedsY) {
             temp += SpeedY;
         }
-        dy=temp*ms;
+        dy = temp * ms;
     }
 
-    protected void getNextPosition(){
+    protected void getNextPosition() {
 
         // movement
         calculateDX();
@@ -172,22 +171,22 @@ public abstract class ActiveMapObject extends MapObject {
     }
 
     private void checkFlinching() {
-        if (flinching){
-            long elapsed =(System.nanoTime()-flinchTimer)/1000000;
-            if (elapsed>1000){
-                flinching=false;
+        if (flinching) {
+            long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
+            if (elapsed > 1000) {
+                flinching = false;
             }
         }
     }
 
-    public void update(){
+    public void update() {
         //time
-        delta=System.nanoTime()-lastTime;
-        lastTime=System.nanoTime();
+        delta = System.nanoTime() - lastTime;
+        lastTime = System.nanoTime();
 
         //is dead
-        if (!(health.getHealth()>0)){
-            dead=true;
+        if (!(health.getHealth() > 0)) {
+            dead = true;
         }
 
         //moving
@@ -213,7 +212,7 @@ public abstract class ActiveMapObject extends MapObject {
 
     }
 
-    public void draw(Graphics2D g){
+    public void draw(Graphics2D g) {
 
         setMapPosition();
         super.draw(g);

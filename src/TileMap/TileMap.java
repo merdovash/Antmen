@@ -199,8 +199,8 @@ public class TileMap {
 				
 				g.drawImage(
 					tiles[r][c].getImage(),
-					(int)(x + col * tileWidth* GamePanel.SCALE),
-					(int)(y + row * tileHeight* GamePanel.SCALE),
+						(int) Math.round(x + col * tileWidth * GamePanel.SCALE),
+						(int) Math.round(y + row * tileHeight * GamePanel.SCALE),
 						(int)(tileSize* GamePanel.SCALE),
 						(int)(tileSize* GamePanel.SCALE),
 					null

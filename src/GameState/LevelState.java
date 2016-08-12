@@ -59,11 +59,7 @@ public abstract class LevelState extends GameState {
 
     private void getLoot(){
         for (int i = 0; i < mapLoots.size(); i++) {
-            if (player.getx() >= mapLoots.get(i).getx()
-                    && player.getx() <= mapLoots.get(i).getx() + 50
-                    && player.gety() - 50 <= mapLoots.get(i).gety()
-                    && player.gety() >= mapLoots.get(i).gety()) {
-
+            if (player.getRectangle().intersects(mapLoots.get(i).getRectangle())) {
                 if (player.addItem(mapLoots.get(i).getID())) {
                     mapLoots.remove(i);
                 }
@@ -268,15 +264,15 @@ private boolean paused;
         // draw tilemap
         tileMap.draw(g);
 
-        // draw player
-        player.draw(g);
-
         //enemies draw
         if (enemies.size()>0){
             for (Enemy enemy : enemies) {
                 enemy.draw(g);
             }
         }
+
+        // draw player
+        player.draw(g);
 
         //draw items
         for (MapItem aMapLoot : mapLoots) {

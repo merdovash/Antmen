@@ -36,6 +36,7 @@ public class FireBall extends Spell {
         animation.setFrames(sprites.get(0));
         width = (int) ((10 + 5 * level) * GamePanel.SCALE);
         height = (int) ((10 + 5 * level) * GamePanel.SCALE);
+        animation.setDelay(300);
 
 
     }

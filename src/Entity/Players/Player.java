@@ -76,7 +76,7 @@ public class Player extends ActiveMapObject {
 
         mana = new Energy(200);
         mana.setUsable(true);
-        mana.setRefillSpeed(0.1);
+        mana.setRefillSpeed(2);
 
         facingRight = true;
 
@@ -355,8 +355,6 @@ public class Player extends ActiveMapObject {
                 g.drawImage(ico, (int) (x + xmap + width / 2), (int) (y + ymap - 50), ico.getWidth(), ico.getHeight(), null);
             }
         }
-
-
     }
 
     public boolean addItem(int id) {
