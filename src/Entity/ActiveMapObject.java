@@ -113,7 +113,7 @@ public abstract class ActiveMapObject extends MapObject {
             }
 
         } else {
-            gravityDown = speedsY.get(0) + speedsY.get(1);
+            gravityDown = speedsY.get(0) + speedsY.get(1) + speedsY.get(2);
             for (int i = 0; i < speedsY.size(); i++) {
                 speedsY.set(i, 0d);
                 pik = false;
@@ -128,7 +128,7 @@ public abstract class ActiveMapObject extends MapObject {
 
         // jumper
         if (jumper && !inAir) {
-            speedsY.set(2, jumpStart * 1.4 - gravityDown / 8);
+            speedsY.set(2, jumpStart * 0.8 - gravityDown / 1.8);
             inAir = true;
         }
 

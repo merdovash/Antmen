@@ -4,8 +4,8 @@ import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
 import Entity.Items.MapItem;
+import Entity.Players.Place;
 import Entity.Players.Player;
-import Entity.Players.SavePoint;
 import Entity.SpawnArea;
 import GUI.GUI;
 import Main.GamePanel;
@@ -40,7 +40,9 @@ public abstract class LevelState extends GameState {
     ArrayList<Enemy> enemies;
 
     ArrayList<SpawnArea> spawnAreas;
-    ArrayList<SavePoint> savePoints;
+
+    ArrayList<Place> savePoints;
+    ArrayList<Place> nextLevel;
 
     ArrayList<MapItem> mapLoots;
 
@@ -149,11 +151,15 @@ private boolean paused;
     }
 
     private void checkSavePoint() {
-        for (SavePoint savePoint : savePoints) {
+        for (Place savePoint : savePoints) {
             if (player.getRectangle().intersects(savePoint.getRectangle())) {
                 player.setRespawn(savePoint.getx(), savePoint.gety());
             }
         }
+    }
+
+    private void checkNextLevel() {
+
     }
 
     private void updateEnemies(){
@@ -272,8 +278,11 @@ private boolean paused;
         for (SpawnArea spawnArea : spawnAreas) {
             spawnArea.draw(g);
         }
-        for (SavePoint savePoint : savePoints) {
-            savePoint.draw(g);
+        for (Place place : savePoints) {
+            place.draw(g);
+        }
+        for (Place place : nextLevel) {
+            place.draw(g);
         }
 
         // draw tilemap

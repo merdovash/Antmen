@@ -1,8 +1,8 @@
 package GameState;
 
 import Entity.FPS;
+import Entity.Players.Place;
 import Entity.Players.Player;
-import Entity.Players.SavePoint;
 import Entity.SpawnArea;
 import TileMap.Background;
 import TileMap.TileMap;
@@ -54,7 +54,11 @@ class Level1State extends LevelState {
 
 		//save points
 		savePoints = new ArrayList<>();
-		savePoints.add(new SavePoint(tileMap, 4500, 950));
+		savePoints.add(new Place(tileMap, 2850, 600));
+
+		nextLevel = new ArrayList<>();
+		nextLevel.add(new Place(tileMap, 5200, 800));
+		nextLevel.get(0).setId(1);
 
 		menu =false;
 		mapLoots = new ArrayList<>();

@@ -180,9 +180,9 @@ public abstract class MapObject {
 		middleRight = mr!= Tile.FREE;
 		middleLeft = ml!= Tile.FREE;
 
-		jumper = bm == Tile.JUMP;
-		
-	}
+        jumper = (bm == Tile.JUMP) || (bl == Tile.JUMP);
+
+    }
 
 	protected boolean fallable;
 	
