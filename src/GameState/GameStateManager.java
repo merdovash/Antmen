@@ -1,20 +1,26 @@
 package GameState;
 
 
+import GameState.Levels.Level1State;
+import GameState.Levels.Level2State;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Created by MERDovashkinar on 7/29/2016.
- */
 public class GameStateManager {
 
     private ArrayList<GameState> gameStates;
     private int currentState;
 
-    public static final int MENUSTATE = 0;
-    public static final int LEVEL1STATE=2;
-    public static final int UPDATER = 1;
+    private final LevelState[][] levels = {
+            {new Level1State(this)},
+            {new Level2State(this, 100, 195)},
+            {new Level1State(this, 5150, 775)}};
+
+    static final int MENUSTATE = 0;
+    static final int LEVEL1STATE = 2;
+    static final int LEVEL2STATE = 3;
+    static final int UPDATER = 1;
 
     public GameStateManager(){
 
@@ -28,9 +34,19 @@ public class GameStateManager {
 
     }
 
-    public void setState(int state){
+    void setState(int state){
         currentState = state;
         gameStates.get(currentState).init();
+    }
+
+    void setLevel(int currentLevel, int nextLevel) {
+        System.out.println(gameStates.size());
+        gameStates.add(levels[currentLevel][nextLevel - 1]);
+        gameStates.get(gameStates.size() - 1).init();
+        System.out.println(gameStates.size());
+        gameStates.remove(gameStates.size() - 2);
+        System.out.println(gameStates.size());
+        currentState = gameStates.size() - 1;
     }
 
     public void update() throws IOException {
@@ -49,9 +65,5 @@ public class GameStateManager {
     public void keyReleased(int k){
 
         gameStates.get(currentState).keyReleased(k);
-    }
-
-    public void mouseClicked(int mouse) {
-
     }
 }

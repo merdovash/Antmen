@@ -28,7 +28,7 @@ public class TileMap {
 	private int tileSize;
 	private int tileWidth;
 	private int tileHeight;
-	private int numRows;
+	private static int numRows;
 	private int numCols;
 	private int width;
 	private int height;
@@ -59,7 +59,11 @@ public class TileMap {
 		numColsToDraw = (int)(GamePanel.WIDTH/(tileWidth*GamePanel.SCALE) +2);
 		numRowsToDraw = (int)(GamePanel.HEIGHT/(tileHeight*GamePanel.SCALE) +2);
 	}
-	
+
+	public static int getRows() {
+		return numRows;
+	}
+
 	public void loadTiles(String s) {
 		
 		try {
@@ -199,8 +203,8 @@ public class TileMap {
 				
 				g.drawImage(
 					tiles[r][c].getImage(),
-					(int)(x + col * tileWidth* GamePanel.SCALE),
-					(int)(y + row * tileHeight* GamePanel.SCALE),
+						(int) Math.round(x + col * tileWidth * GamePanel.SCALE),
+						(int) Math.round(y + row * tileHeight * GamePanel.SCALE),
 						(int)(tileSize* GamePanel.SCALE),
 						(int)(tileSize* GamePanel.SCALE),
 					null
@@ -211,7 +215,10 @@ public class TileMap {
 		}
 		
 	}
-	
+
+	public int getNumRows() {
+		return numRows;
+	}
 }
 
 

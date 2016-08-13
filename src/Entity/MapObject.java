@@ -1,17 +1,19 @@
 package Entity;
 
 import Main.GamePanel;
-import TileMap.TileMap;
 import TileMap.Tile;
+import TileMap.TileMap;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public abstract class MapObject {
 	
 	// tile stuff
 	protected TileMap tileMap;
-	protected int tileSize;
+	private int tileSize;
 	protected double xmap;
 	protected double ymap;
 	
@@ -20,12 +22,12 @@ public abstract class MapObject {
 	protected double y;
 	protected double dx;
 	protected double dy;
-	protected ArrayList<Double> speedX = new ArrayList<>();
-	protected ArrayList<Double> speedY = new ArrayList<>();
-	
-	// dimensions
-	protected int width;
-	protected int height;
+    protected ArrayList<Double> speedsX = new ArrayList<>();
+    protected ArrayList<Double> speedsY = new ArrayList<>();
+
+    // dimensions
+    protected int width;
+    protected int height;
 	
 	// collision box
 	protected int cwidth;
@@ -33,16 +35,16 @@ public abstract class MapObject {
 	protected Rectangle rectangle;
 	
 	// collision
-	protected int currRow;
-	protected int currCol;
-	protected double xdest;
-	protected double ydest;
+	private int currRow;
+	private int currCol;
+	private double xdest;
+	private double ydest;
 	protected double xtemp;
 	protected double ytemp;
-	protected boolean topLeft;
-	protected boolean topRight;
-	protected boolean bottomLeft;
-	protected boolean bottomRight;
+	private boolean topLeft;
+	private boolean topRight;
+	private boolean bottomLeft;
+	private boolean bottomRight;
 	
 	// animation
 	protected Animation animation;
@@ -53,47 +55,84 @@ public abstract class MapObject {
 	// movement
 	protected boolean left;
 	protected boolean right;
-	protected boolean up;
-	protected boolean down;
 	protected boolean jumping;
-	protected boolean inAir;
+	boolean inAir;
 	protected boolean falling;
 	protected boolean pik;
 	
 	// movement attributes
 	protected double moveSpeed;
-	protected double fallSpeed;
-	protected double maxFallSpeed;
+    double gravity;
 	protected double jumpStart;
-	protected double gravityDown;
+	double gravityDown;
 
 	//action with map
-	protected boolean jumper;
+	boolean jumper;
 	private boolean topMiddle;
 	private boolean bottomMiddle;
 	private boolean middleRight;
 	private boolean middleLeft;
+    protected ArrayList<BufferedImage[]> sprites;
+    protected String adressImage;
+    protected int[] numFrames;
 
-	// constructor
-	public MapObject(TileMap tm) {
+    // constructor
+    public MapObject(TileMap tm) {
 		tileMap = tm;
 		tileSize = tm.getTileSize();
 		rectangle = getRectangle();
-	}
-	
-	public boolean intersects(MapObject o) {
+        scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
+        System.out.println(scale);
+    }
+
+    protected void loadSprites() {
+        //load sprite
+        try {
+
+            BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(adressImage));
+
+            sprites = new ArrayList<>();
+            for (int i = 0; i < numFrames.length; i++) {
+
+                BufferedImage[] bi = new BufferedImage[numFrames[i]];
+
+                for (int j = 0; j < numFrames[i]; j++) {
+
+                    bi[j] = spritesheet.getSubimage(
+                            j * width,
+                            i * height,
+                            width,
+                            height
+                    );
+                }
+
+                sprites.add(bi);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        animation = new Animation();
+        animation.setFrame(0);
+    }
+
+    public boolean intersects(MapObject o) {
 		return rectangle.intersects(o.getRectangle());
 	}
 
-	public Rectangle getRectangle() {
-		return new Rectangle(
-				(int)(x+xmap),
-				(int)(y+ymap-height),
-				width,
-				height
-		);
+    public Rectangle getRectangle() {
+        return new Rectangle(
+                (int)(x+xmap),
+                (int) (y + ymap - height * scale),
+                (int) (width * scale),
+                (int) (height * scale)
+        );
 	}
-	private int leftTile =2;
+
+
+    private int leftTile =2;
 	private int rightTile = 2;
 	private int topTile = 2;
 	private int bottomTile = 2;
@@ -101,30 +140,27 @@ public abstract class MapObject {
 	private int middleH = 2;
 	private int middleW = 2;
 
-	public void calculateCorners(double x, double y) {
-		leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
-		rightTile = (int)((x + width + 1) / (tileSize*GamePanel.SCALE));
-		topTile = (int)((y - height - 1) / (tileSize*GamePanel.SCALE));
-		bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
-		middleH = (int)((y-height/2)/(tileSize*GamePanel.SCALE));
-		middleW = (int)((x+width/2)/(tileSize*GamePanel.SCALE));
+    private void calculateCorners(double x, double y) {
+        leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
+        rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
+        topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
+        bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
+        middleH = (int) ((y - height * scale / 2) / (tileSize * GamePanel.SCALE));
+        middleW = (int) ((x + width * scale / 2) / (tileSize * GamePanel.SCALE));
 
 
-		if (topTile<0){
-			topTile=1;
-			System.out.println("SUUUUKA");
-		}
-		if (leftTile<0){
-			leftTile=1;
-			System.out.println("SUUUUKA");
-		}
-		if (middleH<0){
-			middleH=2;
-			System.out.println("SUUUUKA");
-		}
+		//if (topTile<0){
+		//	topTile=1;
+		//}
+        //if (leftTile<0){
+        //	leftTile=1;
+        //}
+        //if (middleH<0){
+        //	middleH=2;
+        //}
 
-		int tl = tileMap.getType(topTile+1-1, leftTile+1-1);
-		int tr = tileMap.getType(topTile, rightTile);
+        int tl = tileMap.getType(topTile, leftTile);
+        int tr = tileMap.getType(topTile, rightTile);
 		int bl = tileMap.getType(bottomTile, leftTile);
 		int br = tileMap.getType(bottomTile, rightTile);
 
@@ -144,20 +180,13 @@ public abstract class MapObject {
 		middleRight = mr!= Tile.FREE;
 		middleLeft = ml!= Tile.FREE;
 
+        jumper = (bm == Tile.JUMP) || (bl == Tile.JUMP);
 
+    }
 
-
-
-
-		if (bm == Tile.JUMP){
-			jumper=true;
-		}else{
-			jumper=false;
-		}
-		
-	}
+	protected boolean fallable;
 	
-	public void checkTileMapCollision() {
+	protected void checkTileMapCollision() {
 
 		currCol = (int)(x / (tileSize*GamePanel.SCALE));
 		currRow = (int)(y / (tileSize*GamePanel.SCALE));
@@ -172,11 +201,11 @@ public abstract class MapObject {
 		if(dy < 0) {
 			if(topLeft || topRight || topMiddle) {
 				dy = 0;
-				speedY.set(1,0d);
-				speedY.set(2,0d);
-			}
-		}
-		if(dy > 0) {
+                speedsY.set(1, 0d);
+                speedsY.set(2, 0d);
+            }
+        }
+        if(dy > 0) {
 			if(bottomLeft || bottomRight || bottomMiddle) {
 				dy = 0;
 				falling = false;
@@ -211,10 +240,17 @@ public abstract class MapObject {
 				dx=0;
 			}
 		}
+
+		if (fallable){
+			calculateCorners(xdest, y+1);
+			if (!bottomRight || !bottomLeft){
+				dx=0;
+			}
+		}
 		xtemp+=dx;
 
 		if(!falling) {
-			calculateCorners(x, ydest + 1);
+			calculateCorners(x, ydest+1);
 			if(!bottomLeft && !bottomRight && !bottomMiddle) {
 				falling = true;
 			}
@@ -236,15 +272,13 @@ public abstract class MapObject {
 		this.dy = dy;
 	}
 	
-	public void setMapPosition() {
+	protected void setMapPosition() {
 		xmap = tileMap.getx();
 		ymap = tileMap.gety();
 	}
 	
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
-	public void setUp(boolean b) { up = b; }
-	public void setDown(boolean b) { down = b; }
 	public void setJumping(boolean b) { jumping = b; }
 	
 	public boolean notOnScreen() {
@@ -254,26 +288,28 @@ public abstract class MapObject {
 			y + ymap - height > GamePanel.HEIGHT;
 	}
 
-	public void draw(Graphics2D g){
+    protected double scale;
 
-		if(facingRight) {
+    public void draw(Graphics2D g){
+        setMapPosition();
+        if(facingRight) {
 			g.drawImage(
 					animation.getImage(),
 					(int)(x + xmap  ),
-					(int)(y + ymap -height),
-					width,
-					height,
-					null
+                    (int) (y + ymap - height * scale),
+                    (int) (width * scale),
+                    (int) (height * scale),
+                    null
 			);
 		}
 		else {
 			g.drawImage(
 					animation.getImage(),
-					(int)(x + xmap+width),
-					(int)(y + ymap-height),
-					-width,
-					height,
-					null
+                    (int) (x + xmap + width * scale),
+                    (int) (y + ymap - height * scale),
+                    (int) (-width * scale),
+                    (int) (height * scale),
+                    null
 			);
 
 		}

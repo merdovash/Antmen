@@ -1,169 +1,221 @@
 package Entity;
 
+import Entity.States.Energy;
+import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 8/3/2016.
- */
+
 public abstract class ActiveMapObject extends MapObject {
 
-    protected Health health;
-    boolean dead;
+    public Health health;
+    protected boolean dead;
+    protected int weight;
+    protected boolean flinching;
+    protected long flinchTimer;
 
     // boost
-    boolean boost;
-    double boostSpeed;
-    Energy energy;
+    protected boolean boost;
+    protected double boostSpeed;
+    protected Energy energy;
 
     // time
-    long delta;
+    protected long delta;
 
-    ActiveMapObject(TileMap tm) {
+    protected ActiveMapObject(TileMap tm) {
         super(tm);
 
-        speedX.add(0d); //right
-        speedX.add(0d); //left
-        speedX.add(0d); //punch
+        speedsX.add(0d); //right
+        speedsX.add(0d); //left
+        speedsX.add(0d); //punch
 
-        speedY.add(0d); //grivity
-        speedY.add(0d); //jump
-        speedY.add(0d); //jump square
+        speedsY.add(0d); //grivity
+        speedsY.add(0d); //jump
+        speedsY.add(0d); //jump square
 
-        fallSpeed = 24* GamePanel.SCALE;
+        gravity = 24 * GamePanel.SCALE;
         health = new Health(10);
     }
 
-    long punchTimer;
-    boolean punched=false;
-    protected void calculateDX(){
-        double ms = delta/100000000d;
-        if (!punched){
-            if(left) {
-                if (boost && !energy.isEmpty()){
-                    energy.consump(delta);
-                    speedX.set(0,-moveSpeed*boostSpeed);
-                }else{
-                    speedX.set(0,-moveSpeed);
-                }
+    private long punchTimer;
+    protected boolean punched = false;
+    protected long lastTime;
 
-            }
-            else if(right) {
-                if(boost && !energy.isEmpty()){
-                    energy.consump(delta);
-                    speedX.set(1, moveSpeed*boostSpeed) ;
+    public void setLastTime(long l) {
+        lastTime = l;
+    }
 
-                }else{
-                    speedX.set(1, moveSpeed);
+    private void calculateDX() {
+        double ms = delta / 100000000d;
+        if (!punched) {
+            if (left) {
+                if (boost && !energy.isEmpty()) {
+                    energy.consump(delta);
+                    speedsX.set(0, -moveSpeed * boostSpeed);
+
+                } else {
+                    speedsX.set(0, -moveSpeed);
+                }
+                speedsX.set(1, 0d);
+
+            } else if (right) {
+                if (boost && !energy.isEmpty()) {
+                    energy.consump(delta);
+                    speedsX.set(1, moveSpeed * boostSpeed);
+
+
+                } else {
+                    speedsX.set(1, moveSpeed);
+                }
+                speedsX.set(0, 0d);
+            } else {
+                if (speedsX.get(0) != 0) {
+                    speedsX.set(0, 0d);
+                } else if (speedsX.get(1) != 0) {
+                    speedsX.set(1, 0d);
                 }
             }
-            else {
-                if(speedX.get(0) != 0) {
-                    speedX.set(0,0d);
+        } else {
+            if (speedsX.get(2) != 0) {
+                speedsX.set(0, 0d);
+                speedsX.set(1, 0d);
+                speedsX.set(2, speedsX.get(2) - weight * ms * speedsX.get(2) / Math.abs(speedsX.get(2)));
+                if (Math.abs(speedsX.get(2)) < 0.5 * weight) {
+                    speedsX.set(2, 0d);
                 }
-                else if(speedX.get(1) != 0) {
-                    speedX.set(1,0d);
-                }
-            }
-        }else{
-            if (System.currentTimeMillis()-punchTimer<1000 || speedX.get(2)>0){
-                speedX.set(0,0d);
-                speedX.set(1,0d);
-                speedX.set(2,speedX.get(2)-1*ms);
-            }else{
-                punched=false;
+            } else {
+                punched = false;
             }
 
 
         }
         // movement
-
-        int temp=0;
-        for (int i=0;i<speedX.size();i++){
-            temp+=speedX.get(i);
+        int temp = 0;
+        for (Double SpeedX : speedsX) {
+            temp += SpeedX;
         }
-        dx=temp*ms;
+        dx = temp * ms;
     }
 
-    protected void calculateDY(){
-        double ms = delta/100000000d;
+    private void calculateDY() {
+        double ms = delta / 100000000d;
 
-        boolean save=jumper;
+        boolean save = jumper;
 
         // falling
-        if(falling) {
+        if (falling) {
 
-            speedY.set(0, speedY.get(0) + fallSpeed*ms);
-            if (speedY.get(0)>-speedY.get(1) || speedY.get(0)>-speedY.get(2)){
-                pik=true;
+            speedsY.set(0, speedsY.get(0) + gravity * ms);
+            if (speedsY.get(0) > -speedsY.get(1) || speedsY.get(0) > -speedsY.get(2)) {
+                pik = true;
             }
 
-        }else{
-            gravityDown=speedY.get(0)+speedY.get(2);
-            for (int i=0; i<speedY.size();i++){
-                speedY.set(i,0d);
-                pik=false;
+        } else {
+            gravityDown = speedsY.get(0) + speedsY.get(1) + speedsY.get(2);
+            for (int i = 0; i < speedsY.size(); i++) {
+                speedsY.set(i, 0d);
+                pik = false;
             }
-            if (!save){
-                health.atacked((int) (gravityDown/130));
+            if (!save) {
+                int damage = (int) (gravityDown / (gravity * 5.5));
+                if (damage > 0) {
+                    hit(damage);
+                }
             }
         }
 
         // jumper
         if (jumper && !inAir) {
-            speedY.set(2, jumpStart*1.4 - gravityDown/8);
-            inAir =true;
+            speedsY.set(2, jumpStart * 0.8 - gravityDown / 1.8);
+            inAir = true;
         }
 
         // jumping
-        if(jumping && !falling) {
-            speedY.set(1, jumpStart);
+        if (jumping && !falling) {
+            speedsY.set(1, jumpStart);
             inAir = true;
             jumping = false;
         }
 
-        if (inAir){
-            falling=true;
-            jumping=false;
-            jumper=false;
+        if (inAir) {
+            falling = true;
+            jumping = false;
+            jumper = false;
         }
 
-        double temp=0;
-        for (int i=0;i<speedY.size();i++){
-            temp+=speedY.get(i);
+        double temp = 0;
+        for (Double SpeedY : speedsY) {
+            temp += SpeedY;
         }
-        dy=temp*ms;
+        dy = temp * ms;
     }
 
-    protected void move(){
-        checkTileMapCollision();
+    protected void getNextPosition() {
 
-    }
-
-    protected void respawn(SpawnArea a){
-        x=a.getx();
-        y=a.gety();
-        health.heal(health.getMaxHealth());
-        dead=false;
-    }
-
-    protected void getNextPosition(){
         // movement
         calculateDX();
 
         calculateDY();
     }
 
-    public void update(){
-        if (!(health.getHealth()>0)){
-            dead=true;
+    public void hit(int damage) {
+        if (flinching) return;
+        health.atacked(damage);
+        flinching = true;
+        flinchTimer = System.nanoTime();
+        if (health.getHealth() == 0) {
+            dead = true;
         }
     }
 
-    public void draw(Graphics2D g){
-            super.draw(g);
+    private void checkFlinching() {
+        if (flinching) {
+            long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
+            if (elapsed > 1000) {
+                flinching = false;
+            }
+        }
+    }
+
+    public void update() {
+        //time
+        delta = System.nanoTime() - lastTime;
+        lastTime = System.nanoTime();
+
+        //is dead
+        if (!(health.getHealth() > 0)) {
+            dead = true;
+        }
+
+        //moving
+        getNextPosition();
+        try {
+            checkTileMapCollision();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            dead = true;
+            health.setDead();
+        }
+
+        if (ytemp > (TileMap.getRows() * 50 * GamePanel.SCALE) - 5) {
+            health.setDead();
+        } else {
+            setPosition(xtemp, ytemp);
+        }
+
+
+        //check flinching
+        checkFlinching();
+
+        animation.update();
+
+    }
+
+    public void draw(Graphics2D g) {
+
+        setMapPosition();
+        super.draw(g);
     }
 }
 

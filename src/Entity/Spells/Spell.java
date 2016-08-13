@@ -3,24 +3,22 @@ package Entity.Spells;
 import Entity.MapObject;
 import TileMap.TileMap;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
 /**
  * Created by MERDovashkinar on 8/2/2016.
  */
 public abstract class Spell extends MapObject {
-    public int cooldown;
+
+    protected final static int FLY = 0;
+    protected final static int HIT = 1;
+
     protected boolean hit;
     protected boolean remove;
-    protected BufferedImage[] sprites;
-    protected BufferedImage[] hitSprites;
-    protected double size;
+
+
+    //parameters
     protected int level;
-
-    protected Rectangle rectangle;
-
-
+    protected double size;
+    public int cooldown;
     public int manacost;
     protected int damage;
     protected int power;
@@ -29,12 +27,7 @@ public abstract class Spell extends MapObject {
         super(tm);
     }
 
-    protected abstract void loadAnimation();
-
-
-    //public abstract void setposition();
     public abstract void update();
-    public abstract void draw(Graphics2D g);
     public boolean checkRemove(){
         return remove;
     }
@@ -51,7 +44,7 @@ public abstract class Spell extends MapObject {
 
     public void setHit(){
         hit=true;
-        animation.setFrames(hitSprites);
+        animation.setFrames(sprites.get(HIT));
         animation.setDelay(70);
         dx=0;
     }
@@ -59,6 +52,7 @@ public abstract class Spell extends MapObject {
     public boolean isHit(){
         return hit;
     }
+
     public int getPower(){return power;}
 
 }

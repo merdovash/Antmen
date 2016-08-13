@@ -32,8 +32,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         super();
         Dimension sSize = Toolkit.getDefaultToolkit ().getScreenSize ();
         HEIGHT = sSize.height;
-        WIDTH =sSize.width;
-		SCALE=HEIGHT/(50*14);
+        WIDTH = sSize.width;
+        SCALE = HEIGHT / 50d / 14d;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
 
