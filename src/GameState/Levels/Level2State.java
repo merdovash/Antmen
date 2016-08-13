@@ -27,7 +27,7 @@ public class Level2State extends LevelState {
 
         tileMap = new TileMap(50);
         tileMap.loadTiles("/tiles/grasstileset_x50.gif");
-        tileMap.loadMap("/Maps/level1-1.map");
+        tileMap.loadMap("/Maps/level1-2.map");
         tileMap.setPosition(0, 0);
         tileMap.setTween(1);
 
@@ -42,14 +42,8 @@ public class Level2State extends LevelState {
 
         //init spawn Areas
         spawnAreas = new ArrayList<>();
-        //spawnAreas.add(new SpawnArea(tileMap, 645, 151, 100, 150, 1));
         spawnAreas.add(new SpawnArea(tileMap, 900, 100, 100, 150, 1));
-        spawnAreas.add(new SpawnArea(tileMap, 645, 500, 100, 150, 1));
-        spawnAreas.add(new SpawnArea(tileMap, 695, 700, 100, 150, 1));
-        spawnAreas.add(new SpawnArea(tileMap, 600, 950, 100, 150, 1));
-        //
-        // spawnAreas.add( new SpawnArea (tileMap,100,1100,100,150,2));
-        //spawnAreas.add (new SpawnArea (tileMap.))
+
 
         //save points
         savePoints = new ArrayList<>();

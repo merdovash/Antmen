@@ -198,7 +198,7 @@ public abstract class ActiveMapObject extends MapObject {
             health.setDead();
         }
 
-        if (ytemp > (26 * 50 * GamePanel.SCALE) - 5) {
+        if (ytemp > (TileMap.getRows() * 50 * GamePanel.SCALE) - 5) {
             health.setDead();
         } else {
             setPosition(xtemp, ytemp);

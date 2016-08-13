@@ -28,7 +28,7 @@ public class TileMap {
 	private int tileSize;
 	private int tileWidth;
 	private int tileHeight;
-	private int numRows;
+	private static int numRows;
 	private int numCols;
 	private int width;
 	private int height;
@@ -59,7 +59,11 @@ public class TileMap {
 		numColsToDraw = (int)(GamePanel.WIDTH/(tileWidth*GamePanel.SCALE) +2);
 		numRowsToDraw = (int)(GamePanel.HEIGHT/(tileHeight*GamePanel.SCALE) +2);
 	}
-	
+
+	public static int getRows() {
+		return numRows;
+	}
+
 	public void loadTiles(String s) {
 		
 		try {
