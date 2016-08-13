@@ -2,7 +2,6 @@ package GUI;
 
 import Entity.Items.ItemList;
 import Entity.Players.Player;
-import GameState.LevelState;
 import Main.GamePanel;
 
 import javax.imageio.ImageIO;
@@ -10,7 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class GUI extends LevelState{
+public class GUI {
 
     private final Font font = new Font("Courier New", Font.PLAIN,18);
 
@@ -38,7 +37,6 @@ public class GUI extends LevelState{
     private void initMapItems() {
     }
 
-    @Override
     public void init() {
         button = new Rectangle[4];
         for (int i =0; i<button.length;i++){
@@ -51,17 +49,6 @@ public class GUI extends LevelState{
         listInventory = items;
     }
 
-
-
-    @Override
-    public void keyPressed(int k) {
-    }
-
-    @Override
-    public void keyReleased(int k) {
-    }
-
-    @Override
     public void draw(Graphics2D g) {
 
         g.setColor(new Color (0,0,0, 0.75f));
@@ -148,7 +135,11 @@ public class GUI extends LevelState{
 
     public void select() {
         if (listInventory[inventoryPlace[1]*4+inventoryPlace[0]]!=0){
-            super.equip(listInventory[inventoryPlace[1]*4+inventoryPlace[0]]);
+            equip(listInventory[inventoryPlace[1] * 4 + inventoryPlace[0]]);
         }
+    }
+
+    private void equip(int i) {
+
     }
 }

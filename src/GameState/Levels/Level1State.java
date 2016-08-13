@@ -18,8 +18,14 @@ public class Level1State extends LevelState {
 	public Level1State(GameStateManager gsm) {
 		super(gsm);
 	}
+
+	public Level1State(GameStateManager gsm, int x, int y) {
+		super(gsm, x, y);
+	}
 	
 	public void init() {
+
+		level = 1;
 
 		fps= new FPS();
 
@@ -34,7 +40,7 @@ public class Level1State extends LevelState {
 		bg = new Background("/Backgrounds/bglvl1.gif", 0.1);
 
 		player = new Player(tileMap);
-		player.setPosition(100, 200);
+		player.setPosition(px, py);
 
 		enemies = new ArrayList<>();
 
@@ -54,8 +60,7 @@ public class Level1State extends LevelState {
 		savePoints.add(new Place(tileMap, 2850, 600));
 
 		nextLevel = new ArrayList<>();
-		nextLevel.add(new Place(tileMap, 5200, 800));
-		nextLevel.get(0).setId(2);
+		nextLevel.add(new Place(tileMap, 5275, 800, 1));
 
 		menu =false;
 		mapLoots = new ArrayList<>();

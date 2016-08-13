@@ -13,12 +13,15 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Level2State extends LevelState {
-    public Level2State(GameStateManager gsm) {
-        super();
+    public Level2State(GameStateManager gsm, int x, int y) {
+
+        super(gsm, x, y);
     }
 
     @Override
     public void init() {
+
+        level = 2;
 
         fps = new FPS();
 
@@ -33,7 +36,7 @@ public class Level2State extends LevelState {
         bg = new Background("/Backgrounds/bglvl1.gif", 0.1);
 
         player = new Player(tileMap);
-        player.setPosition(100, 200);
+        player.setPosition(px, py);
 
         enemies = new ArrayList<>();
 
@@ -53,8 +56,7 @@ public class Level2State extends LevelState {
         savePoints.add(new Place(tileMap, 2850, 600));
 
         nextLevel = new ArrayList<>();
-        nextLevel.add(new Place(tileMap, 5200, 800));
-        nextLevel.get(0).setId(1);
+        nextLevel.add(new Place(tileMap, 0, 250, 1));
 
         menu = false;
         mapLoots = new ArrayList<>();

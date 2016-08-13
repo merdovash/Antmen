@@ -20,17 +20,27 @@ import java.util.ArrayList;
 public abstract class LevelState extends GameState {
 
     protected static int HEIGHT;
+    protected int level;
 
-    protected LevelState() {
-
-    }
+    protected int px = (int) (100 * GamePanel.SCALE);
+    protected int py = (int) (245 * GamePanel.SCALE);
 
     protected LevelState(GameStateManager gsm) {
+        this.gsm = gsm;
+        menu = true;
+        gui = new GUI();
+        init();
+    }
+
+    protected LevelState(GameStateManager gsm, int x, int y) {
 
         this.gsm = gsm;
         menu =true;
         gui = new GUI();
+        px = (int) (x * GamePanel.SCALE);
+        py = (int) (y * GamePanel.SCALE);
         init();
+
     }
 
     protected TileMap tileMap;
@@ -164,7 +174,9 @@ private boolean paused;
     private void checkNextLevel() {
         for (Place place : nextLevel) {
             if (player.getRectangle().intersects(place.getRectangle())) {
-                gsm.setState(place.getId() + 1);
+                System.out.println(place.getId());
+                System.out.println(level + " " + place.getId());
+                gsm.setLevel(level, place.getId());
             }
         }
     }
@@ -320,7 +332,4 @@ private boolean paused;
         }
     }
 
-    protected void equip(int i) {
-        player.equip(i);
-    }
 }
