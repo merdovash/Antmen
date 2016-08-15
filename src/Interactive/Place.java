@@ -1,14 +1,18 @@
 package Entity.Players;
 
 import Entity.MapObject;
+import Entity.SpawnArea;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Place extends MapObject {
 
     private int id;
+    private static String nextLevel;
 
     public Place(TileMap tm, int x, int y) {
         super(tm);
@@ -18,32 +22,23 @@ public class Place extends MapObject {
         height = 136;
     }
 
-    public Place(TileMap tm, int x, int y, int id) {
+    public Place(TileMap tm, int x, int y, String NL) {
 
         super(tm);
         this.x = x * GamePanel.SCALE;
         this.y = y * GamePanel.SCALE;
         width = 75;
         height = 136;
-        this.id = id;
+        nextLevel =NL;
     }
 
     public void draw(Graphics2D g) {
         setMapPosition();
         rectangle = getRectangle();
-        if (id == 0) {
-            g.setColor(Color.MAGENTA);
-        } else {
-            g.setColor(Color.YELLOW);
-        }
         g.draw(rectangle);
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
+    public static String getNextLevel() {
+        return nextLevel;
     }
 }
