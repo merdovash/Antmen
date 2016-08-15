@@ -5,7 +5,7 @@ import TileMap.Background;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class MenuState extends GameState {
+class MenuState extends GameState {
 	
 	private Background bg;
 	
@@ -21,8 +21,8 @@ public class MenuState extends GameState {
 	private Font titleFont;
 	
 	private Font font;
-	
-	public MenuState(GameStateManager gsm) {
+
+	MenuState(GameStateManager gsm) {
 		
 		this.gsm = gsm;
 		
@@ -47,7 +47,7 @@ public class MenuState extends GameState {
 	}
 	
 	public void init() {}
-	
+
 	public void update() {
 		bg.update();
 	}
@@ -78,7 +78,7 @@ public class MenuState extends GameState {
 	
 	private void select() {
 		if(currentChoice == 0) {
-			gsm.setState(GameStateManager.LEVEL1STATE);
+			gsm.setState(GameStateManager.LEVELSTATE);
 		}
 		if (currentChoice == 1){
 			gsm.setState(GameStateManager.UPDATER);

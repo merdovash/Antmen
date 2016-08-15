@@ -50,7 +50,7 @@ public class TileMap {
 		tileHeight=tileSize;
 		numRowsToDraw = (int)(GamePanel.HEIGHT / (tileSize*GamePanel.SCALE) + 2);
 		numColsToDraw = (int)(GamePanel.WIDTH / (tileSize*GamePanel.SCALE) + 2);
-		tween = 0.07;
+		tween = 1;
 	}
 
 	public TileMap(int tileHeight, int tileWidth){
@@ -58,6 +58,7 @@ public class TileMap {
 		this.tileWidth=tileWidth;
 		numColsToDraw = (int)(GamePanel.WIDTH/(tileWidth*GamePanel.SCALE) +2);
 		numRowsToDraw = (int)(GamePanel.HEIGHT/(tileHeight*GamePanel.SCALE) +2);
+		tween = 1;
 	}
 
 	public static int getRows() {
@@ -165,9 +166,9 @@ public class TileMap {
 	
 	public void setPosition(double x, double y) {
 
-		
-		this.x += (x - this.x) * tween;
-		this.y += (y - this.y) * tween;
+
+		this.x += (x - this.x);
+		this.y += (y - this.y);
 
 		
 		fixBounds();

@@ -15,7 +15,7 @@ public class MapItem extends MapObject {
 
 
         this.id=id;
-        adressImage = ItemList.getString(id);
+        adressImage = ItemList.getAddressImage(id);
         facingRight = true;
         width = 96;
         height = 96;

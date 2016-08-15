@@ -4,8 +4,6 @@ import Main.GamePanel;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -13,9 +11,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-/**
- * Created by MERDovashkinar on 8/5/2016.
- */
 class Updater extends GameState{
 
     private String ftpURL_map = "ftp://%s:%s@%s/%s";

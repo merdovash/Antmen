@@ -13,7 +13,7 @@ public abstract class MapObject {
 	
 	// tile stuff
 	protected TileMap tileMap;
-	private int tileSize;
+	protected int tileSize;
 	protected double xmap;
 	protected double ymap;
 	
@@ -82,12 +82,16 @@ public abstract class MapObject {
 		tileSize = tm.getTileSize();
 		rectangle = getRectangle();
         scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
-        System.out.println(scale);
     }
 
-    protected void loadSprites() {
-        //load sprite
-        try {
+	MapObject() {
+		rectangle = getRectangle();
+		scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
+	}
+
+	protected void loadSprites() {
+		//load sprite
+		try {
 
             BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(adressImage));
 
@@ -293,6 +297,7 @@ public abstract class MapObject {
     public void draw(Graphics2D g){
         setMapPosition();
         if(facingRight) {
+			System.out.println(xmap + " " + ymap);
 			g.drawImage(
 					animation.getImage(),
 					(int)(x + xmap  ),

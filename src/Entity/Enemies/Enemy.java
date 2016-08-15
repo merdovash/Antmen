@@ -2,22 +2,18 @@ package Entity.Enemies;
 
 
 import Entity.ActiveMapObject;
-import Entity.Player.Player;
+import Entity.Players.Player;
 import TileMap.TileMap;
 
 
 
 public abstract class Enemy extends ActiveMapObject {
 
-    private boolean dead;
     int damage;
 
     boolean agressive;
     public int visionX;
     public int visionY;
-
-    protected boolean flinching;
-    protected long flinchTimer;
 
     boolean enemy;
 

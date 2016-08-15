@@ -5,11 +5,8 @@ import TileMap.TileMap;
 
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 8/4/2016.
- */
+
 public class SpawnArea extends MapObject {
-    private TileMap tileMap;
     private boolean active =true;
     private int enemyID;
 
@@ -63,4 +60,6 @@ public class SpawnArea extends MapObject {
         g.setColor(Color.GREEN);
         g.draw(rectangle);
     }
+
+
 }

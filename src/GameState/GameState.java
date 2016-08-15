@@ -1,13 +1,17 @@
 package GameState;
 
 import Entity.FPS;
+import Entity.Players.Player;
 
 import java.io.IOException;
 
-public abstract class GameState {
-	
-	protected GameStateManager gsm;
-	protected FPS fps;
+abstract class GameState {
+
+	GameStateManager gsm;
+	FPS fps;
+	Player player;
+	String level;
+
 	
 	public abstract void init();
 	public abstract void update() throws IOException;
@@ -15,4 +19,7 @@ public abstract class GameState {
 	public abstract void keyPressed(int k);
 	public abstract void keyReleased(int k);
 
+	public String getLevel() {
+		return level;
+	}
 }

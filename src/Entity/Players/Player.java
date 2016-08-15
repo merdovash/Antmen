@@ -9,12 +9,9 @@ import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Player extends ActiveMapObject {
 
@@ -54,17 +51,28 @@ public class Player extends ActiveMapObject {
     private static final int SCRATCHING = 6;
 
     // inventory
-    private int[] inventory = new int[40];
+    public Inventory inventory;
 
     //trace
     //private Trace trace;
 
-    private HashMap<Integer, String> map;
+    public Player() {
+        super();
+    }
 
+    public void initPlayer(TileMap tm) {
+        tileMap = tm;
+        tileSize = tm.getTileSize();
+    }
 
     public Player(TileMap tm) {
 
         super(tm);
+
+        init();
+    }
+
+    private void init() {
 
 
         width = 82;
@@ -117,8 +125,14 @@ public class Player extends ActiveMapObject {
         respawnX = 200;
         respawnY = 200;
 
+        inventory = new Inventory();
     }
 
+    public void load(TileMap tm, int x, int y) {
+        tileMap = tm;
+        this.x = x;
+        this.y = y;
+    }
 
     public int getHealth() {
         return health.getHealth();
@@ -365,29 +379,13 @@ public class Player extends ActiveMapObject {
         }
     }
 
-    public boolean addItem(int id) {
-        for (int i = 0; i < inventory.length; i++) {
-            if (inventory[i] == 0) {
-                inventory[i] = id;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int[] getItems() {
+    public Inventory getItems() {
         return inventory;
     }
 
     private BufferedImage ico = null;
 
     public void equip(int i) {
-
-        try {
-            ico = ImageIO.read(getClass().getResourceAsStream(map.get(i)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void setRespawn(int x, int y) {

@@ -1,7 +1,7 @@
 package GUI;
 
 import Entity.Items.ItemList;
-import Entity.Players.Player;
+import Entity.Players.Inventory;
 import Main.GamePanel;
 
 import javax.imageio.ImageIO;
@@ -12,25 +12,26 @@ import java.io.IOException;
 public class GUI {
 
     private final Font font = new Font("Courier New", Font.PLAIN, 18);
+    private final Font font2 = new Font("Courier New", Font.PLAIN, 16);
 
     private Rectangle[] button;
     private String[] name = {"Inventory >", "blabla", "blabla", "Back to game"};
 
     private int currentAction;
 
-    private Player player;
-    private boolean inventory;
-
-    private int[] listInventory;
+    private boolean open;
 
     private double scale;
+
+    private Inventory inventory;
 
     //box
     private int size;
 
-    public GUI() {
+    public GUI(Inventory inventory) {
         scale = GamePanel.SCALE;
         size = (int) (60 * scale);
+        this.inventory = inventory;
         init();
     }
 
@@ -45,8 +46,45 @@ public class GUI {
         initMapItems();
     }
 
-    public void update(int[] items) {
-        listInventory = items;
+    public void update() {
+
+    }
+
+    private void drawInventory(Graphics2D g) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
+        for (int i = 0; i < inventory.height; i++) {
+            for (int j = 0; j < inventory.width; j++) {
+                if (inventoryPlace[0] == j && inventoryPlace[1] == i) {
+                    g.setColor(Color.GREEN);
+                } else {
+                    g.setColor(Color.WHITE);
+                }
+                g.fillRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
+                g.setColor(Color.cyan);
+                g.drawRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
+            }
+        }
+        g.setFont(font2);
+        for (int i = 0; i < inventory.height; i++) {
+            for (int j = 0; j < inventory.width; j++) {
+                int id = inventory.getID(j, i);
+                if (id != 0) {
+                    BufferedImage ico = null;
+                    try {
+                        ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getAddressImage(id)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    g.drawImage(ico, (int) (GamePanel.WIDTH / 2 + (-150 + 71 * i / 10) * scale), (int) ((350 + i % 10 * 70) * scale), size, size, null);
+                    g.setColor(Color.BLACK);
+                    g.drawString(Integer.toString(inventory.getSize(j, i)), (int) (GamePanel.WIDTH / 2 + (-145 + 71 * i / 10) * scale), (int) ((365 + i % 10 * 70) * scale));
+                }
+            }
+        }
+        g.setFont(font);
+        g.setColor(Color.WHITE);
+        g.drawString("Backspace to Back", (int) (530 * scale), (int) (150 * scale));
     }
 
     public void draw(Graphics2D g) {
@@ -64,34 +102,8 @@ public class GUI {
             g.drawString(name[i], (int) (button[i].getX() + 5 * scale), (int) (button[i].getY() + 50 * scale));
         }
 
-        if (inventory) {
-            g.setColor(Color.DARK_GRAY);
-            g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 10; j++) {
-                    if (inventoryPlace[0] == j && inventoryPlace[1] == i) {
-                        g.setColor(Color.GREEN);
-                    } else {
-                        g.setColor(Color.WHITE);
-                    }
-                    g.fillRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
-                    g.setColor(Color.cyan);
-                    g.drawRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
-                }
-            }
-            for (int i = 0; i < listInventory.length; i++) {
-                if (listInventory[i] != 0) {
-                    BufferedImage ico = null;
-                    try {
-                        ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getString(listInventory[i])));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    g.drawImage(ico, (int) (GamePanel.WIDTH / 2 + (-150 + 71 * i / 10) * scale), (int) ((350 + i % 10 * 70) * scale), size, size, null);
-                }
-            }
-            g.setColor(Color.WHITE);
-            g.drawString("Backspace to Back", (int) (530 * scale), (int) (150 * scale));
+        if (open) {
+            drawInventory(g);
         }
     }
 
@@ -109,11 +121,11 @@ public class GUI {
     }
 
     public void openInventory() {
-        inventory = !inventory;
+        open = !open;
     }
 
-    public boolean isInventory() {
-        return inventory;
+    public boolean isOpen() {
+        return open;
     }
 
     private int[] inventoryPlace = new int[]{0, 0};
@@ -134,9 +146,7 @@ public class GUI {
     }
 
     public void select() {
-        if (listInventory[inventoryPlace[1] * 4 + inventoryPlace[0]] != 0) {
-            equip(listInventory[inventoryPlace[1] * 4 + inventoryPlace[0]]);
-        }
+
     }
 
     private void equip(int i) {

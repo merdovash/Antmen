@@ -43,6 +43,21 @@ public abstract class ActiveMapObject extends MapObject {
     protected boolean punched = false;
     protected long lastTime;
 
+    public ActiveMapObject() {
+        super();
+
+        speedsX.add(0d); //right
+        speedsX.add(0d); //left
+        speedsX.add(0d); //punch
+
+        speedsY.add(0d); //grivity
+        speedsY.add(0d); //jump
+        speedsY.add(0d); //jump square
+
+        gravity = 24 * GamePanel.SCALE;
+        health = new Health(10);
+    }
+
     public void setLastTime(long l) {
         lastTime = l;
     }

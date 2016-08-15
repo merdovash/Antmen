@@ -3,63 +3,194 @@ package GameState;
 import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
+import Entity.FPS;
 import Entity.Items.MapItem;
-import Entity.Players.Place;
 import Entity.Players.Player;
-import Entity.SpawnArea;
 import GUI.GUI;
+import Interactive.DoorPoint;
+import Interactive.SavePoint;
+import Interactive.SpawnPoint;
 import Main.GamePanel;
 import TileMap.Background;
 import TileMap.TileMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-public abstract class LevelState extends GameState {
+class LevelState extends GameState {
 
-    protected static int HEIGHT;
-    protected int level;
+    private static int HEIGHT;
 
-    protected int px = (int) (100 * GamePanel.SCALE);
-    protected int py = (int) (245 * GamePanel.SCALE);
+    private int px = (int) (100 * GamePanel.SCALE);
+    private int py = (int) (245 * GamePanel.SCALE);
 
-    protected LevelState(GameStateManager gsm) {
+    LevelState(GameStateManager gsm) {
         this.gsm = gsm;
         menu = true;
-        gui = new GUI();
         init();
     }
 
-    protected LevelState(GameStateManager gsm, int x, int y) {
+    private void loadMap() {
+        tileMap = new TileMap(50);
+        tileMap.loadTiles("/tiles/grasstileset_x50.gif");
+        tileMap.loadMap("/Maps/" + level + "/map.map");
+        tileMap.setPosition(0, 0);
+        tileMap.setTween(1);
 
+        LevelState.HEIGHT = tileMap.getNumRows();
+
+        bg = new Background("/Maps/" + level + "/bg.gif", 0.1);
+    }
+
+    private void loadSpawns() {
+        spawnAreas = new ArrayList<>();
+        try {
+            InputStream in = getClass().getResourceAsStream("/Maps/" + level + "/spawnPlaces.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            int num = Integer.parseInt(br.readLine());
+            int[] params;
+
+            String delims = "\\s+";
+            for (int i = 0; i < num; i++) {
+                String line = br.readLine();
+                String[] tokens = line.split(delims);
+                params = new int[tokens.length];
+                for (int j = 0; j < tokens.length; j++) {
+                    params[j] = Integer.parseInt(tokens[j]);
+                }
+                spawnAreas.add(new SpawnPoint(tileMap, params[0], params[1], params[2], params[3], params[4]));
+            }
+            br.close();
+            in.close();
+        } catch (Exception e) {
+            System.out.println("/Maps/" + level + "/spawnPlaces.txt file not found");
+            e.printStackTrace();
+        }
+    }
+
+    private void loadSavePoints() {
+        savePoints = new ArrayList<>();
+        try {
+            InputStream in = getClass().getResourceAsStream("/Maps/" + level + "/savePoints.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            int num = Integer.parseInt(br.readLine());
+            int[] params;
+
+            String delims = "\\s+";
+            for (int i = 0; i < num; i++) {
+                String line = br.readLine();
+                String[] tokens = line.split(delims);
+                params = new int[tokens.length];
+                for (int j = 0; j < tokens.length; j++) {
+                    params[j] = Integer.parseInt(tokens[j]);
+                }
+                savePoints.add(new SavePoint(tileMap, params[0], params[1]));
+            }
+            br.close();
+            in.close();
+        } catch (Exception e) {
+            System.out.println("/Maps/" + level + "/savePoint.txt file not found");
+            e.printStackTrace();
+        }
+    }
+
+    private void loadNext() {
+        nextLevel = new ArrayList<>();
+        try {
+            InputStream in = getClass().getResourceAsStream("/Maps/" + level + "/next.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+            int num = Integer.parseInt(br.readLine());
+            int[] params;
+
+            String delims = "\\s+";
+            for (int i = 0; i < num; i++) {
+                String line = br.readLine();
+                String[] tokens = line.split(delims);
+                params = new int[tokens.length];
+                for (int j = 0; j < tokens.length - 1; j++) {
+                    params[j] = Integer.parseInt(tokens[j]);
+                }
+                nextLevel.add(new DoorPoint(tileMap, params[0], params[1], params[2], params[3], tokens[4]));
+            }
+            br.close();
+            in.close();
+        } catch (Exception e) {
+            System.out.println("/Maps/" + level + "/next.txt file not found");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void init() {
+        load();
+    }
+
+    private void loadPlayer() {
+        player = new Player(tileMap);
+        player.setPosition(px, py);
+    }
+
+    private void load() {
+
+        level = "Beginning_1";
+
+        fps = new FPS();
+        loadLevel();
+
+        loadPlayer();
+        gui = new GUI(player.inventory);
+
+
+        menu = false;
+    }
+
+    private void loadLevel() {
+        loadMap();
+        enemies = new ArrayList<>();
+        loadSpawns();
+        loadSavePoints();
+        loadNext();
+        mapLoots = new ArrayList<>();
+
+        if (!(player == null)) player.load(tileMap, px, py);
+
+    }
+
+
+    protected LevelState(GameStateManager gsm, int x, int y) {
         this.gsm = gsm;
         menu =true;
-        gui = new GUI();
         px = (int) (x * GamePanel.SCALE);
         py = (int) (y * GamePanel.SCALE);
         init();
 
     }
 
-    protected TileMap tileMap;
-    protected Background bg;
 
-    protected Player player;
+    private TileMap tileMap;
+    private Background bg;
 
-    protected ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> enemies;
 
-    protected ArrayList<SpawnArea> spawnAreas;
+    private ArrayList<SpawnPoint> spawnAreas;
 
-    protected ArrayList<Place> savePoints;
-    protected ArrayList<Place> nextLevel;
+    private ArrayList<SavePoint> savePoints;
+    private ArrayList<DoorPoint> nextLevel;
 
-    protected ArrayList<MapItem> mapLoots;
+    private ArrayList<MapItem> mapLoots;
 
     private GUI gui;
 
-    protected boolean menu;
+    private boolean menu;
+
 
     private void addLoot(Enemy e){
         double chance = Math.random()*(1);
@@ -69,13 +200,12 @@ public abstract class LevelState extends GameState {
                 mapLoots.get(mapLoots.size() - 1).setPosition(e.getx(), e.gety());
             }
         }
-
     }
 
     private void getLoot(){
         for (int i = 0; i < mapLoots.size(); i++) {
             if (player.getRectangle().intersects(mapLoots.get(i).getRectangle())) {
-                if (player.addItem(mapLoots.get(i).getID())) {
+                if (player.inventory.addItem(mapLoots.get(i).getID())) {
                     mapLoots.remove(i);
                 }
             }
@@ -85,41 +215,36 @@ public abstract class LevelState extends GameState {
 
     private void addEnemy(){
         for (int i = 0; i < spawnAreas.size(); i++) {
-            if (spawnAreas.get(i).isActive()) {
-                boolean empty =true;
-                for (Enemy enemy : enemies) {
-                    if (spawnAreas.get(i).contains(enemy)) {
-                        empty = false;
+            if (spawnAreas.get(i).isEmpty() && enemies.size() < spawnAreas.size()) {
+                switch (spawnAreas.get(i).getId()) {
+                    case 1:
+                        enemies.add(new Ant(tileMap));
                         break;
-                    }
-
+                    case 2:
+                        enemies.add(new Spider(tileMap));
+                        break;
                 }
 
-                if (empty && enemies.size() < spawnAreas.size()) {
-                    if (spawnAreas.get(i).isReady()) {
-                        switch (spawnAreas.get(i).getID()) {
-                            case 1:
-                                enemies.add(new Ant(tileMap));
-                                break;
-                            case 2:
-                                enemies.add(new Spider(tileMap));
-                                break;
-                        }
-                        if (enemies.size() != 0) {
-                            enemies.get(enemies.size() - 1).setPosition(spawnAreas.get(i).getx(), spawnAreas.get(i).gety());
-                        }
+                if (enemies.size() != 0) {
+                    if (spawnAreas.get(i).isEmpty()) {
+                        spawnAreas.get(i).setEnemy(enemies.get(enemies.size() - 1));
                     }
+                    enemies.get(enemies.size() - 1).setPosition(spawnAreas.get(i).getx(), spawnAreas.get(i).gety());
                 }
             }
         }
     }
 
+
 private boolean paused;
+
+
     public void update(){
+
+
         fps.update();
         if (menu) {
             paused=true;
-            gui.update(player.getItems());
             return;
         }
         if (paused){
@@ -143,7 +268,7 @@ private boolean paused;
         //update map
         tileMap.setPosition(
                 GamePanel.WIDTH /2  - player.getx(),
-                GamePanel.HEIGHT /2 - player.gety()+50
+                GamePanel.HEIGHT / 2 - player.gety()
         );
 
         //bg moves
@@ -161,10 +286,12 @@ private boolean paused;
         checkSavePoint();
 
         checkNextLevel();
+
+        //System.out.println(player.tileMap.equals(enemies.get(0).tileMap));
     }
 
     private void checkSavePoint() {
-        for (Place savePoint : savePoints) {
+        for (SavePoint savePoint : savePoints) {
             if (player.getRectangle().intersects(savePoint.getRectangle())) {
                 player.setRespawn(savePoint.getx(), savePoint.gety());
             }
@@ -172,11 +299,13 @@ private boolean paused;
     }
 
     private void checkNextLevel() {
-        for (Place place : nextLevel) {
-            if (player.getRectangle().intersects(place.getRectangle())) {
-                System.out.println(place.getId());
-                System.out.println(level + " " + place.getId());
-                gsm.setLevel(level, place.getId());
+        for (DoorPoint doorPoint : nextLevel) {
+            if (player.getRectangle().intersects(doorPoint.getRectangle())) {
+                level = doorPoint.getNextLevel();
+                player.setRespawn(doorPoint.getPx(), doorPoint.getPy());
+                px = doorPoint.getPx();
+                py = doorPoint.getPy();
+                loadLevel();
             }
         }
     }
@@ -257,7 +386,7 @@ private boolean paused;
         if (!menu){
             if(k == KeyEvent.VK_ENTER) setPause();
         }else{
-            if (gui.isInventory()){
+            if (gui.isOpen()) {
                 if(k == KeyEvent.VK_W) gui.inventoryMove(0,-1);
                 if(k == KeyEvent.VK_S) gui.inventoryMove(0,1);
                 if(k == KeyEvent.VK_A) gui.inventoryMove(-1,0);
@@ -296,13 +425,13 @@ private boolean paused;
         bg.draw(g);
 
         //draw spawn areas
-        for (SpawnArea spawnArea : spawnAreas) {
-            spawnArea.draw(g);
+        for (SpawnPoint spawnPoint : spawnAreas) {
+            spawnPoint.draw(g);
         }
-        for (Place place : savePoints) {
+        for (SavePoint place : savePoints) {
             place.draw(g);
         }
-        for (Place place : nextLevel) {
+        for (DoorPoint place : nextLevel) {
             place.draw(g);
         }
 
