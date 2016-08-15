@@ -1,13 +1,9 @@
 package GUI;
 
-import Entity.Items.ItemList;
 import Entity.Players.Inventory;
 import Main.GamePanel;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class GUI {
 
@@ -55,7 +51,7 @@ public class GUI {
         g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
         for (int i = 0; i < inventory.height; i++) {
             for (int j = 0; j < inventory.width; j++) {
-                if (inventoryPlace[0] == j && inventoryPlace[1] == i) {
+                if (place[0] == j && place[1] == i) {
                     g.setColor(Color.GREEN);
                 } else {
                     g.setColor(Color.WHITE);
@@ -68,23 +64,26 @@ public class GUI {
         g.setFont(font2);
         for (int i = 0; i < inventory.height; i++) {
             for (int j = 0; j < inventory.width; j++) {
-                int id = inventory.getID(j, i);
-                if (id != 0) {
-                    BufferedImage ico = null;
-                    try {
-                        ico = ImageIO.read(getClass().getResourceAsStream(ItemList.getAddressImage(id)));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    g.drawImage(ico, (int) (GamePanel.WIDTH / 2 + (-150 + 71 * i / 10) * scale), (int) ((350 + i % 10 * 70) * scale), size, size, null);
+                if (null != inventory.getItem(j, i)) {
+                    g.drawImage(inventory.getItem(j, i).getImage(), (int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size, null);
                     g.setColor(Color.BLACK);
-                    g.drawString(Integer.toString(inventory.getSize(j, i)), (int) (GamePanel.WIDTH / 2 + (-145 + 71 * i / 10) * scale), (int) ((365 + i % 10 * 70) * scale));
+                    g.drawString(Integer.toString(inventory.getSize(j, i)), (int) (GamePanel.WIDTH / 2 + (-145 + 71 * j) * scale), (int) ((365 + i * 70) * scale));
                 }
             }
         }
         g.setFont(font);
         g.setColor(Color.WHITE);
         g.drawString("Backspace to Back", (int) (530 * scale), (int) (150 * scale));
+    }
+
+    public void drawEquipment(Graphics2D g) {
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect((GamePanel.WIDTH / 2), (int) (150 * scale), size, size);
+        g.setColor(Color.cyan);
+        g.drawRect((GamePanel.WIDTH / 2), (int) (150 * scale), size, size);
+        if (inventory.getHelm() != null) {
+            g.drawImage(inventory.getHelm().getImage(), (GamePanel.WIDTH / 2), (int) (150 * scale), size, size, null);
+        }
     }
 
     public void draw(Graphics2D g) {
@@ -104,6 +103,7 @@ public class GUI {
 
         if (open) {
             drawInventory(g);
+            drawEquipment(g);
         }
     }
 
@@ -128,28 +128,24 @@ public class GUI {
         return open;
     }
 
-    private int[] inventoryPlace = new int[]{0, 0};
+    private int[] place = new int[]{0, 0};
 
     public void inventoryMove(int i, int j) {
-        inventoryPlace[0] += i;
-        inventoryPlace[1] += j;
-        if (inventoryPlace[0] < 0) {
-            inventoryPlace[0] = 9;
-        } else if (inventoryPlace[0] > 9) {
-            inventoryPlace[0] = 0;
+        place[0] += i;
+        place[1] += j;
+        if (place[0] < 0) {
+            place[0] = 9;
+        } else if (place[0] > 9) {
+            place[0] = 0;
         }
-        if (inventoryPlace[1] < 0) {
-            inventoryPlace[1] = 3;
-        } else if (inventoryPlace[1] > 3) {
-            inventoryPlace[1] = 0;
+        if (place[1] < 0) {
+            place[1] = 3;
+        } else if (place[1] > 3) {
+            place[1] = 0;
         }
     }
 
     public void select() {
-
-    }
-
-    private void equip(int i) {
-
+        inventory.setItem(place[0], place[1], inventory.equip(inventory.getItem(place[0], place[1])));
     }
 }

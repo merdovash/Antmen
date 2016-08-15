@@ -5,9 +5,7 @@ import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Ant extends Enemy {
 
@@ -46,6 +44,7 @@ public class Ant extends Enemy {
         //add loot
         loot = new DropList();
         loot.add(1d,1);
+        loot.add(0.5, 2);
 
 
     }

@@ -297,7 +297,6 @@ public abstract class MapObject {
     public void draw(Graphics2D g){
         setMapPosition();
         if(facingRight) {
-			System.out.println(xmap + " " + ymap);
 			g.drawImage(
 					animation.getImage(),
 					(int)(x + xmap  ),

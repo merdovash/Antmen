@@ -373,8 +373,8 @@ public class Player extends ActiveMapObject {
 
         if (!dead) {
             super.draw(g);
-            if (ico != null) {
-                g.drawImage(ico, (int) (x + xmap + width / 2), (int) (y + ymap - 50), ico.getWidth(), ico.getHeight(), null);
+            if (inventory.getHelm() != null) {
+                g.drawImage(inventory.getHelm().getImage(), (int) (x + xmap + 2 * scale), (int) (y + ymap - (height - (-30)) * scale), (int) (85 * scale), (int) (85 * scale), null);
             }
         }
     }
@@ -385,8 +385,6 @@ public class Player extends ActiveMapObject {
 
     private BufferedImage ico = null;
 
-    public void equip(int i) {
-    }
 
     public void setRespawn(int x, int y) {
         respawnX = x;

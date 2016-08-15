@@ -1,24 +1,28 @@
 package Entity.Items;
 
+import Entity.Items.Armor.Headset.Helmet;
+import Entity.Items.Loot.Branch;
+
 import java.util.ArrayList;
 
 public class ItemList {
     private static ArrayList<Integer> id;
     private static ArrayList<String> adressImage;
-    private static ArrayList<Integer> weight;
+    private static ArrayList<Item> item;
     private static int size;
     static {
         id = new ArrayList<>();
         adressImage = new ArrayList<>();
-        weight = new ArrayList<>();
+        item = new ArrayList<>();
         size = 0;
-        add(1, "/Items/Loot/branch.gif", 1);
+        add(1, "/Items/Loot/branch.gif", new Branch());
+        add(2, "/Items/Headset/helmet.gif", new Helmet());
     }
 
-    private static void add(int id, String adress, int weight) {
+    private static void add(int id, String adress, Item item) {
         ItemList.id.add(id);
         adressImage.add(adress);
-        ItemList.weight.add(weight);
+        ItemList.item.add(item);
         size++;
     }
 
@@ -31,12 +35,7 @@ public class ItemList {
         return null;
     }
 
-    public static int getWeight(int id) {
-        for (int i = 0; i < size; i++) {
-            if (ItemList.id.get(i) == id) {
-                return (weight.get(i));
-            }
-        }
-        return 65;
+    public static Item getItem(int id) {
+        return item.get(id - 1);
     }
 }

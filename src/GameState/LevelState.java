@@ -4,6 +4,7 @@ import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
 import Entity.FPS;
+import Entity.Items.ItemList;
 import Entity.Items.MapItem;
 import Entity.Players.Player;
 import GUI.GUI;
@@ -205,7 +206,7 @@ class LevelState extends GameState {
     private void getLoot(){
         for (int i = 0; i < mapLoots.size(); i++) {
             if (player.getRectangle().intersects(mapLoots.get(i).getRectangle())) {
-                if (player.inventory.addItem(mapLoots.get(i).getID())) {
+                if (player.inventory.addItem(ItemList.getItem(mapLoots.get(i).getID()))) {
                     mapLoots.remove(i);
                 }
             }
