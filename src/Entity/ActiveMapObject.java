@@ -24,6 +24,7 @@ public abstract class ActiveMapObject extends MapObject {
     // time
     protected long delta;
 
+
     protected ActiveMapObject(TileMap tm) {
         super(tm);
 
@@ -37,26 +38,12 @@ public abstract class ActiveMapObject extends MapObject {
 
         gravity = 24 * GamePanel.SCALE;
         health = new Health(10);
+
     }
 
-    private long punchTimer;
     protected boolean punched = false;
     protected long lastTime;
 
-    public ActiveMapObject() {
-        super();
-
-        speedsX.add(0d); //right
-        speedsX.add(0d); //left
-        speedsX.add(0d); //punch
-
-        speedsY.add(0d); //grivity
-        speedsY.add(0d); //jump
-        speedsY.add(0d); //jump square
-
-        gravity = 24 * GamePanel.SCALE;
-        health = new Health(10);
-    }
 
     public void setLastTime(long l) {
         lastTime = l;
@@ -114,6 +101,7 @@ public abstract class ActiveMapObject extends MapObject {
         dx = temp * ms;
     }
 
+
     private void calculateDY() {
         double ms = delta / 100000000d;
 
@@ -167,7 +155,7 @@ public abstract class ActiveMapObject extends MapObject {
         dy = temp * ms;
     }
 
-    protected void getNextPosition() {
+    private void getNextPosition() {
 
         // movement
         calculateDX();
@@ -204,15 +192,16 @@ public abstract class ActiveMapObject extends MapObject {
             dead = true;
         }
 
+
         //moving
         getNextPosition();
+
         try {
             checkTileMapCollision();
         } catch (ArrayIndexOutOfBoundsException e) {
             dead = true;
             health.setDead();
         }
-
         if (ytemp > (TileMap.getRows() * 50 * GamePanel.SCALE) - 5) {
             health.setDead();
         } else {
@@ -227,10 +216,14 @@ public abstract class ActiveMapObject extends MapObject {
 
     }
 
+
     public void draw(Graphics2D g) {
 
         setMapPosition();
         super.draw(g);
+        g.setColor(Color.red);
+        Rectangle r2d2 = new Rectangle((int) (x + xmap), (int) (y + ymap), 5, 5);
+        g.draw(r2d2);
     }
 }
 

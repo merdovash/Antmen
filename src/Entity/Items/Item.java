@@ -22,10 +22,6 @@ public abstract class Item {
         }
     }
 
-    public int getID() {
-        return ID;
-    }
-
     public BufferedImage getImage() {
         return image;
     }

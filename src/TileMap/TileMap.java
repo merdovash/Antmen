@@ -210,7 +210,7 @@ public class TileMap {
 						(int)(tileSize* GamePanel.SCALE),
 					null
 				);
-
+				g.setColor(Color.red);
 			}
 			
 		}

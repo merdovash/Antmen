@@ -13,7 +13,7 @@ public abstract class MapObject {
 	
 	// tile stuff
 	protected TileMap tileMap;
-	protected int tileSize;
+	private int tileSize;
 	protected double xmap;
 	protected double ymap;
 	
@@ -37,8 +37,6 @@ public abstract class MapObject {
 	// collision
 	private int currRow;
 	private int currCol;
-	private double xdest;
-	private double ydest;
 	protected double xtemp;
 	protected double ytemp;
 	private boolean topLeft;
@@ -49,15 +47,14 @@ public abstract class MapObject {
 	// animation
 	protected Animation animation;
 	protected int currentAction;
-	protected int previousAction;
 	protected boolean facingRight;
 	
 	// movement
 	protected boolean left;
 	protected boolean right;
-	protected boolean jumping;
+	boolean jumping;
 	boolean inAir;
-	protected boolean falling;
+	boolean falling;
 	protected boolean pik;
 	
 	// movement attributes
@@ -84,10 +81,6 @@ public abstract class MapObject {
         scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
     }
 
-	MapObject() {
-		rectangle = getRectangle();
-		scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
-	}
 
 	protected void loadSprites() {
 		//load sprite
@@ -136,21 +129,13 @@ public abstract class MapObject {
 	}
 
 
-    private int leftTile =2;
-	private int rightTile = 2;
-	private int topTile = 2;
-	private int bottomTile = 2;
-
-	private int middleH = 2;
-	private int middleW = 2;
-
-    private void calculateCorners(double x, double y) {
-        leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
-        rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
-        topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
-        bottomTile = (int)((y + 1) / (tileSize*GamePanel.SCALE));
-        middleH = (int) ((y - height * scale / 2) / (tileSize * GamePanel.SCALE));
-        middleW = (int) ((x + width * scale / 2) / (tileSize * GamePanel.SCALE));
+	private void calculateCorners(double x, double y) {
+		int leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
+		int rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
+		int topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
+		int bottomTile = (int) ((y + 1) / (tileSize * GamePanel.SCALE));
+		int middleH = (int) ((y - height * scale / 2) / (tileSize * GamePanel.SCALE));
+		int middleW = (int) ((x + width * scale / 2) / (tileSize * GamePanel.SCALE));
 
 
 		//if (topTile<0){
@@ -181,6 +166,7 @@ public abstract class MapObject {
 		bottomRight = br != Tile.FREE;
 		bottomMiddle = bm !=Tile.FREE;
 
+
 		middleRight = mr!= Tile.FREE;
 		middleLeft = ml!= Tile.FREE;
 
@@ -195,8 +181,8 @@ public abstract class MapObject {
 		currCol = (int)(x / (tileSize*GamePanel.SCALE));
 		currRow = (int)(y / (tileSize*GamePanel.SCALE));
 
-		xdest = x + dx;
-		ydest = y + dy;
+		double xdest = x + dx;
+		double ydest = y + dy;
 
 		xtemp = x;
 		ytemp = y;
@@ -223,7 +209,7 @@ public abstract class MapObject {
 		if(dx < 0) {
 			while( (topLeft || bottomLeft || middleLeft) && dx<0) {
 				dx+=1;
-				xdest=x+dx;
+				xdest = x + dx;
 				calculateCorners(xdest, y);
 			}
 			if (dx>0){
@@ -235,7 +221,7 @@ public abstract class MapObject {
 		if(dx > 0) {
 			while( (topRight || bottomRight || middleRight) && dx>0){
 				dx-=1;
-				xdest=x+dx;
+				xdest = x + dx;
 				calculateCorners(xdest,y);
 			}
 			if (dx<0){
@@ -254,12 +240,11 @@ public abstract class MapObject {
 		xtemp+=dx;
 
 		if(!falling) {
-			calculateCorners(x, ydest+1);
+			calculateCorners(x, ydest + 1);
 			if(!bottomLeft && !bottomRight && !bottomMiddle) {
 				falling = true;
 			}
 		}
-
 	}
 	
 	public int getx() { return (int)x; }
@@ -271,10 +256,6 @@ public abstract class MapObject {
 		this.x = x;
 		this.y = y;
 	}
-	public void setVector(double dx, double dy) {
-		this.dx = dx;
-		this.dy = dy;
-	}
 	
 	protected void setMapPosition() {
 		xmap = tileMap.getx();
@@ -284,13 +265,6 @@ public abstract class MapObject {
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
 	public void setJumping(boolean b) { jumping = b; }
-	
-	public boolean notOnScreen() {
-		return x + xmap + width < 0 ||
-			x + xmap - width > GamePanel.WIDTH ||
-			y + ymap + height < 0 ||
-			y + ymap - height > GamePanel.HEIGHT;
-	}
 
     protected double scale;
 

@@ -1,5 +1,6 @@
 package GameState;
 
+import Entity.Blocks.Block;
 import Entity.Enemies.Ant;
 import Entity.Enemies.Enemy;
 import Entity.Enemies.Spider;
@@ -30,11 +31,62 @@ class LevelState extends GameState {
     private int px = (int) (100 * GamePanel.SCALE);
     private int py = (int) (245 * GamePanel.SCALE);
 
+    private TileMap tileMap;
+    private Background bg;
+
+    private ArrayList<Enemy> enemies;
+
+    private ArrayList<SpawnPoint> spawnAreas;
+
+    private ArrayList<SavePoint> savePoints;
+    private ArrayList<DoorPoint> nextLevel;
+
+    private ArrayList<MapItem> mapLoots;
+
+    private GUI gui;
+
+    private ArrayList<Block> blocks;
+
+    private boolean menu;
+
     LevelState(GameStateManager gsm) {
         this.gsm = gsm;
         menu = true;
         init();
     }
+
+    @Override
+    public void init() {
+        load();
+    }
+
+    private void load() {
+
+        level = "Beginning_1";
+
+        fps = new FPS();
+        loadLevel();
+
+        loadPlayer();
+        gui = new GUI(player.inventory);
+
+
+        menu = false;
+    }
+
+    private void loadLevel() {
+        loadMap();
+        enemies = new ArrayList<>();
+        loadSpawns();
+        loadSavePoints();
+        loadNext();
+        mapLoots = new ArrayList<>();
+
+        if (!(player == null)) player.load(tileMap, px, py);
+
+        loadBlocks();
+    }
+
 
     private void loadMap() {
         tileMap = new TileMap(50);
@@ -129,81 +181,32 @@ class LevelState extends GameState {
         }
     }
 
-    @Override
-    public void init() {
-        load();
-    }
-
     private void loadPlayer() {
         player = new Player(tileMap);
         player.setPosition(px, py);
     }
 
-    private void load() {
-
-        level = "Beginning_1";
-
-        fps = new FPS();
-        loadLevel();
-
-        loadPlayer();
-        gui = new GUI(player.inventory);
-
-
-        menu = false;
-    }
-
-    private void loadLevel() {
-        loadMap();
-        enemies = new ArrayList<>();
-        loadSpawns();
-        loadSavePoints();
-        loadNext();
-        mapLoots = new ArrayList<>();
-
-        if (!(player == null)) player.load(tileMap, px, py);
+    private void loadBlocks() {
+        blocks = new ArrayList<>();
+        blocks.add(new Block(tileMap, 2100, 500, 150, 75));
+        blocks.get(0).setBorder(2100, 300, 2100, 1000);
+        blocks.get(0).setSpeed(0, 35);
 
     }
 
-
-    protected LevelState(GameStateManager gsm, int x, int y) {
-        this.gsm = gsm;
-        menu =true;
-        px = (int) (x * GamePanel.SCALE);
-        py = (int) (y * GamePanel.SCALE);
-        init();
-
-    }
-
-
-    private TileMap tileMap;
-    private Background bg;
-
-    private ArrayList<Enemy> enemies;
-
-    private ArrayList<SpawnPoint> spawnAreas;
-
-    private ArrayList<SavePoint> savePoints;
-    private ArrayList<DoorPoint> nextLevel;
-
-    private ArrayList<MapItem> mapLoots;
-
-    private GUI gui;
-
-    private boolean menu;
-
-
-    private void addLoot(Enemy e){
-        double chance = Math.random()*(1);
-        for (int i = 0; i<e.loot.size();i++){
-            if (chance<=e.loot.getChance(i)){
+    private void addLoot(Enemy e) {
+        double chance = Math.random() * (1);
+        int replace = 0;
+        for (int i = 0; i < e.loot.size(); i++) {
+            if (chance <= e.loot.getChance(i)) {
                 mapLoots.add(new MapItem(tileMap, e.loot.getID(i)));
-                mapLoots.get(mapLoots.size() - 1).setPosition(e.getx(), e.gety());
+                mapLoots.get(mapLoots.size() - 1).setPosition(e.getx() + replace, e.gety() + replace / 2);
+                replace += 10;
             }
         }
     }
 
-    private void getLoot(){
+    private void getLoot() {
         for (int i = 0; i < mapLoots.size(); i++) {
             if (player.getRectangle().intersects(mapLoots.get(i).getRectangle())) {
                 if (player.inventory.addItem(ItemList.getItem(mapLoots.get(i).getID()))) {
@@ -214,7 +217,7 @@ class LevelState extends GameState {
     }
 
 
-    private void addEnemy(){
+    private void addEnemy() {
         for (int i = 0; i < spawnAreas.size(); i++) {
             if (spawnAreas.get(i).isEmpty() && enemies.size() < spawnAreas.size()) {
                 switch (spawnAreas.get(i).getId()) {
@@ -237,26 +240,27 @@ class LevelState extends GameState {
     }
 
 
-private boolean paused;
+    private boolean paused;
 
 
-    public void update(){
+    public void update() {
 
-
+        // refresh fps
         fps.update();
+
         if (menu) {
-            paused=true;
+            paused = true;
             return;
         }
-        if (paused){
-            paused=false;
-            long l=System.nanoTime();
+        if (paused) {
+            paused = false;
+            long l = System.nanoTime();
             player.setLastTime(l);
             for (Enemy enemy : enemies) {
                 enemy.setLastTime(l);
             }
         }
-        // refresh fps
+
 
 
         //add enemies
@@ -268,7 +272,7 @@ private boolean paused;
 
         //update map
         tileMap.setPosition(
-                GamePanel.WIDTH /2  - player.getx(),
+                GamePanel.WIDTH / 2 - player.getx(),
                 GamePanel.HEIGHT / 2 - player.gety()
         );
 
@@ -276,6 +280,8 @@ private boolean paused;
         //bg.setPosition(tileMap.getx(),tileMap.gety());
 
         updateEnemies();
+
+        updateBlocks();
 
         //update mapLoots
         for (MapItem mapLoot : mapLoots) {
@@ -288,7 +294,12 @@ private boolean paused;
 
         checkNextLevel();
 
-        //System.out.println(player.tileMap.equals(enemies.get(0).tileMap));
+    }
+
+    private void updateBlocks() {
+        for (int i = 0; i < blocks.size(); i++) {
+            blocks.get(i).update();
+        }
     }
 
     private void checkSavePoint() {
@@ -311,7 +322,7 @@ private boolean paused;
         }
     }
 
-    private void updateEnemies(){
+    private void updateEnemies() {
         //enemies search player
         for (Enemy enemy : enemies) {
             if (player.getx() < enemy.getx() + enemy.visionX && enemy.getx() - enemy.visionX < player.getx()) {
@@ -331,16 +342,16 @@ private boolean paused;
         }
 
         //enemies get attacked from spells
-        for (int i=0; i<enemies.size();i++){
+        for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).update(tileMap);
-            for (int j=0; j<player.spells.size();j++){
+            for (int j = 0; j < player.spells.size(); j++) {
                 if (i == 0) {
                     System.out.println(player.spells.get(j).isHit() + " " + enemies.get(i).health.getHealth());
                 }
                 if (!(player.spells.get(j).isHit()) && enemies.get(i).intersects(player.spells.get(j))) {
                     player.spells.get(j).setHit();
                     enemies.get(i).hit(player.spells.get(j).getDamage());
-                    enemies.get(i).punch(player.spells.get(j).getPower(),player.spells.get(j).getx());
+                    enemies.get(i).punch(player.spells.get(j).getPower(), player.spells.get(j).getx());
                 }
             }
             if (enemies.size() > 0) {
@@ -359,20 +370,20 @@ private boolean paused;
         }
     }
 
-    private void setPause(){
+    private void setPause() {
         menu = !menu;
     }
 
     private void menuAction() {
-        if (gui.getCurrentAction()==3){
+        if (gui.getCurrentAction() == 3) {
             setPause();
-        }else if (gui.getCurrentAction()==0){
+        } else if (gui.getCurrentAction() == 0) {
             gui.openInventory();
         }
     }
 
     public void keyPressed(int k) {
-        if (!paused){
+        if (!paused) {
             if (player != null) {
                 if (k == KeyEvent.VK_A) player.setLeft(true);
                 if (k == KeyEvent.VK_D) player.setRight(true);
@@ -384,43 +395,41 @@ private boolean paused;
                 if (k == KeyEvent.VK_3) player.use3spell(true);
             }
         }
-        if (!menu){
-            if(k == KeyEvent.VK_ENTER) setPause();
-        }else{
+        if (!menu) {
+            if (k == KeyEvent.VK_ENTER) setPause();
+        } else {
             if (gui.isOpen()) {
-                if(k == KeyEvent.VK_W) gui.inventoryMove(0,-1);
-                if(k == KeyEvent.VK_S) gui.inventoryMove(0,1);
-                if(k == KeyEvent.VK_A) gui.inventoryMove(-1,0);
-                if(k == KeyEvent.VK_D) gui.inventoryMove(1,0);
-                if(k == KeyEvent.VK_BACK_SPACE) gui.openInventory();
-                if(k == KeyEvent.VK_ENTER) gui.select();
-            }else{
-                if(k == KeyEvent.VK_ENTER) menuAction();
-                if(k == KeyEvent.VK_W) gui.setCurrentAction(-1);
-                if(k == KeyEvent.VK_S) gui.setCurrentAction(1);
+                if (k == KeyEvent.VK_W) gui.inventoryMove(0, -1);
+                if (k == KeyEvent.VK_S) gui.inventoryMove(0, 1);
+                if (k == KeyEvent.VK_A) gui.inventoryMove(-1, 0);
+                if (k == KeyEvent.VK_D) gui.inventoryMove(1, 0);
+                if (k == KeyEvent.VK_BACK_SPACE) gui.openInventory();
+                if (k == KeyEvent.VK_ENTER) gui.select();
+            } else {
+                if (k == KeyEvent.VK_ENTER) menuAction();
+                if (k == KeyEvent.VK_W) gui.setCurrentAction(-1);
+                if (k == KeyEvent.VK_S) gui.setCurrentAction(1);
             }
         }
 
 
-
     }
-
 
 
     public void keyReleased(int k) {
-        if (!paused){
-            if(k == KeyEvent.VK_A) player.setLeft(false);
-            if(k == KeyEvent.VK_D) player.setRight(false);
-            if(k == KeyEvent.VK_SPACE) player.setJumping(false);
-            if(k == KeyEvent.VK_Q) player.respawn();
-            if(k == KeyEvent.VK_SHIFT) player.setBoost(false);
-            if(k == KeyEvent.VK_1) player.use1spell(false);
-            if(k == KeyEvent.VK_2) player.use2spell(false);
-            if(k == KeyEvent.VK_3) player.use3spell(false);
+        if (!paused) {
+            if (k == KeyEvent.VK_A) player.setLeft(false);
+            if (k == KeyEvent.VK_D) player.setRight(false);
+            if (k == KeyEvent.VK_SPACE) player.setJumping(false);
+            if (k == KeyEvent.VK_Q) player.respawn();
+            if (k == KeyEvent.VK_SHIFT) player.setBoost(false);
+            if (k == KeyEvent.VK_1) player.use1spell(false);
+            if (k == KeyEvent.VK_2) player.use2spell(false);
+            if (k == KeyEvent.VK_3) player.use3spell(false);
         }
     }
 
-    public void draw(Graphics2D g){
+    public void draw(Graphics2D g) {
 
         // draw bg
         bg.draw(g);
@@ -436,11 +445,12 @@ private boolean paused;
             place.draw(g);
         }
 
+
         // draw tilemap
         tileMap.draw(g);
 
         //enemies draw
-        if (enemies.size()>0){
+        if (enemies.size() > 0) {
             for (Enemy enemy : enemies) {
                 enemy.draw(g);
             }
@@ -453,11 +463,13 @@ private boolean paused;
         for (MapItem aMapLoot : mapLoots) {
             aMapLoot.draw(g);
         }
-
+        for (Block block : blocks) {
+            block.draw(g);
+        }
 
         fps.draw(g);
 
-        if (menu){
+        if (menu) {
             gui.draw(g);
         }
     }

@@ -26,7 +26,7 @@ public class ItemList {
         size++;
     }
 
-    public static String getAddressImage(int id) {
+    static String getAddressImage(int id) {
         for (int i = 0; i < size; i++) {
             if (ItemList.id.get(i) == id) {
                 return (adressImage.get(i));

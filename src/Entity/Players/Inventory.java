@@ -12,6 +12,7 @@ public class Inventory {
 
     private Item helm;
     private Item weapon;
+    private Item armor;
 
     Inventory() {
         width = 10;

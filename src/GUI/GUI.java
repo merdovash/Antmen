@@ -77,6 +77,7 @@ public class GUI {
     }
 
     public void drawEquipment(Graphics2D g) {
+        //headset
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect((GamePanel.WIDTH / 2), (int) (150 * scale), size, size);
         g.setColor(Color.cyan);

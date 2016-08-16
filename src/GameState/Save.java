@@ -7,7 +7,7 @@ class Save {
     private int level;
 
     Save() {
-        player = new Player();
+        //player = new Player();
         level = 0;
     }
 

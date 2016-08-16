@@ -2,7 +2,7 @@ package Entity.Items.Armor.Headset;
 
 import Entity.Items.Item;
 
-public abstract class Headset extends Item {
+abstract class Headset extends Item {
 
     Headset() {
         super();

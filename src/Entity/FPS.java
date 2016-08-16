@@ -2,9 +2,6 @@ package Entity;
 
 import java.awt.*;
 
-/**
- * Created by MERDovashkinar on 8/5/2016.
- */
 public class FPS {
     private int fps;
     private long delta;

@@ -10,8 +10,8 @@ import java.util.ArrayList;
  */
 public class Energy {
 
-    private double opacity;
-    private int maxOpacity;
+    private double capacity;
+    private int maxCapacity;
     private double consumption=10;
     private double refillSpeed=5;
     private boolean empty;
@@ -24,16 +24,11 @@ public class Energy {
     private long lastTime;
     private long delay;
 
-
     private ArrayList<Integer> extendMax = new ArrayList<>();
 
-    private boolean rearmable=false;
-    private boolean delayable=false;
-    private boolean usable=false;
-
-    public Energy(int opacity){
-        maxOpacity=opacity;
-        this.opacity=maxOpacity;
+    public Energy(int capacity) {
+        maxCapacity = capacity;
+        this.capacity = maxCapacity;
         empty=false;
         extendMax.add(0);
         lastTime=System.currentTimeMillis();
@@ -43,11 +38,11 @@ public class Energy {
     public void consump(long delta){
         if (!empty){
             double c=consumption*delta/100000000;
-            if (opacity>=c) {
-                opacity -= c;
+            if (capacity >= c) {
+                capacity -= c;
             }
-            if (opacity<c){
-                opacity=0;
+            if (capacity < c) {
+                capacity = 0;
                 empty=true;
             }
         }
@@ -55,9 +50,9 @@ public class Energy {
 
     public boolean use(long delay, int cost){
         delta = System.currentTimeMillis() - lastTime;
-        if (opacity>=cost){
+        if (capacity >= cost) {
             if(delta >this.delay){
-                opacity-=cost;
+                capacity -= cost;
                 this.delay=delay;
                 lastTime=System.currentTimeMillis();
                 return true;
@@ -66,28 +61,12 @@ public class Energy {
         return false;
     }
 
-    public void recalculate(){
-
-    }
-
-    public void extendBy(int value){
-        extendMax.set(0,extendMax.get(0)+value);
-    }
-
-    public void extend(double value){
-        maxOpacity*=value;
-    }
-
-    public void addTempExtendMax(int value){
-        extendMax.add(value);
-    }
-
     public void refill(long delta){
-        if (opacity<maxOpacity){
+        if (capacity < maxCapacity) {
             double c= refillSpeed *delta/100000000;
-            opacity+=c;
-            if (opacity>maxOpacity){
-                opacity=maxOpacity;
+            capacity += c;
+            if (capacity > maxCapacity) {
+                capacity = maxCapacity;
                 empty=false;
             }
         }
@@ -95,21 +74,11 @@ public class Energy {
     }
 
     public boolean isEmpty(){return empty;}
-    public double getOpacity(){return opacity;}
-    public double getMaxOpacity(){return maxOpacity;}
 
-    public void setRearm(boolean b){rearmable=b;}
     public void setConsumption(int value) {consumption = value;}
-    public void setUsable(boolean b){usable =b;}
-    public void setDelayable(boolean b){delayable=b;}
-
-    public void plusEnergy(int value){
-        opacity+=value;
-        if (opacity>maxOpacity) opacity=maxOpacity;
-    }
 
     public void draw(Graphics2D g, int number,Color c){
-        percent=opacity/maxOpacity*100;
+        percent = capacity / maxCapacity * 100;
         g.setColor(c);
         g.fillRect((int) (GamePanel.WIDTH - (350) * GamePanel.SCALE), (int) ((25 + number * 35) * GamePanel.SCALE), (int) ((int) percent * 3 * GamePanel.SCALE), (int) (30 * GamePanel.SCALE));
     }

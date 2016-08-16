@@ -5,9 +5,6 @@ import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
-/**
- * Created by vlad on 09.08.16.
- */
 public class Spider extends Enemy {
 
     public Spider(TileMap tm) {

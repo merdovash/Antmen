@@ -10,7 +10,6 @@ import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Player extends ActiveMapObject {
@@ -18,10 +17,6 @@ public class Player extends ActiveMapObject {
     //respawn
     private int respawnX;
     private int respawnY;
-
-    // player stuff
-    private int fire;
-    private int maxFire;
 
     //spells
     private SpellsManager sm;
@@ -56,14 +51,6 @@ public class Player extends ActiveMapObject {
     //trace
     //private Trace trace;
 
-    public Player() {
-        super();
-    }
-
-    public void initPlayer(TileMap tm) {
-        tileMap = tm;
-        tileSize = tm.getTileSize();
-    }
 
     public Player(TileMap tm) {
 
@@ -88,13 +75,11 @@ public class Player extends ActiveMapObject {
         energy.setConsumption(15);
 
         mana = new Energy(200);
-        mana.setUsable(true);
         mana.setRefillSpeed(2);
 
         facingRight = true;
 
         health = new Health(10);
-        fire = maxFire = 2500;
 
         spells = new ArrayList<>();
         sm = new SpellsManager();
@@ -132,14 +117,6 @@ public class Player extends ActiveMapObject {
         tileMap = tm;
         this.x = x;
         this.y = y;
-    }
-
-    public int getHealth() {
-        return health.getHealth();
-    }
-
-    public int getMaxHealth() {
-        return health.getMaxHealth();
     }
 
     public void setScratching() {
@@ -197,17 +174,6 @@ public class Player extends ActiveMapObject {
     }
 
 
-    protected void getNextPosition() {
-        super.getNextPosition();
-
-        // cannot move while attacking, except in air
-        if (
-                (currentAction == SCRATCHING || currentAction == FIREBALL) &&
-                        !(jumping || falling)) {
-            dx = 0;
-        }
-    }
-
     private void useSpells() {
         if (spell1 && currentAction != FIREBALL) {
             Spell s = sm.use(tileMap, facingRight, 0);
@@ -236,6 +202,7 @@ public class Player extends ActiveMapObject {
         health.setAlive();
         dead = false;
     }
+
 
     public void update() {
         if (!dead) {
@@ -347,6 +314,7 @@ public class Player extends ActiveMapObject {
         }
     }
 
+
     public void draw(Graphics2D g) {
         setMapPosition();
 
@@ -378,12 +346,6 @@ public class Player extends ActiveMapObject {
             }
         }
     }
-
-    public Inventory getItems() {
-        return inventory;
-    }
-
-    private BufferedImage ico = null;
 
 
     public void setRespawn(int x, int y) {
