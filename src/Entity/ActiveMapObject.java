@@ -200,10 +200,10 @@ public abstract class ActiveMapObject extends MapObject {
             checkTileMapCollision();
         } catch (ArrayIndexOutOfBoundsException e) {
             dead = true;
-            health.setDead();
+
         }
         if (ytemp > (TileMap.getRows() * 50 * GamePanel.SCALE) - 5) {
-            health.setDead();
+            dead = true;
         } else {
             setPosition(xtemp, ytemp);
         }

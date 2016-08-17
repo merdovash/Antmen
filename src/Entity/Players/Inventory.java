@@ -14,7 +14,7 @@ public class Inventory {
     private Item weapon;
     private Item armor;
 
-    Inventory() {
+    public Inventory() {
         width = 10;
         height = 4;
         places = new Item[height][width];

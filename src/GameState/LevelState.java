@@ -1,9 +1,8 @@
 package GameState;
 
-import Entity.Blocks.Block;
-import Entity.Enemies.Ant;
+import Entity.Enemies.Ants.Ant;
+import Entity.Enemies.Ants.AntViking;
 import Entity.Enemies.Enemy;
-import Entity.Enemies.Spider;
 import Entity.FPS;
 import Entity.Items.ItemList;
 import Entity.Items.MapItem;
@@ -45,8 +44,6 @@ class LevelState extends GameState {
 
     private GUI gui;
 
-    private ArrayList<Block> blocks;
-
     private boolean menu;
 
     LevelState(GameStateManager gsm) {
@@ -84,7 +81,6 @@ class LevelState extends GameState {
 
         if (!(player == null)) player.load(tileMap, px, py);
 
-        loadBlocks();
     }
 
 
@@ -186,13 +182,6 @@ class LevelState extends GameState {
         player.setPosition(px, py);
     }
 
-    private void loadBlocks() {
-        blocks = new ArrayList<>();
-        blocks.add(new Block(tileMap, 2100, 500, 150, 75));
-        blocks.get(0).setBorder(2100, 300, 2100, 1000);
-        blocks.get(0).setSpeed(0, 35);
-
-    }
 
     private void addLoot(Enemy e) {
         double chance = Math.random() * (1);
@@ -225,10 +214,9 @@ class LevelState extends GameState {
                         enemies.add(new Ant(tileMap));
                         break;
                     case 2:
-                        enemies.add(new Spider(tileMap));
+                        enemies.add(new AntViking(tileMap));
                         break;
                 }
-
                 if (enemies.size() != 0) {
                     if (spawnAreas.get(i).isEmpty()) {
                         spawnAreas.get(i).setEnemy(enemies.get(enemies.size() - 1));
@@ -281,8 +269,6 @@ class LevelState extends GameState {
 
         updateEnemies();
 
-        updateBlocks();
-
         //update mapLoots
         for (MapItem mapLoot : mapLoots) {
             mapLoot.update();
@@ -294,12 +280,6 @@ class LevelState extends GameState {
 
         checkNextLevel();
 
-    }
-
-    private void updateBlocks() {
-        for (int i = 0; i < blocks.size(); i++) {
-            blocks.get(i).update();
-        }
     }
 
     private void checkSavePoint() {
@@ -345,9 +325,6 @@ class LevelState extends GameState {
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).update(tileMap);
             for (int j = 0; j < player.spells.size(); j++) {
-                if (i == 0) {
-                    System.out.println(player.spells.get(j).isHit() + " " + enemies.get(i).health.getHealth());
-                }
                 if (!(player.spells.get(j).isHit()) && enemies.get(i).intersects(player.spells.get(j))) {
                     player.spells.get(j).setHit();
                     enemies.get(i).hit(player.spells.get(j).getDamage());
@@ -357,6 +334,7 @@ class LevelState extends GameState {
             if (enemies.size() > 0) {
                 if (enemies.get(i).isDead()) {
                     addLoot(enemies.get(i));
+                    player.stats.addExp(enemies.get(i).getExp());
                     enemies.remove(i);
                     if (i == enemies.size()) {
                         break;
@@ -463,11 +441,10 @@ class LevelState extends GameState {
         for (MapItem aMapLoot : mapLoots) {
             aMapLoot.draw(g);
         }
-        for (Block block : blocks) {
-            block.draw(g);
-        }
 
         fps.draw(g);
+
+        player.drawGui(g);
 
         if (menu) {
             gui.draw(g);

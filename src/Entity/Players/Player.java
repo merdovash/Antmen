@@ -5,7 +5,6 @@ import Entity.Enemies.Enemy;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Entity.States.Energy;
-import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -48,6 +47,9 @@ public class Player extends ActiveMapObject {
     // inventory
     public Inventory inventory;
 
+    //Stats
+    public Stats stats;
+
     //trace
     //private Trace trace;
 
@@ -79,7 +81,6 @@ public class Player extends ActiveMapObject {
 
         facingRight = true;
 
-        health = new Health(10);
 
         spells = new ArrayList<>();
         sm = new SpellsManager();
@@ -111,6 +112,8 @@ public class Player extends ActiveMapObject {
         respawnY = 200;
 
         inventory = new Inventory();
+
+        stats = new Stats();
     }
 
     public void load(TileMap tm, int x, int y) {
@@ -173,6 +176,16 @@ public class Player extends ActiveMapObject {
         }
     }
 
+    public void hit(int damage) {
+        if (flinching) return;
+        stats.health.atacked(damage);
+        flinching = true;
+        flinchTimer = System.nanoTime();
+        if (stats.health.getHealth() == 0) {
+            dead = true;
+        }
+    }
+
 
     private void useSpells() {
         if (spell1 && currentAction != FIREBALL) {
@@ -199,7 +212,7 @@ public class Player extends ActiveMapObject {
     public void respawn() {
         x = respawnX;
         y = respawnY;
-        health.setAlive();
+        stats.health.setAlive();
         dead = false;
     }
 
@@ -250,6 +263,13 @@ public class Player extends ActiveMapObject {
             lastTime = System.nanoTime();
         }
         setAnimation();
+
+        if (stats.getCongats()) {
+            levelUp = true;
+            levelUpTime = System.currentTimeMillis();
+            place = 0;
+        }
+
     }
 
 
@@ -314,7 +334,9 @@ public class Player extends ActiveMapObject {
         }
     }
 
-
+    private boolean levelUp = false;
+    private long levelUpTime;
+    private int place;
     public void draw(Graphics2D g) {
         setMapPosition();
 
@@ -322,11 +344,7 @@ public class Player extends ActiveMapObject {
             spell.draw(g);
         }
 
-        health.draw(g);
-        energy.draw(g, 0, energy.GREEN_RED);
-        mana.draw(g, 1, energy.RED_BLUE);
 
-        sm.draw(g);
 
         //trace.draw(g);
 
@@ -345,6 +363,25 @@ public class Player extends ActiveMapObject {
                 g.drawImage(inventory.getHelm().getImage(), (int) (x + xmap + 2 * scale), (int) (y + ymap - (height - (-30)) * scale), (int) (85 * scale), (int) (85 * scale), null);
             }
         }
+
+        if (levelUp) {
+            if (System.currentTimeMillis() - levelUpTime < 2000) {
+                g.setColor(new Color(1, 1, 1, 0.5f));
+                g.fillRect((int) (x + xmap + width * scale / 2 - place / 2), (int) (y + ymap - height * scale / 2 - place), (place), (int) ((width * scale / 2 + 100) - place));
+                place = (int) (((System.currentTimeMillis() - levelUpTime) / 20) * scale);
+                System.out.println(place);
+            }
+        }
+    }
+
+    public void drawGui(Graphics2D g) {
+        stats.health.draw(g);
+        energy.draw(g, 0, energy.GREEN_RED);
+        mana.draw(g, 1, energy.RED_BLUE);
+
+        sm.draw(g);
+
+        stats.drawExp(g);
     }
 
 

@@ -8,8 +8,8 @@ import java.awt.image.BufferedImage;
 
 public class Health {
     private int health;
-    private int maxHealth;
-    private int deffaultMaxHealth;
+    private double maxHealth;
+    private double deffaultMaxHealth;
     private double x;
     public boolean dead;
     private BufferedImage tileset;
@@ -21,7 +21,7 @@ public class Health {
     public Health(int size){
         deffaultMaxHealth=size;
         maxHealth=deffaultMaxHealth;
-        health=maxHealth;
+        health = (int) maxHealth;
         dead=false;
         x=1;
         try {
@@ -47,7 +47,7 @@ public class Health {
             health+=size;
         }
         if (health>maxHealth){
-            health=maxHealth;
+            health = (int) maxHealth;
         }
     }
 
@@ -60,8 +60,16 @@ public class Health {
         maxHealth= (int) (deffaultMaxHealth*x);
     }
 
+    public void extendAbs(double size) {
+        deffaultMaxHealth += size;
+        maxHealth = deffaultMaxHealth;
+    }
+
     public int getHealth(){return health;}
-    public int getMaxHealth(){return maxHealth;}
+
+    public double getMaxHealth() {
+        return maxHealth;
+    }
 
     public void draw(Graphics2D g){
         for (int i=0;i<health;i++){
@@ -76,7 +84,7 @@ public class Health {
 
     public void setAlive() {
         dead = false;
-        health = maxHealth;
+        health = (int) maxHealth;
     }
 }
 

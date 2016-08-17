@@ -1,8 +1,8 @@
 package Entity.Items.Armor.Headset;
 
-import Entity.Items.Item;
+import Entity.Items.Armor.Armory;
 
-abstract class Headset extends Item {
+public class Headset extends Armory {
 
     Headset() {
         super();

@@ -2,24 +2,28 @@ package Entity.Enemies;
 
 
 import Entity.ActiveMapObject;
+import Entity.Players.Inventory;
 import TileMap.TileMap;
 
 
 
 public abstract class Enemy extends ActiveMapObject {
 
-    int damage;
+    protected int damage;
 
-    boolean agressive;
+    protected int exp;
+
+    protected boolean agressive;
     public int visionX;
     public int visionY;
 
-    boolean enemy;
+    protected boolean enemy;
 
     //loot
     public DropList loot;
+    protected Inventory inventory;
 
-    Enemy(TileMap tm) {
+    protected Enemy(TileMap tm) {
         super(tm);
         dx=0;
         dy=0;
@@ -52,6 +56,10 @@ public abstract class Enemy extends ActiveMapObject {
     public void setLeft(){
         left=true;
         right=false;
+    }
+
+    public int getExp() {
+        return exp;
     }
 
     public void setAgressive(boolean b) {

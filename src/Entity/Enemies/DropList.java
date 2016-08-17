@@ -8,13 +8,13 @@ public class DropList {
 
     private int size;
 
-    DropList() {
+    public DropList() {
         id = new ArrayList<>();
         chance = new ArrayList<>();
         size = 0;
     }
 
-    void add(double chance, int id) {
+    public void add(double chance, int id) {
         this.chance.add(chance);
         this.id.add(id);
         size++;
