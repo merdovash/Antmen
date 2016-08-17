@@ -3,6 +3,7 @@ package Entity.Enemies.Ants;
 import Entity.Animation;
 import Entity.Enemies.DropList;
 import Entity.Enemies.Enemy;
+import Entity.Items.Armor.GrabPoint;
 import Entity.Items.Armor.Headset.Helmet;
 import Entity.Players.Inventory;
 import Entity.States.Health;
@@ -54,6 +55,7 @@ public class AntViking extends Enemy {
         inventory.equip(new Helmet());
 
 
+        headPoint = new GrabPoint((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 5 * scale), facingRight, (int) ((width - 20) * GamePanel.SCALE));
     }
 
     public void update(TileMap tm) {
@@ -74,6 +76,7 @@ public class AntViking extends Enemy {
         //change direction
         facingRight = right;
 
+        headPoint.update((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 34 * scale), facingRight);
     }
 
     public void draw(Graphics2D g) {
@@ -81,8 +84,8 @@ public class AntViking extends Enemy {
 
         super.draw(g);
 
-        if (inventory.getHelm() != null) {
-            g.drawImage(inventory.getHelm().getImage(), (int) (x + xmap - 4 * scale), (int) (y + ymap - (height + 30) * scale), (int) (80 * scale), (int) (80 * scale), null);
+        if (inventory != null) {
+            drawArmory(g);
         }
     }
 

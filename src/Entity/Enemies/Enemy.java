@@ -2,7 +2,6 @@ package Entity.Enemies;
 
 
 import Entity.ActiveMapObject;
-import Entity.Players.Inventory;
 import TileMap.TileMap;
 
 
@@ -21,7 +20,6 @@ public abstract class Enemy extends ActiveMapObject {
 
     //loot
     public DropList loot;
-    protected Inventory inventory;
 
     protected Enemy(TileMap tm) {
         super(tm);

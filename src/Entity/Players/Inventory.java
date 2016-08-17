@@ -1,7 +1,12 @@
 package Entity.Players;
 
 
+import Entity.Items.Armor.GrabPoint;
 import Entity.Items.Item;
+import Main.GamePanel;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 
 public class Inventory {
@@ -63,5 +68,22 @@ public class Inventory {
 
     public void setItem(int x, int y, Item item) {
         places[y][x] = item;
+    }
+
+    public void draw(Graphics2D g, int x, int y) {
+        if (helm != null) {
+            BufferedImage img = helm.getImage();
+            g.drawImage(img, x - helm.getImage().getWidth() / 2, y - img.getHeight() / 2, (int) (img.getWidth() * 0.75d * GamePanel.SCALE), (int) (img.getHeight() * 0.75d * GamePanel.SCALE), null);
+        }
+    }
+
+    public void draw(Graphics2D g, GrabPoint headPoint) {
+        if (helm != null) {
+            BufferedImage img = helm.getImage();
+            double scale = (double) (headPoint.getWidth()) / img.getWidth() * GamePanel.SCALE;
+            int width = (int) (img.getWidth() * scale) * headPoint.getSide();
+            int height = (int) (img.getHeight() * scale);
+            g.drawImage(img, headPoint.getX() - width / 2, (headPoint.getY() - height), width, height, null);
+        }
     }
 }

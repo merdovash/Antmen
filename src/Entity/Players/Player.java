@@ -45,7 +45,6 @@ public class Player extends ActiveMapObject {
     private static final int SCRATCHING = 6;
 
     // inventory
-    public Inventory inventory;
 
     //Stats
     public Stats stats;
@@ -183,6 +182,8 @@ public class Player extends ActiveMapObject {
         flinchTimer = System.nanoTime();
         if (stats.health.getHealth() == 0) {
             dead = true;
+            x = 0;
+            y = 0;
         }
     }
 
@@ -239,14 +240,6 @@ public class Player extends ActiveMapObject {
             mana.refill(delta);
             useSpells();
 
-            //update firebals
-            for (int i = 0; i < spells.size(); i++) {
-                spells.get(i).update();
-                if (spells.get(i).checkRemove()) {
-                    spells.remove(i);
-                    i--;
-                }
-            }
 
             //set animation
             firing = spell1 || spell2 || spell3;
@@ -262,6 +255,16 @@ public class Player extends ActiveMapObject {
             delta = System.nanoTime() - lastTime;
             lastTime = System.nanoTime();
         }
+
+        //update firebals
+        for (int i = 0; i < spells.size(); i++) {
+            spells.get(i).update();
+            if (spells.get(i).checkRemove()) {
+                spells.remove(i);
+                i--;
+            }
+        }
+
         setAnimation();
 
         if (stats.getCongats()) {

@@ -1,5 +1,7 @@
 package Entity;
 
+import Entity.Items.Armor.GrabPoint;
+import Entity.Players.Inventory;
 import Entity.States.Energy;
 import Entity.States.Health;
 import Main.GamePanel;
@@ -23,6 +25,12 @@ public abstract class ActiveMapObject extends MapObject {
 
     // time
     protected long delta;
+
+    //inventory
+    public Inventory inventory;
+
+    //points
+    protected GrabPoint headPoint;
 
 
     protected ActiveMapObject(TileMap tm) {
@@ -224,6 +232,12 @@ public abstract class ActiveMapObject extends MapObject {
         g.setColor(Color.red);
         Rectangle r2d2 = new Rectangle((int) (x + xmap), (int) (y + ymap), 5, 5);
         g.draw(r2d2);
+    }
+
+    protected void drawArmory(Graphics2D g) {
+        if (inventory != null) {
+            inventory.draw(g, headPoint);
+        }
     }
 }
 
