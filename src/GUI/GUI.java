@@ -4,12 +4,17 @@ import Entity.Players.Inventory;
 import Entity.Players.Stats;
 import Main.GamePanel;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class GUI {
 
     private final Font font = new Font("Courier New", Font.PLAIN, 18);
     private final Font font2 = new Font("Courier New", Font.PLAIN, 16);
+    private final Font font3 = new Font("courier New", Font.PLAIN, 25);
+    private final Font font4 = new Font("Courier New", Font.PLAIN, (int) (10 * GamePanel.SCALE));
     private final Stats stats;
 
     private Rectangle[] button;
@@ -35,6 +40,15 @@ public class GUI {
         this.inventory = inventory;
         this.stats = stats;
         init();
+        loadSprites();
+    }
+
+    private void loadSprites() {
+        try {
+            statAdd = ImageIO.read(getClass().getResourceAsStream(statAddAdress));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initMapItems() {
@@ -57,7 +71,7 @@ public class GUI {
         g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
         for (int i = 0; i < inventory.height; i++) {
             for (int j = 0; j < inventory.width; j++) {
-                if (place[0] == j && place[1] == i) {
+                if (inventoryPlace[0] == j && inventoryPlace[1] == i) {
                     g.setColor(Color.GREEN);
                 } else {
                     g.setColor(Color.WHITE);
@@ -117,18 +131,66 @@ public class GUI {
 
     }
 
+    private String[] s = new String[]{"str:     ", "int:     ", "dex:     ", "vit:     "};
+    private String statAddAdress = "/GUI/Stats/stats_add.png";
+    private String[] explanation = new String[]{
+            "Power: ",
+            "Magic power: ",
+            "Mana regeneration: ",
+            "Magic speed: ",
+            "Energy regeneration: ",
+            "Health"};
+    private BufferedImage statAdd;
     private void drawStats(Graphics2D g) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
-        g.setColor(Color.BLACK);
-        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (200 * scale), (int) (100 * scale), (int) (50 * scale));
-        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (265 * scale), (int) (100 * scale), (int) (50 * scale));
-        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (330 * scale), (int) (100 * scale), (int) (50 * scale));
+        for (int i = 0; i < 4; i++) {
+            if (place == i) {
+                g.setColor(Color.BLUE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
+            g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) ((200 + 65 * i) * scale), (int) (150 * scale), (int) (50 * scale));
+
+        }
+        g.setFont(font3);
         g.setColor(Color.WHITE);
-        g.drawString("Level: " + stats.getLevel(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (150 * scale));
-        g.drawString("str: " + stats.getStats()[0], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (230 * scale));
-        g.drawString("int: " + stats.getStats()[1], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (295 * scale));
-        g.drawString("dex: " + stats.getStats()[2], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (360 * scale));
+        g.drawString("Level:   " + stats.getLevel(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (150 * scale));
+        g.drawString("Free points:  " + stats.getFreePoints(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (180 * scale));
+        for (int i = 0; i < 4; i++) {
+            g.drawString(s[i] + stats.getStats()[i], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) ((230 + 65 * i) * scale));
+            g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 - 10 * scale), (int) ((210 + 65 * i) * scale), -(int) (30 * scale), (int) (30 * scale), null);
+            g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 - 105 * scale), (int) ((210 + 65 * i) * scale), (int) (30 * scale), (int) (30 * scale), null);
+        }
+        g.setFont(font4);
+        double value;
+        for (int i = 0; i < explanation.length; i++) {
+            g.drawString(explanation[i], (int) (GamePanel.WIDTH / 2 + 105 * scale), (int) ((180 + 20 * i) * scale));
+            switch (i) {
+                case 0:
+                    value = stats.getPunchModifier();
+                    break;
+                case 1:
+                    value = stats.getSpellDamageModifier();
+                    break;
+                case 2:
+                    value = stats.getManaRefillSpeedModifier();
+                    break;
+                case 3:
+                    value = stats.getSpellSpeedModifier();
+                    break;
+                case 4:
+                    value = stats.getEnergyRefillSpeedModifier();
+                    break;
+                case 5:
+                    value = stats.getHealthExtendModifier();
+                    break;
+                default:
+                    value = 7.66;
+            }
+            value = (value - 1) * 100;
+            g.drawString("+" + String.valueOf((int) value) + "%", (int) (GamePanel.WIDTH / 2 + 280 * scale), (int) ((180 + 20 * i) * scale));
+        }
     }
 
     public void setCurrentAction(int i) {
@@ -152,7 +214,7 @@ public class GUI {
         return openInventory;
     }
 
-    public void OpenStats() {
+    public void setOpenStats() {
         openStats = !openStats;
     }
 
@@ -160,24 +222,58 @@ public class GUI {
         return openStats;
     }
 
-    private int[] place = new int[]{0, 0};
+    private int place;
 
-    public void inventoryMove(int i, int j) {
-        place[0] += i;
-        place[1] += j;
-        if (place[0] < 0) {
-            place[0] = 9;
-        } else if (place[0] > 9) {
-            place[0] = 0;
-        }
-        if (place[1] < 0) {
-            place[1] = 3;
-        } else if (place[1] > 3) {
-            place[1] = 0;
+    public void statsMove(int i) {
+        place += i;
+        if (place < 0) {
+            place = 3;
+        } else if (place > 3) {
+            place = 0;
         }
     }
 
-    public void select() {
-        inventory.setItem(place[0], place[1], inventory.equip(inventory.getItem(place[0], place[1])));
+    private int[] tempAdd = {0, 0, 0, 0};
+
+    public void statsAdd(int i) {
+        if (i > 0) {
+            if (stats.getFreePoints() > 0) {
+                stats.getStat(place).addAbs(1);
+                tempAdd[place] += 1;
+                stats.useFreePoints(-1);
+            }
+        } else {
+            if (tempAdd[place] > 0) {
+                stats.getStat(place).addAbs(-1);
+                tempAdd[place] -= 1;
+                stats.useFreePoints(1);
+            }
+        }
+        stats.calculateModifiers();
+    }
+
+    public void statsSelect() {
+        tempAdd = new int[]{0, 0, 0, 0};
+    }
+
+    private int[] inventoryPlace = new int[]{0, 0};
+
+    public void inventoryMove(int i, int j) {
+        inventoryPlace[0] += i;
+        inventoryPlace[1] += j;
+        if (inventoryPlace[0] < 0) {
+            inventoryPlace[0] = 9;
+        } else if (inventoryPlace[0] > 9) {
+            inventoryPlace[0] = 0;
+        }
+        if (inventoryPlace[1] < 0) {
+            inventoryPlace[1] = 3;
+        } else if (inventoryPlace[1] > 3) {
+            inventoryPlace[1] = 0;
+        }
+    }
+
+    public void inventorySelect() {
+        inventory.setItem(inventoryPlace[0], inventoryPlace[1], inventory.equip(inventory.getItem(inventoryPlace[0], inventoryPlace[1])));
     }
 }

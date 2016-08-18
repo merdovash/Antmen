@@ -362,7 +362,7 @@ class LevelState extends GameState {
         } else if (gui.getCurrentAction() == 0) {
             gui.openInventory();
         } else if (gui.getCurrentAction() == 1) {
-            gui.OpenStats();
+            gui.setOpenStats();
         }
     }
 
@@ -388,7 +388,14 @@ class LevelState extends GameState {
                 if (k == KeyEvent.VK_A) gui.inventoryMove(-1, 0);
                 if (k == KeyEvent.VK_D) gui.inventoryMove(1, 0);
                 if (k == KeyEvent.VK_BACK_SPACE) gui.openInventory();
-                if (k == KeyEvent.VK_ENTER) gui.select();
+                if (k == KeyEvent.VK_ENTER) gui.inventorySelect();
+            } else if (gui.isOpenStats()) {
+                if (k == KeyEvent.VK_W) gui.statsMove(-1);
+                if (k == KeyEvent.VK_S) gui.statsMove(1);
+                if (k == KeyEvent.VK_A) gui.statsAdd(-1);
+                if (k == KeyEvent.VK_D) gui.statsAdd(1);
+                if (k == KeyEvent.VK_ENTER) gui.statsSelect();
+                if (k == KeyEvent.VK_BACK_SPACE) gui.setOpenStats();
             } else {
                 if (k == KeyEvent.VK_ENTER) menuAction();
                 if (k == KeyEvent.VK_W) gui.setCurrentAction(-1);

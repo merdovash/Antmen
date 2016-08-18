@@ -24,6 +24,7 @@ public class Stats {
     private int dexGrow;
     private int vitGrow;
 
+
     private int freePoints;
 
     public Stats() {
@@ -46,7 +47,7 @@ public class Stats {
         vit = new Param(2);
         vitGrow = 1;
 
-        calculateModifier();
+        calculateModifiers();
     }
 
     public void addExp(int exp) {
@@ -59,6 +60,7 @@ public class Stats {
         }
     }
 
+
     private void levelUp() {
         level++;
         str.addAbs(strGrow);
@@ -69,7 +71,7 @@ public class Stats {
         health.heal((int) (health.getMaxHealth()));
 
 
-        calculateModifier();
+        calculateModifiers();
     }
 
     public long getExp() {
@@ -85,7 +87,7 @@ public class Stats {
     }
 
     public int[] getStats() {
-        return new int[]{str.getValue(), intel.getValue(), dex.getValue()};
+        return new int[]{str.getValue(), intel.getValue(), dex.getValue(), vit.getValue()};
     }
 
     public void update() {
@@ -120,7 +122,7 @@ public class Stats {
     private double punchModifier;
 
 
-    private void calculateModifier() {
+    public void calculateModifiers() {
         spellDamageModifier = intel.getValue() / 50d + 1;
         spellSpeedModifier = dex.getValue() / 25d + 1;
         manaRefillSpeedModifier = (intel.getValue() + dex.getValue()) / 100d + 1;
@@ -152,5 +154,28 @@ public class Stats {
 
     public double getPunchModifier() {
         return punchModifier;
+    }
+
+    public int getFreePoints() {
+        return freePoints;
+    }
+
+    public void useFreePoints(int i) {
+        this.freePoints += i;
+    }
+
+    public Param getStat(int place) {
+        switch (place) {
+            case 0:
+                return str;
+            case 1:
+                return intel;
+            case 2:
+                return dex;
+            case 3:
+                return vit;
+            default:
+                return null;
+        }
     }
 }
