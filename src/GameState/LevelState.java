@@ -215,6 +215,7 @@ class LevelState extends GameState {
                         break;
                     case 2:
                         enemies.add(new AntViking(tileMap));
+                        spawnAreas.get(i).setCooldown(25000);
                         break;
                 }
                 if (enemies.size() != 0) {

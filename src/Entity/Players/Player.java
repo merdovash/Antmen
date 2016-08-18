@@ -3,7 +3,6 @@ package Entity.Players;
 import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
 import Entity.Items.Armor.GrabPoint;
-import Entity.Items.Armor.Headset.Helmet;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Entity.States.Energy;
@@ -117,8 +116,6 @@ public class Player extends ActiveMapObject {
         headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
 
         stats = new Stats();
-
-        inventory.addItem(new Helmet());
 
     }
 
@@ -242,7 +239,7 @@ public class Player extends ActiveMapObject {
             }
 
             //spell atack;
-            mana.refill(delta);
+            mana.refill((long) (delta * stats.getManaRefillSpeedModifier()));
             useSpells();
 
 
@@ -389,7 +386,6 @@ public class Player extends ActiveMapObject {
                 g.setColor(new Color(1, 1, 1, 0.5f));
                 g.fillRect((int) (x + xmap + width * scale / 2 - place / 2), (int) (y + ymap - height * scale / 2 - place), (place), (int) ((width * scale / 2 + 100) - place));
                 place = (int) (((System.currentTimeMillis() - levelUpTime) / 20) * scale);
-                System.out.println(place);
             }
         }
     }

@@ -291,10 +291,6 @@ public abstract class MapObject {
 			);
 
 		}
-
-		rectangle=getRectangle();
-		g.setColor(Color.GREEN);
-		g.draw(rectangle);
 	}
 
 	

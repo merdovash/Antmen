@@ -2,17 +2,14 @@ package Entity.Enemies.Ants;
 
 import Entity.Animation;
 import Entity.Enemies.DropList;
-import Entity.Enemies.Enemy;
-import Entity.Items.Armor.GrabPoint;
-import Entity.Items.Armor.Headset.Helmet;
-import Entity.Players.Inventory;
+import Entity.Enemies.MiniBoss;
 import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
 
-public class AntViking extends Enemy {
+public class AntViking extends MiniBoss {
 
     public AntViking(TileMap tm) {
         super(tm);
@@ -51,11 +48,7 @@ public class AntViking extends Enemy {
 
         exp = 75;
 
-        inventory = new Inventory();
-        inventory.equip(new Helmet());
-
-
-        headPoint = new GrabPoint((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 5 * scale), facingRight, (int) ((width - 25) * GamePanel.SCALE));
+        init();
     }
 
     public void update() {
@@ -75,7 +68,6 @@ public class AntViking extends Enemy {
         //change direction
         facingRight = right;
 
-        headPoint.update((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 34 * scale), facingRight);
     }
 
     public void draw(Graphics2D g) {
@@ -83,9 +75,7 @@ public class AntViking extends Enemy {
 
         super.draw(g);
 
-        if (inventory != null) {
-            drawArmory(g);
-        }
+
     }
 
 }

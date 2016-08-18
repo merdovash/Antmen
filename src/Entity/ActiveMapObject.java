@@ -222,6 +222,8 @@ public abstract class ActiveMapObject extends MapObject {
 
         animation.update();
 
+        rectangle = getRectangle();
+
     }
 
 
@@ -229,9 +231,12 @@ public abstract class ActiveMapObject extends MapObject {
 
         setMapPosition();
         super.draw(g);
-        g.setColor(Color.red);
-        Rectangle r2d2 = new Rectangle((int) (x + xmap), (int) (y + ymap), 5, 5);
-        g.draw(r2d2);
+
+    }
+
+    public void drawBorder(Graphics2D g) {
+        g.setColor(Color.GREEN);
+        g.draw(rectangle);
     }
 
     protected void drawArmory(Graphics2D g) {
