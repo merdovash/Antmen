@@ -10,9 +10,9 @@ public class GrabPoint {
         this.x = x;
         this.y = y;
         if (side) {
-            this.side = 1;
-        } else {
             this.side = -1;
+        } else {
+            this.side = 1;
         }
         this.width = width;
     }

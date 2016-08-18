@@ -4,9 +4,11 @@ import Entity.Items.Armor.Armory;
 
 public class Headset extends Armory {
 
-    Headset() {
-        super();
+
+    public void init() {
         type = "headset";
         weight = 64;
+        super.init();
     }
+
 }

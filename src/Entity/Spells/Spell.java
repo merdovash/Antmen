@@ -1,6 +1,7 @@
 package Entity.Spells;
 
 import Entity.MapObject;
+import Main.GamePanel;
 import TileMap.TileMap;
 
 /**
@@ -13,6 +14,7 @@ public abstract class Spell extends MapObject {
 
     protected boolean hit;
     protected boolean remove;
+    protected boolean active;
 
 
     //parameters
@@ -25,6 +27,7 @@ public abstract class Spell extends MapObject {
 
     public Spell(TileMap tm ,boolean right) {
         super(tm);
+        active = true;
     }
 
     public abstract void update();
@@ -39,7 +42,7 @@ public abstract class Spell extends MapObject {
 
     public void setPosition(double x, double y, int height) {
         this.x = x;
-        this.y = y-height*0.20;
+        this.y = y - height * 0.20 * GamePanel.SCALE;
     }
 
     public void setHit(){
@@ -47,6 +50,11 @@ public abstract class Spell extends MapObject {
         animation.setFrames(sprites.get(HIT));
         animation.setDelay(70);
         dx=0;
+        active = false;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public boolean isHit(){

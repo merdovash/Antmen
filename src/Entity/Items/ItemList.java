@@ -16,7 +16,7 @@ public class ItemList {
         item = new ArrayList<>();
         size = 0;
         add(1, "/Items/Loot/branch.gif", new Branch());
-        add(2, "/Items/Armory/Headset/helmet.gif", new Helmet());
+        add(2, "/Items/Armory/Headset/helmetIco.gif", new Helmet());
     }
 
     private static void add(int id, String adress, Item item) {

@@ -65,7 +65,7 @@ class LevelState extends GameState {
         loadLevel();
 
         loadPlayer();
-        gui = new GUI(player.inventory);
+        gui = new GUI(player.inventory, player.stats);
 
 
         menu = false;
@@ -323,12 +323,15 @@ class LevelState extends GameState {
 
         //enemies get attacked from spells
         for (int i = 0; i < enemies.size(); i++) {
-            enemies.get(i).update(tileMap);
+            enemies.get(i).update();
             for (int j = 0; j < player.spells.size(); j++) {
-                if (!(player.spells.get(j).isHit()) && enemies.get(i).intersects(player.spells.get(j))) {
-                    player.spells.get(j).setHit();
-                    enemies.get(i).hit(player.spells.get(j).getDamage());
-                    enemies.get(i).punch(player.spells.get(j).getPower(), player.spells.get(j).getx());
+                boolean active = player.spells.get(j).isActive();
+                if (enemies.get(i).intersects(player.spells.get(j))) {
+                    if (active) {
+                        player.spells.get(j).setHit();
+                        enemies.get(i).hit((int) (player.spells.get(j).getDamage() * player.stats.getSpellDamageModifier()));
+                        enemies.get(i).punch(player.spells.get(j).getPower() * player.stats.getSpellDamageModifier(), player.spells.get(j).getx());
+                    }
                 }
             }
             if (enemies.size() > 0) {
@@ -357,6 +360,8 @@ class LevelState extends GameState {
             setPause();
         } else if (gui.getCurrentAction() == 0) {
             gui.openInventory();
+        } else if (gui.getCurrentAction() == 1) {
+            gui.OpenStats();
         }
     }
 
@@ -376,7 +381,7 @@ class LevelState extends GameState {
         if (!menu) {
             if (k == KeyEvent.VK_ENTER) setPause();
         } else {
-            if (gui.isOpen()) {
+            if (gui.isOpenInventory()) {
                 if (k == KeyEvent.VK_W) gui.inventoryMove(0, -1);
                 if (k == KeyEvent.VK_S) gui.inventoryMove(0, 1);
                 if (k == KeyEvent.VK_A) gui.inventoryMove(-1, 0);

@@ -1,13 +1,24 @@
 package Entity.Items.Armor.Headset;
 
-public class Helmet extends Headset {
+import Entity.Items.Armor.Boosts.HealthRegen.HealthRegen;
+
+public class Helmet extends Headset implements HealthRegen {
 
     static {
-        adress = "/Items/Armory/Headset/helmet.gif";
+
     }
 
+    double heal;
+
     public Helmet() {
-        super();
+        adress = "/Items/Armory/Headset/helmet.gif";
         ID = 2;
+        setSpeed(10000);
+        super.init();
+    }
+
+    @Override
+    public void getBuffs() {
+        heal = getHealthRegen();
     }
 }

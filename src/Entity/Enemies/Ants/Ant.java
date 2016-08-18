@@ -52,10 +52,8 @@ public class Ant extends Enemy {
 
     }
 
-    public void update(TileMap tm){
+    public void update() {
         super.update();
-
-        this.tileMap=tm;
 
         if(dx==0){
             if (!enemy){
@@ -74,6 +72,7 @@ public class Ant extends Enemy {
 
     public void draw(Graphics2D g){
         setMapPosition();
+
 
         super.draw(g);
     }

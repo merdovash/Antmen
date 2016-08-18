@@ -4,6 +4,7 @@ package Entity.Enemies;
 import Entity.ActiveMapObject;
 import TileMap.TileMap;
 
+import java.awt.*;
 
 
 public abstract class Enemy extends ActiveMapObject {
@@ -46,6 +47,10 @@ public abstract class Enemy extends ActiveMapObject {
         }
     }
 
+    public void hit(int damage) {
+        health.atacked(damage);
+    }
+
     public void setRight(){
         right=true;
         left=false;
@@ -60,10 +65,20 @@ public abstract class Enemy extends ActiveMapObject {
         return exp;
     }
 
+    public void draw(Graphics2D g) {
+        super.draw(g);
+        drawHealth(g);
+    }
+
     public void setAgressive(boolean b) {
         enemy=b;
     }
 
-    public abstract void update(TileMap tilemap);
+    private void drawHealth(Graphics2D g) {
+        double proc = health.getHealth() / health.getMaxHealth();
+
+        g.fillRect((int) (x + xmap), (int) (y + ymap - (height + 5) * scale), (int) (width * scale * proc), 5);
+    }
+
 
 }

@@ -55,13 +55,12 @@ public class AntViking extends Enemy {
         inventory.equip(new Helmet());
 
 
-        headPoint = new GrabPoint((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 5 * scale), facingRight, (int) ((width - 20) * GamePanel.SCALE));
+        headPoint = new GrabPoint((int) (x + xmap + width * scale / 2), (int) (y + ymap - height * scale + 5 * scale), facingRight, (int) ((width - 25) * GamePanel.SCALE));
     }
 
-    public void update(TileMap tm) {
+    public void update() {
         super.update();
 
-        this.tileMap = tm;
 
         if (dx == 0) {
             if (!enemy) {

@@ -2,6 +2,8 @@ package Entity.Players;
 
 import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
+import Entity.Items.Armor.GrabPoint;
+import Entity.Items.Armor.Headset.Helmet;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Entity.States.Energy;
@@ -112,7 +114,12 @@ public class Player extends ActiveMapObject {
 
         inventory = new Inventory();
 
+        headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
+
         stats = new Stats();
+
+        inventory.addItem(new Helmet());
+
     }
 
     public void load(TileMap tm, int x, int y) {
@@ -160,14 +167,6 @@ public class Player extends ActiveMapObject {
                     }
                 }
             }
-            for (Spell spell : spells) {
-                if (spell.intersects(enemy)) {
-                    enemy.hit(spell.getDamage());
-                    spell.setHit();
-                    break;
-                }
-
-            }
 
             if (rectangle.intersects(enemy.getRectangle())) {
                 hit(enemy.getDamage());
@@ -188,25 +187,29 @@ public class Player extends ActiveMapObject {
     }
 
 
+    private long cooldown;
+    private long lastSpell = System.currentTimeMillis();
     private void useSpells() {
-        if (spell1 && currentAction != FIREBALL) {
-            Spell s = sm.use(tileMap, facingRight, 0);
-            if (mana.use(s.cooldown, s.manacost)) {
-                s.setPosition(x, y, height);
-                spells.add(s);
+        if (System.currentTimeMillis() - cooldown > lastSpell) {
+            if (spell1 && currentAction != FIREBALL) {
+                Spell s = sm.use(tileMap, facingRight, 0);
+                useSpell(s);
+            } else if (spell2 && currentAction != FIREBALL) {
+                Spell s = sm.use(tileMap, facingRight, 1);
+                useSpell(s);
+            } else if (spell3 && currentAction != FIREBALL) {
+                Spell s = sm.use(tileMap, facingRight, 2);
+                useSpell(s);
             }
-        } else if (spell2 && currentAction != FIREBALL) {
-            Spell s = sm.use(tileMap, facingRight, 1);
-            if (mana.use(s.cooldown, s.manacost)) {
-                s.setPosition(x, y, height);
-                spells.add(s);
-            }
-        } else if (spell3 && currentAction != FIREBALL) {
-            Spell s = sm.use(tileMap, facingRight, 2);
-            if (mana.use(s.cooldown, s.manacost)) {
-                s.setPosition(x, y, height);
-                spells.add(s);
-            }
+        }
+    }
+
+    private void useSpell(Spell s) {
+        cooldown = (long) (s.cooldown / stats.getSpellSpeedModifier());
+        if (mana.use(s.manacost)) {
+            s.setPosition(x, y, height);
+            spells.add(s);
+            lastSpell = System.currentTimeMillis();
         }
     }
 
@@ -221,6 +224,8 @@ public class Player extends ActiveMapObject {
     public void update() {
         if (!dead) {
             super.update();
+
+            updateBuffs();
 
             //trace
             //trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
@@ -273,6 +278,20 @@ public class Player extends ActiveMapObject {
             place = 0;
         }
 
+
+    }
+
+    private void updateBuffs() {
+        try {
+            if (inventory.getHelm().lastUsage == 0) {
+                inventory.getHelm().lastUsage = System.currentTimeMillis();
+            } else if (System.currentTimeMillis() - inventory.getHelm().lastUsage >= inventory.getHelm().getSpeed()) {
+                stats.health.heal(inventory.getHelm().getHealthRegen());
+                inventory.getHelm().lastUsage = System.currentTimeMillis();
+            }
+        } catch (NullPointerException e) {
+
+        }
     }
 
 
@@ -347,7 +366,7 @@ public class Player extends ActiveMapObject {
             spell.draw(g);
         }
 
-
+        drawUpdateGrabPoint();
 
         //trace.draw(g);
 
@@ -362,9 +381,7 @@ public class Player extends ActiveMapObject {
 
         if (!dead) {
             super.draw(g);
-            if (inventory.getHelm() != null) {
-                g.drawImage(inventory.getHelm().getImage(), (int) (x + xmap + 2 * scale), (int) (y + ymap - (height - (-30)) * scale), (int) (85 * scale), (int) (85 * scale), null);
-            }
+            inventory.draw(g, headPoint);
         }
 
         if (levelUp) {
@@ -375,6 +392,10 @@ public class Player extends ActiveMapObject {
                 System.out.println(place);
             }
         }
+    }
+
+    private void drawUpdateGrabPoint() {
+        headPoint.update((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 42) * scale), facingRight);
     }
 
     public void drawGui(Graphics2D g) {

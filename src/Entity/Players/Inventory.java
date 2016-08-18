@@ -1,6 +1,5 @@
 package Entity.Players;
 
-
 import Entity.Items.Armor.GrabPoint;
 import Entity.Items.Item;
 import Main.GamePanel;
@@ -18,6 +17,7 @@ public class Inventory {
     private Item helm;
     private Item weapon;
     private Item armor;
+
 
     public Inventory() {
         width = 10;
@@ -61,6 +61,7 @@ public class Inventory {
         }
         return i;
     }
+
 
     public Item getHelm() {
         return helm;

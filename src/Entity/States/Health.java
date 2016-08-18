@@ -51,6 +51,22 @@ public class Health {
         }
     }
 
+    double permaHeal;
+
+    public void heal(double healthRegen) {
+        if (health == maxHealth) {
+        } else if (health < maxHealth) {
+            permaHeal += healthRegen;
+            if (permaHeal >= 1) {
+                health++;
+                permaHeal -= 1;
+            }
+        } else if (health > maxHealth) {
+            health = (int) maxHealth;
+        }
+
+    }
+
     public void extend(int size){
         maxHealth+=size;
     }
@@ -86,5 +102,7 @@ public class Health {
         dead = false;
         health = (int) maxHealth;
     }
+
+
 }
 

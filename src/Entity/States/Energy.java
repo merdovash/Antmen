@@ -48,15 +48,11 @@ public class Energy {
         }
     }
 
-    public boolean use(long delay, int cost){
-        delta = System.currentTimeMillis() - lastTime;
+    public boolean use(int cost) {
         if (capacity >= cost) {
-            if(delta >this.delay){
-                capacity -= cost;
-                this.delay=delay;
-                lastTime=System.currentTimeMillis();
-                return true;
-            }
+            capacity -= cost;
+            lastTime = System.currentTimeMillis();
+            return true;
         }
         return false;
     }

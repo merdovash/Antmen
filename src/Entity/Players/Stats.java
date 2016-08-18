@@ -6,6 +6,7 @@ import Main.GamePanel;
 import java.awt.*;
 
 public class Stats {
+
     protected Health health;
 
     private int level;
@@ -16,10 +17,12 @@ public class Stats {
     private Param str;
     private Param intel;
     private Param dex;
+    private Param vit;
 
     private int strGrow;
     private int intallGrow;
     private int dexGrow;
+    private int vitGrow;
 
     private int freePoints;
 
@@ -39,6 +42,11 @@ public class Stats {
 
         dex = new Param(1);
         dexGrow = 1;
+
+        vit = new Param(2);
+        vitGrow = 1;
+
+        calculateModifier();
     }
 
     public void addExp(int exp) {
@@ -59,6 +67,9 @@ public class Stats {
         freePoints += 2;
         health.extendAbs(0.5);
         health.heal((int) (health.getMaxHealth()));
+
+
+        calculateModifier();
     }
 
     public long getExp() {
@@ -93,5 +104,53 @@ public class Stats {
 
     public void draw(Graphics2D g) {
 
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+
+    //Modifiers;
+    private double spellDamageModifier;
+    private double spellSpeedModifier;
+    private double manaRefillSpeedModifier;
+    private double healthExtendModifier;
+    private double energyRefillSpeedModifier;
+    private double punchModifier;
+
+
+    private void calculateModifier() {
+        spellDamageModifier = intel.getValue() / 50d + 1;
+        spellSpeedModifier = dex.getValue() / 25d + 1;
+        manaRefillSpeedModifier = (intel.getValue() + dex.getValue()) / 100d + 1;
+        healthExtendModifier = vit.getValue() / 25d + 1;
+        energyRefillSpeedModifier = (vit.getValue() + dex.getValue()) / 100d + 1;
+        punchModifier = str.getValue() / 50d + 1;
+
+    }
+
+    public double getSpellDamageModifier() {
+        return spellDamageModifier;
+    }
+
+    public double getSpellSpeedModifier() {
+        return spellSpeedModifier;
+    }
+
+    public double getManaRefillSpeedModifier() {
+        return manaRefillSpeedModifier;
+    }
+
+    public double getHealthExtendModifier() {
+        return healthExtendModifier;
+    }
+
+    public double getEnergyRefillSpeedModifier() {
+        return energyRefillSpeedModifier;
+    }
+
+    public double getPunchModifier() {
+        return punchModifier;
     }
 }

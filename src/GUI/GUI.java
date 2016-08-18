@@ -1,6 +1,7 @@
 package GUI;
 
 import Entity.Players.Inventory;
+import Entity.Players.Stats;
 import Main.GamePanel;
 
 import java.awt.*;
@@ -9,13 +10,17 @@ public class GUI {
 
     private final Font font = new Font("Courier New", Font.PLAIN, 18);
     private final Font font2 = new Font("Courier New", Font.PLAIN, 16);
+    private final Stats stats;
 
     private Rectangle[] button;
-    private String[] name = {"Inventory >", "blabla", "blabla", "Back to game"};
+    private String[] name = {"Inventory >", "Stats >", "blabla", "Back to game"};
 
     private int currentAction;
 
-    private boolean open;
+    private boolean openInventory;
+
+
+    private boolean openStats;
 
     private double scale;
 
@@ -24,10 +29,11 @@ public class GUI {
     //box
     private int size;
 
-    public GUI(Inventory inventory) {
+    public GUI(Inventory inventory, Stats stats) {
         scale = GamePanel.SCALE;
         size = (int) (60 * scale);
         this.inventory = inventory;
+        this.stats = stats;
         init();
     }
 
@@ -102,10 +108,27 @@ public class GUI {
             g.drawString(name[i], (int) (button[i].getX() + 5 * scale), (int) (button[i].getY() + 50 * scale));
         }
 
-        if (open) {
+        if (openInventory) {
             drawInventory(g);
             drawEquipment(g);
+        } else if (openStats) {
+            drawStats(g);
         }
+
+    }
+
+    private void drawStats(Graphics2D g) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
+        g.setColor(Color.BLACK);
+        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (200 * scale), (int) (100 * scale), (int) (50 * scale));
+        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (265 * scale), (int) (100 * scale), (int) (50 * scale));
+        g.fillRect((int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (330 * scale), (int) (100 * scale), (int) (50 * scale));
+        g.setColor(Color.WHITE);
+        g.drawString("Level: " + stats.getLevel(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (150 * scale));
+        g.drawString("str: " + stats.getStats()[0], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (230 * scale));
+        g.drawString("int: " + stats.getStats()[1], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (295 * scale));
+        g.drawString("dex: " + stats.getStats()[2], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) (360 * scale));
     }
 
     public void setCurrentAction(int i) {
@@ -122,11 +145,19 @@ public class GUI {
     }
 
     public void openInventory() {
-        open = !open;
+        openInventory = !openInventory;
     }
 
-    public boolean isOpen() {
-        return open;
+    public boolean isOpenInventory() {
+        return openInventory;
+    }
+
+    public void OpenStats() {
+        openStats = !openStats;
+    }
+
+    public boolean isOpenStats() {
+        return openStats;
     }
 
     private int[] place = new int[]{0, 0};
