@@ -5,7 +5,6 @@ import Entity.Enemies.Enemy;
 import Entity.Items.Armor.GrabPoint;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
-import Entity.States.Energy;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -24,7 +23,6 @@ public class Player extends ActiveMapObject {
     // fireball
     private boolean firing;
     public ArrayList<Spell> spells;
-    private Energy mana;
 
 
     // scratch
@@ -69,18 +67,9 @@ public class Player extends ActiveMapObject {
         cwidth = width / 2;
         cheight = height / 2 - 15;
 
+        facingRight = true;
         moveSpeed = 20 * GamePanel.SCALE;
         jumpStart = -55 * GamePanel.SCALE;
-        boostSpeed = 2.5;
-
-        energy = new Energy(400);
-        energy.setConsumption(15);
-
-        mana = new Energy(200);
-        mana.setRefillSpeed(2);
-
-        facingRight = true;
-
 
         spells = new ArrayList<>();
         sm = new SpellsManager();
@@ -187,23 +176,22 @@ public class Player extends ActiveMapObject {
     private long cooldown;
     private long lastSpell = System.currentTimeMillis();
     private void useSpells() {
-        if (System.currentTimeMillis() - cooldown > lastSpell) {
-            if (spell1 && currentAction != FIREBALL) {
-                Spell s = sm.use(tileMap, facingRight, 0);
-                useSpell(s);
-            } else if (spell2 && currentAction != FIREBALL) {
-                Spell s = sm.use(tileMap, facingRight, 1);
-                useSpell(s);
-            } else if (spell3 && currentAction != FIREBALL) {
-                Spell s = sm.use(tileMap, facingRight, 2);
-                useSpell(s);
-            }
+        Spell s = null;
+        if (spell1 && currentAction != FIREBALL) {
+            s = sm.use(tileMap, facingRight, 0);
+        } else if (spell2 && currentAction != FIREBALL) {
+            s = sm.use(tileMap, facingRight, 1);
+        } else if (spell3 && currentAction != FIREBALL) {
+            s = sm.use(tileMap, facingRight, 2);
+            
         }
+        if (s != null) useSpell(s);
+        
     }
 
     private void useSpell(Spell s) {
-        cooldown = (long) (s.cooldown / stats.getSpellSpeedModifier());
-        if (mana.use(s.manacost)) {
+        cooldown = (long) (s.getCooldown() / stats.getModifier(Stats.SPELL_SPEED));
+        if (stats.mana.use(s.manacost)) {
             s.setPosition(x, y, height);
             spells.add(s);
             lastSpell = System.currentTimeMillis();
@@ -220,7 +208,16 @@ public class Player extends ActiveMapObject {
 
     public void update() {
         if (!dead) {
+
+            if (boost && !stats.energy.isEmpty()) {
+                stats.energy.consump(delta);
+                moveSpeed = stats.getBoostSpeed();
+            } else {
+                moveSpeed = stats.getSpeed();
+            }
             super.update();
+
+            stats.update(delta);
 
             updateBuffs();
 
@@ -228,7 +225,7 @@ public class Player extends ActiveMapObject {
             //trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
 
             //refill energy
-            if (!boost || energy.isEmpty()) energy.refill(delta);
+            if (!boost || stats.energy.isEmpty()) stats.energy.refill(delta);
 
             //check attack has stopped
             if (currentAction == SCRATCHING) {
@@ -239,7 +236,6 @@ public class Player extends ActiveMapObject {
             }
 
             //spell atack;
-            mana.refill((long) (delta * stats.getManaRefillSpeedModifier()));
             useSpells();
 
 
@@ -330,7 +326,7 @@ public class Player extends ActiveMapObject {
                 width = 82;
             }
         } else if (left || right) {
-            if (boost && !energy.isEmpty()) {
+            if (boost && !stats.energy.isEmpty()) {
                 if (currentAction != GLIDING) {
                     currentAction = GLIDING;
                     animation.setFrames(sprites.get(GLIDING));
@@ -395,13 +391,8 @@ public class Player extends ActiveMapObject {
     }
 
     public void drawGui(Graphics2D g) {
-        stats.health.draw(g);
-        energy.draw(g, 0, energy.GREEN_RED);
-        mana.draw(g, 1, energy.RED_BLUE);
-
-        sm.draw(g);
-
-        stats.drawExp(g);
+        stats.draw(g);
+        sm.draw(g, delta);
     }
 
 

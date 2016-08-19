@@ -1,31 +1,66 @@
 package Entity.Players;
 
+import Entity.States.Energy;
 import Entity.States.Health;
 import Main.GamePanel;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Stats {
 
+
+    public static final int SPEED = 0;
+    public static final int BOOST_SPEED = 1;
+    public static final int SPELL_DAMAGE = 2;
+    public static final int SPELL_SPEED = 3;
+    public static final int SPELL_POWER = 4;
+    public static final int ATTACK = 5;
+    public static final int ENERGY_CONSUMP = 6;
+    public static final int STR = 7;
+    public static final int INT = 8;
+    public static final int DEX = 9;
+    public static final int VIT = 10;
+    public static final int AGI = 11;
+    public static final int SPK = 12;
+    public static final int HEALTH = 13;
+    public static final int HEALTH_REGEN = 14;
+    public static final int MANA = 15;
+    public static final int MANA_REGEN = 16;
+    public static final int MANA_CONSUMP = 17;
+    public static final int ENERGY = 18;
+    public static final int ENERGY_REFILL = 19;
+
+
+    //health
     protected Health health;
 
+    //energy
+    protected Energy mana;
+    protected Energy energy;
+
+    //level
     private int level;
     private long experience;
     private long nextLevel;
     private boolean congats;
 
+
+    //stats
     private Param str;
     private Param intel;
     private Param dex;
     private Param vit;
+    private Param agi;
+    private Param spk;
 
-    private int strGrow;
-    private int intallGrow;
-    private int dexGrow;
-    private int vitGrow;
-
-
+    private final int[] grow;
     private int freePoints;
+
+    private double boostSpeed;
+
+    private double speed;
 
     public Stats() {
         health = new Health(3);
@@ -36,18 +71,28 @@ public class Stats {
         freePoints = 0;
 
         str = new Param(1);
-        strGrow = 1;
-
         intel = new Param(5);
-        intallGrow = 2;
-
         dex = new Param(1);
-        dexGrow = 1;
-
         vit = new Param(2);
-        vitGrow = 1;
+        agi = new Param(1);
+        spk = new Param(3);
 
-        calculateModifiers();
+        grow = new int[]{3, 2, 1, 1, 1, 1};
+
+
+        energy = new Energy(100);
+        energy.setConsumption(4);
+        energy.setRefillSpeed(1);
+
+        mana = new Energy(100);
+        mana.setRefillSpeed(1);
+
+        speed = 20 * GamePanel.SCALE;
+        boostSpeed = speed * 2.5;
+
+        modifier = new double[20];
+        Arrays.fill(modifier, 1d);
+        calculateModifier();
     }
 
     public void addExp(int exp) {
@@ -61,17 +106,12 @@ public class Stats {
     }
 
 
+
     private void levelUp() {
         level++;
-        str.addAbs(strGrow);
-        dex.addAbs(dexGrow);
-        intel.addAbs(intallGrow);
-        freePoints += 2;
+        freePoints += 4 + level / 20;
         health.extendAbs(0.5);
         health.heal((int) (health.getMaxHealth()));
-
-
-        calculateModifiers();
     }
 
     public long getExp() {
@@ -87,11 +127,11 @@ public class Stats {
     }
 
     public int[] getStats() {
-        return new int[]{str.getValue(), intel.getValue(), dex.getValue(), vit.getValue()};
+        return new int[]{str.getValue(), intel.getValue(), dex.getValue(), vit.getValue(), agi.getValue(), spk.getValue()};
     }
 
-    public void update() {
-
+    public void update(long delta) {
+        mana.refill((long) (delta * modifier[MANA_REGEN]));
     }
 
 
@@ -105,59 +145,68 @@ public class Stats {
     }
 
     public void draw(Graphics2D g) {
+        mana.draw(g, 1, new Color(50, 50, 100));
+        energy.draw(g, 0, new Color(50, 100, 50));
+        health.draw(g);
 
-    }
-
-    public int getLevel() {
-        return level;
+        drawExp(g);
     }
 
 
     //Modifiers;
-    private double spellDamageModifier;
-    private double spellSpeedModifier;
-    private double manaRefillSpeedModifier;
-    private double healthExtendModifier;
-    private double energyRefillSpeedModifier;
-    private double punchModifier;
 
 
-    public void calculateModifiers() {
-        spellDamageModifier = intel.getValue() / 50d + 1;
-        spellSpeedModifier = dex.getValue() / 25d + 1;
-        manaRefillSpeedModifier = (intel.getValue() + dex.getValue()) / 100d + 1;
-        healthExtendModifier = vit.getValue() / 25d + 1;
-        energyRefillSpeedModifier = (vit.getValue() + dex.getValue()) / 100d + 1;
-        punchModifier = str.getValue() / 50d + 1;
+    private double[] modifier;
 
+    public void calculateModifier() {
+        modifier[SPELL_DAMAGE] = 1 + (double) intel.getValue() / 100d;
+        modifier[SPELL_SPEED] = 1 + (double) dex.getValue() / 150d;
+        modifier[MANA_REGEN] = 1 + (double) intel.getValue() / 100d;
+        modifier[MANA] = 1 + (double) intel.getValue() / 50d + (double) vit.getValue() / 100d;
+        modifier[ENERGY] = 1 + (double) vit.getValue() / 50d;
+        modifier[HEALTH] = 1 + (double) vit.getValue() / 50d + (double) str.getValue() / 200d;
+        modifier[ENERGY_REFILL] = 1 + (double) dex.getValue() / 100d;
+        modifier[ATTACK] = 1 + (double) str.getValue() / 100d + (double) dex.getValue() / 500d;
+        modifier[SPEED] = 1 + (double) agi.getValue() / 100d + (double) dex.getValue() / 700d;
+        modifier[BOOST_SPEED] = 1 + (double) agi.getValue() / 250d;
+        modifier[ENERGY_CONSUMP] = 1 + (double) vit.getValue() / 100d + (double) dex.getValue() / 500d;
+        System.out.println(Arrays.toString(modifier));
     }
 
-    public double getSpellDamageModifier() {
-        return spellDamageModifier;
+    public double getModifier(int modifier) {
+        return this.modifier[modifier];
     }
 
-    public double getSpellSpeedModifier() {
-        return spellSpeedModifier;
+    private ArrayList<Double> boostSpeedIncrease = new ArrayList<>();
+
+    public void extendBoostSpeed(double boostSpeed) {
+        boostSpeedIncrease.add(boostSpeed);
     }
 
-    public double getManaRefillSpeedModifier() {
-        return manaRefillSpeedModifier;
+    public void removeBoostSpeed(double boostSpeed) {
+        boostSpeedIncrease.remove(boostSpeedIncrease.indexOf(boostSpeed));
     }
 
-    public double getHealthExtendModifier() {
-        return healthExtendModifier;
+    private ArrayList<Double> SpeedIncrease = new ArrayList<>();
+
+    public void extendSpeed(double Speed) {
+        SpeedIncrease.add(Speed);
     }
 
-    public double getEnergyRefillSpeedModifier() {
-        return energyRefillSpeedModifier;
+    public void removeSpeed(double Speed) {
+        SpeedIncrease.remove(SpeedIncrease.indexOf(Speed));
     }
 
-    public double getPunchModifier() {
-        return punchModifier;
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 
     public int getFreePoints() {
         return freePoints;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public void useFreePoints(int i) {
@@ -174,8 +223,24 @@ public class Stats {
                 return dex;
             case 3:
                 return vit;
+            case 4:
+                return agi;
+            case 5:
+                return spk;
             default:
                 return null;
         }
+    }
+
+    public double getBoostSpeed() {
+        double temp = 0;
+        for (int i = 0; i < boostSpeedIncrease.size(); i++) {
+            temp += boostSpeedIncrease.get(i);
+        }
+        return boostSpeed * (1 + temp);
+    }
+
+    public double getSpeed() {
+        return speed;
     }
 }

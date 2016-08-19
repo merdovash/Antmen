@@ -20,6 +20,8 @@ public class SpellsManager {
     private int id[];
     private int place[];
 
+    private final Color cd = new Color(0, 0, 0, 0.7f);
+
 
     public SpellsManager(){
         place = new int[3];
@@ -42,6 +44,8 @@ public class SpellsManager {
         place[1]=102;
         place[2]=103;
 
+        cooldown = new double[][]{{0, 0}, {0, 0}, {0, 0}};
+
     }
 
     public int getId1(){ return id[0];}
@@ -49,23 +53,41 @@ public class SpellsManager {
     public int getId3(){ return id[2];}
 
 
-    public void draw(Graphics2D g){
+    public void draw(Graphics2D g, long delta) {
         g.drawImage(menu,GamePanel.WIDTH/2-160,GamePanel.HEIGHT-110,(int)(menu.getWidth()*0.66), menu.getHeight(),null);
-        g.drawImage(ico.get(place[0]), GamePanel.WIDTH/2-150, GamePanel.HEIGHT-100, null);
-        g.drawImage(ico.get(place[1]), GamePanel.WIDTH/2-90, GamePanel.HEIGHT-100, null);
-        g.drawImage(ico.get(place[2]), GamePanel.WIDTH/2-30, GamePanel.HEIGHT-100, null);
+        for (int i = 0; i < 3; i++) {
+            g.drawImage(ico.get(place[i]), GamePanel.WIDTH / 2 - 150 + 60 * i, GamePanel.HEIGHT - 100, null);
+            if (cooldown[i][0] > 0) {
+                g.setColor(cd);
+                g.fillRect(GamePanel.WIDTH / 2 - 150 + 60 * i, GamePanel.HEIGHT - 100, menu.getHeight(), (int) (menu.getHeight() * (cooldown[i][0] / cooldown[i][1])));
+                cooldown[i][0] -= delta / 1000000d;
+            } else if (cooldown[i][0] != 0) {
+                cooldown[i][0] = 0;
+            }
+        }
     }
 
-    public Spell use( TileMap tm, boolean r, int n){
-        switch (place[n]){
-            case 101:
-                return new FireBall(tm, r, 1);
-            case 102:
-                return new FireBall(tm, r, 2);
-            case 103:
-                return new FireBall(tm, r, 3);
-            default:
-                return null;
+    private double[][] cooldown;
+
+    public Spell use(TileMap tm, boolean r, int n) {
+        Spell s = null;
+        if (cooldown[n][0] == 0) {
+            switch (place[n]) {
+                case 101:
+                    s = new FireBall(tm, r, 1);
+                    break;
+                case 102:
+                    s = new FireBall(tm, r, 2);
+                    break;
+                case 103:
+                    s = new FireBall(tm, r, 3);
+                    break;
+                default:
+                    break;
+            }
+            cooldown[n][0] = s.getCooldown();
+            cooldown[n][1] = s.getCooldown();
         }
+        return s;
     }
 }

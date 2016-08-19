@@ -20,7 +20,7 @@ public abstract class Spell extends MapObject {
     //parameters
     protected int level;
     protected double size;
-    public int cooldown;
+    protected int cooldown;
     public int manacost;
     protected int damage;
     protected int power;

@@ -2,7 +2,6 @@ package Entity;
 
 import Entity.Items.Armor.GrabPoint;
 import Entity.Players.Inventory;
-import Entity.States.Energy;
 import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
@@ -20,8 +19,6 @@ public abstract class ActiveMapObject extends MapObject {
 
     // boost
     protected boolean boost;
-    protected double boostSpeed;
-    protected Energy energy;
 
     // time
     protected long delta;
@@ -61,24 +58,10 @@ public abstract class ActiveMapObject extends MapObject {
         double ms = delta / 100000000d;
         if (!punched) {
             if (left) {
-                if (boost && !energy.isEmpty()) {
-                    energy.consump(delta);
-                    speedsX.set(0, -moveSpeed * boostSpeed);
-
-                } else {
-                    speedsX.set(0, -moveSpeed);
-                }
+                speedsX.set(0, -moveSpeed);
                 speedsX.set(1, 0d);
-
             } else if (right) {
-                if (boost && !energy.isEmpty()) {
-                    energy.consump(delta);
-                    speedsX.set(1, moveSpeed * boostSpeed);
-
-
-                } else {
-                    speedsX.set(1, moveSpeed);
-                }
+                speedsX.set(1, moveSpeed);
                 speedsX.set(0, 0d);
             } else {
                 if (speedsX.get(0) != 0) {

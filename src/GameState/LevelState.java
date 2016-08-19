@@ -7,6 +7,7 @@ import Entity.FPS;
 import Entity.Items.ItemList;
 import Entity.Items.MapItem;
 import Entity.Players.Player;
+import Entity.Players.Stats;
 import GUI.GUI;
 import Interactive.DoorPoint;
 import Interactive.SavePoint;
@@ -330,8 +331,8 @@ class LevelState extends GameState {
                 if (enemies.get(i).intersects(player.spells.get(j))) {
                     if (active) {
                         player.spells.get(j).setHit();
-                        enemies.get(i).hit((int) (player.spells.get(j).getDamage() * player.stats.getSpellDamageModifier()));
-                        enemies.get(i).punch(player.spells.get(j).getPower() * player.stats.getSpellDamageModifier(), player.spells.get(j).getx());
+                        enemies.get(i).hit((int) (player.spells.get(j).getDamage() * player.stats.getModifier(Stats.SPELL_DAMAGE)));
+                        enemies.get(i).punch(player.spells.get(j).getPower() * player.stats.getModifier(Stats.SPELL_POWER), player.spells.get(j).getx());
                     }
                 }
             }

@@ -13,12 +13,12 @@ public class GUI {
 
     private final Font font = new Font("Courier New", Font.PLAIN, 18);
     private final Font font2 = new Font("Courier New", Font.PLAIN, 16);
-    private final Font font3 = new Font("courier New", Font.PLAIN, 25);
+    private final Font font3 = new Font("courier New", Font.PLAIN, (int) (25 * GamePanel.SCALE));
     private final Font font4 = new Font("Courier New", Font.PLAIN, (int) (10 * GamePanel.SCALE));
     private final Stats stats;
 
     private Rectangle[] button;
-    private String[] name = {"Inventory >", "Stats >", "blabla", "Back to game"};
+    private String[] name = {"Inventory >", "Stats >", "Spells >", "Back to game"};
 
     private int currentAction;
 
@@ -41,6 +41,7 @@ public class GUI {
         this.stats = stats;
         init();
         loadSprites();
+        buttonSize = (int) (30 * scale);
     }
 
     private void loadSprites() {
@@ -66,18 +67,20 @@ public class GUI {
 
     }
 
+    private final Color placeBox = new Color(200, 200, 200);
+    private final Color placeBoxI = new Color(100, 100, 100);
     private void drawInventory(Graphics2D g) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
         for (int i = 0; i < inventory.height; i++) {
             for (int j = 0; j < inventory.width; j++) {
                 if (inventoryPlace[0] == j && inventoryPlace[1] == i) {
-                    g.setColor(Color.GREEN);
+                    g.setColor(placeBox);
                 } else {
-                    g.setColor(Color.WHITE);
+                    g.setColor(placeBoxI);
                 }
                 g.fillRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
-                g.setColor(Color.cyan);
+                g.setColor(Color.BLACK);
                 g.drawRect((int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size);
             }
         }
@@ -88,6 +91,7 @@ public class GUI {
                     g.drawImage(inventory.getItem(j, i).getImage(), (int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size, null);
                     g.setColor(Color.BLACK);
                     g.drawString(Integer.toString(inventory.getSize(j, i)), (int) (GamePanel.WIDTH / 2 + (-145 + 71 * j) * scale), (int) ((365 + i * 70) * scale));
+                    inventory.getItem(j, i).drawDescription(g);
                 }
             }
         }
@@ -95,6 +99,7 @@ public class GUI {
         g.setColor(Color.WHITE);
         g.drawString("Backspace to Back", (int) (530 * scale), (int) (150 * scale));
     }
+
 
     public void drawEquipment(Graphics2D g) {
         //headset
@@ -107,15 +112,18 @@ public class GUI {
         }
     }
 
+    private final Color menuButton = new Color(50, 10, 10);
+    private final Color menuButtonPressed = new Color(100, 20, 20);
     public void draw(Graphics2D g) {
 
         g.setColor(new Color(0, 0, 0, 0.75f));
         g.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
+        g.setFont(font3);
         for (int i = 0; i < button.length; i++) {
             if (currentAction == i) {
-                g.setColor(Color.blue);
+                g.setColor(menuButtonPressed);
             } else {
-                g.setColor(Color.GREEN);
+                g.setColor(menuButton);
             }
             g.fill(button[i]);
             g.setColor(Color.WHITE);
@@ -131,20 +139,22 @@ public class GUI {
 
     }
 
-    private String[] s = new String[]{"str:     ", "int:     ", "dex:     ", "vit:     "};
+    private String[] s = new String[]{"str:", "int:", "dex:", "vit:", "agi:", "spk:"};
     private String statAddAdress = "/GUI/Stats/stats_add.png";
     private String[] explanation = new String[]{
-            "Power: ",
+            "Speed: ",
+            "Boost speed: ",
+            "Magic damage: ",
+            "Cast speed: ",
             "Magic power: ",
-            "Mana regeneration: ",
-            "Magic speed: ",
-            "Energy regeneration: ",
-            "Health"};
+            "Attack: "};
     private BufferedImage statAdd;
+    private int buttonSize;
+
     private void drawStats(Graphics2D g) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect((int) (GamePanel.WIDTH / 2 - 200 * scale), (int) (100 * scale), (int) (800 * scale), (int) (550 * scale));
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             if (place == i) {
                 g.setColor(Color.BLUE);
             } else {
@@ -157,38 +167,18 @@ public class GUI {
         g.setColor(Color.WHITE);
         g.drawString("Level:   " + stats.getLevel(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (150 * scale));
         g.drawString("Free points:  " + stats.getFreePoints(), (int) (GamePanel.WIDTH / 2 - 150 * scale), (int) (180 * scale));
-        for (int i = 0; i < 4; i++) {
-            g.drawString(s[i] + stats.getStats()[i], (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) ((230 + 65 * i) * scale));
-            g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 - 10 * scale), (int) ((210 + 65 * i) * scale), -(int) (30 * scale), (int) (30 * scale), null);
-            g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 - 105 * scale), (int) ((210 + 65 * i) * scale), (int) (30 * scale), (int) (30 * scale), null);
+        for (int i = 0; i < 6; i++) {
+            g.drawString(String.format("%s %3d", s[i], stats.getStats()[i]), (int) (GamePanel.WIDTH / 2 - 145 * scale), (int) ((230 + 65 * i) * scale));
+            if (stats.getFreePoints() > 0)
+                g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 + 5 * scale), (int) ((210 + 65 * i) * scale), -buttonSize, buttonSize, null);
+            if (tempAdd[i] > 0)
+                g.drawImage(statAdd, (int) (GamePanel.WIDTH / 2 - 85 * scale), (int) ((210 + 65 * i) * scale), buttonSize, buttonSize, null);
         }
         g.setFont(font4);
         double value;
         for (int i = 0; i < explanation.length; i++) {
             g.drawString(explanation[i], (int) (GamePanel.WIDTH / 2 + 105 * scale), (int) ((180 + 20 * i) * scale));
-            switch (i) {
-                case 0:
-                    value = stats.getPunchModifier();
-                    break;
-                case 1:
-                    value = stats.getSpellDamageModifier();
-                    break;
-                case 2:
-                    value = stats.getManaRefillSpeedModifier();
-                    break;
-                case 3:
-                    value = stats.getSpellSpeedModifier();
-                    break;
-                case 4:
-                    value = stats.getEnergyRefillSpeedModifier();
-                    break;
-                case 5:
-                    value = stats.getHealthExtendModifier();
-                    break;
-                default:
-                    value = 7.66;
-            }
-            value = (value - 1) * 100;
+            value = (stats.getModifier(i) - 1) * 100;
             g.drawString("+" + String.valueOf((int) value) + "%", (int) (GamePanel.WIDTH / 2 + 280 * scale), (int) ((180 + 20 * i) * scale));
         }
     }
@@ -227,13 +217,13 @@ public class GUI {
     public void statsMove(int i) {
         place += i;
         if (place < 0) {
-            place = 3;
-        } else if (place > 3) {
+            place = 5;
+        } else if (place > 5) {
             place = 0;
         }
     }
 
-    private int[] tempAdd = {0, 0, 0, 0};
+    private int[] tempAdd = {0, 0, 0, 0, 0, 0};
 
     public void statsAdd(int i) {
         if (i > 0) {
@@ -249,7 +239,7 @@ public class GUI {
                 stats.useFreePoints(1);
             }
         }
-        stats.calculateModifiers();
+        stats.calculateModifier();
     }
 
     public void statsSelect() {

@@ -26,6 +26,9 @@ public class Energy {
 
     private ArrayList<Integer> extendMax = new ArrayList<>();
 
+
+    private final Font font = new Font("Courier New", Font.PLAIN, (int) (12 * GamePanel.SCALE));
+
     public Energy(int capacity) {
         maxCapacity = capacity;
         this.capacity = maxCapacity;
@@ -77,6 +80,9 @@ public class Energy {
         percent = capacity / maxCapacity * 100;
         g.setColor(c);
         g.fillRect((int) (GamePanel.WIDTH - (350) * GamePanel.SCALE), (int) ((25 + number * 35) * GamePanel.SCALE), (int) ((int) percent * 3 * GamePanel.SCALE), (int) (30 * GamePanel.SCALE));
+        g.setFont(font);
+        g.setColor(Color.LIGHT_GRAY);
+        g.drawString(String.format("%5s / %s", (int) capacity, maxCapacity), (int) (GamePanel.WIDTH - (250) * GamePanel.SCALE), (int) ((43 + number * 35) * GamePanel.SCALE));
     }
 
     public void setRefillSpeed(double refillSpeed) {
