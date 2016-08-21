@@ -33,8 +33,8 @@ public class Weapons extends Item {
         return range;
     }
 
-    public double[] getDamage() {
-        return wp.getDamage();
+    public int getDamage() {
+        return (int) wp.getDamage()[0];
     }
 
     public double getPower() {

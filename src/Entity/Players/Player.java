@@ -3,6 +3,7 @@ package Entity.Players;
 import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
 import Entity.Items.GrabPoint;
+import Entity.Items.Weapons.Swords.Sword;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Main.GamePanel;
@@ -29,11 +30,7 @@ public class Player extends ActiveMapObject {
     private boolean scratching;
     private int scratchDamage;
     private int scratchRange;
-    private boolean attack = false;
-
-    // gliding
-    private boolean gliding;
-
+    private boolean attacking = false;
 
     // animation actions
     private static final int IDLE = 0;
@@ -102,12 +99,14 @@ public class Player extends ActiveMapObject {
         respawnX = 200;
         respawnY = 200;
 
-        inventory = new Inventory();
+        inventory = new Inventory(attack, defence);
+        inventory.addItem(new Sword());
 
         headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
         weaponPoint = new GrabPoint(0, 0, facingRight, (int) ((10) * GamePanel.SCALE));
 
         stats = new Stats();
+        AI = false;
 
     }
 
@@ -156,11 +155,11 @@ public class Player extends ActiveMapObject {
                         }
                     }
                 } else {
-                    if (attack) {
+                    if (attacking) {
                         if (attackPlace.intersects(enemy.getRectangle())) {
-                            enemy.hit(inventory.getWeapon());
+                            enemy.hit(attack);
                             enemy.punch(inventory.getWeapon().getPower(), (int) x);
-                            attack = false;
+                            attacking = false;
                         }
                     }
                 }
@@ -183,9 +182,6 @@ public class Player extends ActiveMapObject {
         }
     }
 
-
-    private long cooldown;
-    private long lastSpell = System.currentTimeMillis();
     private void useSpells() {
         Spell s = null;
         if (spell1 && currentAction != FIREBALL) {
@@ -201,11 +197,9 @@ public class Player extends ActiveMapObject {
     }
 
     private void useSpell(Spell s) {
-        cooldown = (long) (s.getCooldown() / stats.getModifier(Stats.SPELL_SPEED));
         if (stats.mana.use(s.manacost)) {
             s.setPosition(x, y, height);
             spells.add(s);
-            lastSpell = System.currentTimeMillis();
         }
     }
 
@@ -242,7 +236,7 @@ public class Player extends ActiveMapObject {
 
 
             if (scratching) {
-                attack = true;
+                attacking = true;
                 attackAnimation = true;
                 scratching = false;
             }
@@ -349,14 +343,7 @@ public class Player extends ActiveMapObject {
                 width = 82;
             }
         } else if (dy > 0) {
-            if (gliding) {
-                if (currentAction != GLIDING) {
-                    currentAction = GLIDING;
-                    animation.setFrames(sprites.get(GLIDING));
-                    animation.setDelay(100);
-                    width = 82;
-                }
-            } else if (currentAction != FALLING) {
+            if (currentAction != FALLING) {
                 currentAction = FALLING;
                 animation.setFrames(sprites.get(FALLING));
                 animation.setDelay(100);

@@ -28,6 +28,7 @@ public abstract class Enemy extends ActiveMapObject {
         dy=0;
         x=0;
         y=0;
+        AI = true;
     }
 
     public boolean isDead(){return health.dead;}

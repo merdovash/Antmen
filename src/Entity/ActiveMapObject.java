@@ -1,7 +1,9 @@
 package Entity;
 
+import Entity.Battle.Attack;
+import Entity.Battle.Battle;
+import Entity.Battle.Defence;
 import Entity.Items.GrabPoint;
-import Entity.Items.Item;
 import Entity.Players.Inventory;
 import Entity.States.Health;
 import Main.GamePanel;
@@ -36,6 +38,9 @@ public abstract class ActiveMapObject extends MapObject {
     protected long atackAnimation;
     protected long lastHit;
 
+    protected Defence defence;
+    protected Attack attack;
+
 
     protected ActiveMapObject(TileMap tm) {
         super(tm);
@@ -53,6 +58,10 @@ public abstract class ActiveMapObject extends MapObject {
 
         drawDmg = new ArrayList<>();
 
+
+        defence = new Defence();
+        attack = new Attack();
+
     }
 
     protected boolean punched = false;
@@ -64,6 +73,14 @@ public abstract class ActiveMapObject extends MapObject {
     }
 
     private void calculateDX() {
+        if (AI) {
+            if (speedsX.get(2) != 0) {
+                fallable = false;
+            } else {
+                fallable = true;
+            }
+        }
+
         double ms = delta / 100000000d;
         if (!punched) {
             if (left) {
@@ -232,7 +249,6 @@ public abstract class ActiveMapObject extends MapObject {
         for (int i = 0; i < drawDmg.size(); i++) {
             g.setColor(new Color(1, 1, 1, (float) (1 - drawDmg.get(i)[1])));
             g.drawString(String.format("%5d", (int) drawDmg.get(i)[0]), (int) (x + xmap + width / 2 * drawDmg.get(i)[1] * scale), (int) (y + ymap - scale * (height + width / 2 * Math.sqrt(drawDmg.get(i)[1]))));
-            System.out.println((double) delta / 100000000);
             drawDmg.get(i)[1] += (double) delta / 300000000;
             if (drawDmg.get(i)[1] >= 1) {
                 drawDmg.remove(i);
@@ -280,20 +296,11 @@ public abstract class ActiveMapObject extends MapObject {
 
     protected ArrayList<double[]> drawDmg;
 
-    public void hit(Item weapon) {
-        double realdmg;
-        if (inventory != null) {
-            if (inventory.getArmor() != null) {
-                realdmg = Item.getElementResistance(weapon.getElement(), inventory.getArmor().getElement()) * (weapon.getDamage()[0] - inventory.getDefence());
-            } else {
-                realdmg = Item.getElementResistance(weapon.getElement(), new double[]{Item.NORMAL, 1d}) * (weapon.getDamage()[0] - inventory.getDefence());
-            }
-
-        } else {
-            realdmg = weapon.getDamage()[0];
-        }
-        health.atacked((int) realdmg);
-        drawDmg.add(new double[]{(int) realdmg, 0d});
+    public void hit(Attack a) {
+        Battle battle = new Battle();
+        int dmg = battle.calculateDmg(a, defence);
+        health.atacked(dmg);
+        drawDmg.add(new double[]{dmg, 0});
         lastHit = System.currentTimeMillis();
     }
 }

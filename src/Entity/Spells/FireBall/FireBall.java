@@ -1,5 +1,6 @@
 package Entity.Spells.FireBall;
 
+import Entity.Battle.Attack;
 import Entity.Spells.Spell;
 import Main.GamePanel;
 import TileMap.TileMap;
@@ -11,17 +12,18 @@ public class FireBall extends Spell {
     public FireBall(TileMap tm, boolean right, int level) {
         super(tm , right);
 
-        power =level*5;
+        attack = new Attack(damage = level, Attack.FIRE, 0.1 * level);
+
+        power = level * 25;
 
         this.level=level;
-        moveSpeed=2+level;
+        moveSpeed = level * 2 + 3;
         manacost = 10*level;
-        damage = level;
         cooldown =(int) (400*level/1.5);
         if (right){
-            dx=moveSpeed;
+            dx = moveSpeed * 0.3;
         }else {
-            dx=-moveSpeed;
+            dx = -moveSpeed * 0.3;
         }
 
         cwidth=14;

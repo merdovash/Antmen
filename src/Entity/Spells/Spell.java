@@ -1,5 +1,6 @@
 package Entity.Spells;
 
+import Entity.Battle.Attack;
 import Entity.MapObject;
 import Main.GamePanel;
 import TileMap.TileMap;
@@ -24,6 +25,8 @@ public abstract class Spell extends MapObject {
     public int manacost;
     protected int damage;
     protected int power;
+
+    protected Attack attack;
 
     public Spell(TileMap tm ,boolean right) {
         super(tm);
@@ -62,5 +65,9 @@ public abstract class Spell extends MapObject {
     }
 
     public int getPower(){return power;}
+
+    public Attack getAttack() {
+        return attack;
+    }
 
 }

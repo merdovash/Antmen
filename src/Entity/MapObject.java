@@ -72,9 +72,10 @@ public abstract class MapObject {
     protected ArrayList<BufferedImage[]> sprites;
     protected String adressImage;
     protected int[] numFrames;
+	protected boolean AI;
 
-    // constructor
-    public MapObject(TileMap tm) {
+	// constructor
+	public MapObject(TileMap tm) {
 		tileMap = tm;
 		tileSize = tm.getTileSize();
 		rectangle = getRectangle();
@@ -170,7 +171,11 @@ public abstract class MapObject {
 		middleRight = mr!= Tile.FREE;
 		middleLeft = ml!= Tile.FREE;
 
-        jumper = (bm == Tile.JUMP) || (bl == Tile.JUMP);
+		if (!AI) {
+			jumper = (bm == Tile.JUMP) || (bl == Tile.JUMP);
+		}
+
+
 
     }
 

@@ -13,7 +13,7 @@ public class MiniBoss extends Enemy {
     protected MiniBoss(TileMap tm) {
         super(tm);
 
-        inventory = new Inventory();
+        inventory = new Inventory(attack, defence);
         inventory.equip(new Helmet());
 
 

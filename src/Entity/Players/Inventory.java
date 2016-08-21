@@ -1,5 +1,7 @@
 package Entity.Players;
 
+import Entity.Battle.Attack;
+import Entity.Battle.Defence;
 import Entity.Items.GrabPoint;
 import Entity.Items.Item;
 import Main.GamePanel;
@@ -21,12 +23,17 @@ public class Inventory {
     private Item legs;
     private Item arms;
 
+    private Attack attack;
+    private Defence defence;
 
-    public Inventory() {
+
+    public Inventory(Attack a, Defence d) {
         width = 10;
         height = 4;
         places = new Item[height][width];
         size = new int[height][width];
+        attack = a;
+        defence = d;
     }
 
     public boolean addItem(Item item) {
@@ -59,10 +66,12 @@ public class Inventory {
             if (i.getType().equals("headset")) {
                 i2 = helm;
                 helm = i;
+                defence.addArmor(i);
                 return i2;
             } else if (i.getType().equals("weapon")) {
                 i2 = weapon;
                 weapon = i;
+                attack.setWeapon(i);
                 return i2;
             }
         }

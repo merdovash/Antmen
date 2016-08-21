@@ -31,8 +31,10 @@ public abstract class Item extends BoostStats {
 
     //inventory stuff
     protected int weight;
+    private double[] elementDef;
 
     public void init() {
+        elementDef = new double[]{0, 0, 0, 0, 0, 0, 0};
         try {
             image = ImageIO.read(getClass().getResourceAsStream(adress));
         } catch (IOException e) {
@@ -92,8 +94,8 @@ public abstract class Item extends BoostStats {
         return 0;
     }
 
-    public double[] getDamage() {
-        return new double[]{0, 0, 0};
+    public int getDamage() {
+        return 0;
     }
 
     public Double[] getResistance() {
@@ -106,73 +108,13 @@ public abstract class Item extends BoostStats {
     }
 
     public static final int NORMAL = 0;
-    private static final int FIRE = 1;
-    private static final int EARTH = 2;
-    private static final int WATER = 3;
-    private static final int WIND = 4;
-    private static final int HOLY = 5;
-    private static final int SHADOW = 6;
+    public static final int FIRE = 1;
+    public static final int WATER = 2;
+    public static final int WIND = 3;
+    public static final int EARTH = 4;
+    public static final int HOLY = 5;
+    public static final int SHADOW = 6;
 
-    public static double getElementResistance(double[] weapon, double[] armor) {
-        if (weapon[0] == NORMAL) {
-            if (armor[0] == NORMAL) return 1;
-            if (armor[0] == FIRE) return 0.75;
-            if (armor[0] == WATER) return 0.75;
-            if (armor[0] == WIND) return 0.75;
-            if (armor[0] == EARTH) return 0.75;
-            if (armor[0] == HOLY) return 0.5;
-            if (armor[0] == SHADOW) return 0.5;
-        } else if (weapon[0] == FIRE) {
-            if (armor[0] == NORMAL) return 1 * (1 + weapon[1]);
-            if (armor[0] == FIRE) return 0.5 * (1 - armor[1] + weapon[1]);
-            if (armor[0] == WATER) return 1 * (-armor[1] + weapon[1]);
-            if (armor[0] == WIND) return 1;
-            if (armor[0] == EARTH) return 1.5 * (1 + weapon[1]);
-            if (armor[0] == HOLY) return 1.25 * (1 + weapon[1] - armor[1] * 2);
-            if (armor[0] == SHADOW) return 0.5 * (1 - armor[1]);
-        } else if (weapon[0] == WATER) {
-            if (armor[0] == NORMAL) return 1 * (1 + weapon[1]);
-            if (armor[0] == FIRE) return 1.5 * (1 + weapon[1]);
-            if (armor[0] == WATER) return 0.5 * (1 - armor[1] + weapon[1]);
-            if (armor[0] == WIND) return 1 * (-armor[1] + weapon[1]);
-            if (armor[0] == EARTH) return 1;
-            if (armor[0] == HOLY) return 1.25 * (1 + weapon[1] - armor[1] * 2);
-            if (armor[0] == SHADOW) return 0.5 * (1 - armor[1]);
-        } else if (weapon[0] == WIND) {
-            if (armor[0] == NORMAL) return 1 * (1 + weapon[1]);
-            if (armor[0] == FIRE) return 1;
-            if (armor[0] == WATER) return 1.5 * (1 + weapon[1]);
-            if (armor[0] == WIND) return 0.5 * (1 - armor[1] + weapon[1]);
-            if (armor[0] == EARTH) return 1 * (-armor[1] + weapon[1]);
-            if (armor[0] == HOLY) return 1.25 * (1 + weapon[1] - armor[1] * 2);
-            if (armor[0] == SHADOW) return 0.5 * (1 - armor[1]);
-        } else if (weapon[0] == EARTH) {
-            if (armor[0] == NORMAL) return 1 * (1 + weapon[1]);
-            if (armor[0] == FIRE) return 1 * (-armor[1] + weapon[1]);
-            if (armor[0] == WATER) return 1;
-            if (armor[0] == WIND) return 1.5 * (1 + weapon[1]);
-            if (armor[0] == EARTH) return 0.5 * (1 - armor[1] + weapon[1]);
-            if (armor[0] == HOLY) return 1.25 * (1 + weapon[1] - armor[1] * 2);
-            if (armor[0] == SHADOW) return 0.5 * (1 - armor[1]);
-        } else if (weapon[0] == HOLY) {
-            if (armor[0] == NORMAL) return 1;
-            if (armor[0] == FIRE) return 1;
-            if (armor[0] == WATER) return 1;
-            if (armor[0] == WIND) return 1;
-            if (armor[0] == EARTH) return 1;
-            if (armor[0] == HOLY) return 0.5 * (weapon[1] - armor[1]);
-            if (armor[0] == SHADOW) return 1 * (1 * weapon[1]);
-        } else if (weapon[0] == SHADOW) {
-            if (armor[0] == NORMAL) return 1 * (weapon[1] - armor[1]);
-            if (armor[0] == FIRE) return 1.5;
-            if (armor[0] == WATER) return 1.5;
-            if (armor[0] == WIND) return 1.5;
-            if (armor[0] == EARTH) return 1.5;
-            if (armor[0] == HOLY) return 0;
-            if (armor[0] == SHADOW) return 0;
-        }
-        return 1;
-    }
 
     public double getPower() {
         return 0;
@@ -180,6 +122,10 @@ public abstract class Item extends BoostStats {
 
     public int getDef() {
         return 0;
+    }
+
+    public double[] getElementDef() {
+        return elementDef;
     }
 }
 

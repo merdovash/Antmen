@@ -32,6 +32,19 @@ public class Stats {
     public static final int ENERGY = 18;
     public static final int ENERGY_REFILL = 19;
 
+    //elements
+    public static final int WEAPON = 0;
+    public static final int ARMOR = 1;
+
+    public static final int NORMAL = 0;
+    public static final int FIRE = 1;
+    public static final int WATER = 2;
+    public static final int WIND = 3;
+    public static final int EARTH = 4;
+    public static final int HOLY = 5;
+    public static final int SHADOW = 6;
+
+
 
     //health
     protected Health health;
@@ -95,6 +108,8 @@ public class Stats {
         modifier = new double[20];
         Arrays.fill(modifier, 1d);
         calculateModifier();
+
+        elementModifier = new double[2][7];
     }
 
     public void setInventory(Inventory i) {
@@ -138,6 +153,7 @@ public class Stats {
 
     public void update(long delta) {
         mana.refill((long) (delta * modifier[MANA_REGEN]));
+        calculateElementModifier();
     }
 
 
@@ -160,8 +176,6 @@ public class Stats {
 
 
     //Modifiers;
-
-
     private double[] modifier;
 
     public void calculateModifier() {
@@ -181,6 +195,16 @@ public class Stats {
 
     public double getModifier(int modifier) {
         return this.modifier[modifier];
+    }
+
+    private double[][] elementModifier;
+
+    public void calculateElementModifier() {
+
+    }
+
+    public double getElementModifier(int equipment, int element) {
+        return elementModifier[equipment][element];
     }
 
     private ArrayList<Double> boostSpeedIncrease = new ArrayList<>();
