@@ -1,7 +1,7 @@
 package Entity.Enemies;
 
-import Entity.Items.Armor.GrabPoint;
 import Entity.Items.Armor.Headset.Helmet;
+import Entity.Items.GrabPoint;
 import Entity.Players.Inventory;
 import Main.GamePanel;
 import TileMap.TileMap;

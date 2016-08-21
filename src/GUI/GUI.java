@@ -88,7 +88,7 @@ public class GUI {
         for (int i = 0; i < inventory.height; i++) {
             for (int j = 0; j < inventory.width; j++) {
                 if (null != inventory.getItem(j, i)) {
-                    g.drawImage(inventory.getItem(j, i).getImage(), (int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size, null);
+                    g.drawImage(inventory.getItem(j, i).getIco(), (int) (GamePanel.WIDTH / 2 + (-150 + 71 * j) * scale), (int) ((350 + i * 70) * scale), size, size, null);
                     g.setColor(Color.BLACK);
                     g.drawString(Integer.toString(inventory.getSize(j, i)), (int) (GamePanel.WIDTH / 2 + (-145 + 71 * j) * scale), (int) ((365 + i * 70) * scale));
                     inventory.getItem(j, i).drawDescription(g);
@@ -108,7 +108,14 @@ public class GUI {
         g.setColor(Color.cyan);
         g.drawRect((GamePanel.WIDTH / 2), (int) (150 * scale), size, size);
         if (inventory.getHelm() != null) {
-            g.drawImage(inventory.getHelm().getImage(), (GamePanel.WIDTH / 2), (int) (150 * scale), size, size, null);
+            g.drawImage(inventory.getHelm().getIco(), (GamePanel.WIDTH / 2), (int) (150 * scale), size, size, null);
+        }
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect((GamePanel.WIDTH / 2 + size), (int) (150 * scale + size), size, size);
+        g.setColor(Color.cyan);
+        g.drawRect((GamePanel.WIDTH / 2 + size), (int) (150 * scale + size), size, size);
+        if (inventory.getWeapon() != null) {
+            g.drawImage(inventory.getWeapon().getIco(), (GamePanel.WIDTH / 2 + size), (int) (150 * scale + size), size, size, null);
         }
     }
 

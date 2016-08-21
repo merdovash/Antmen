@@ -8,8 +8,6 @@ public class Armory extends Item {
 
 
     public void init() {
-
-
         super.init();
     }
 

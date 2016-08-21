@@ -47,10 +47,10 @@ public abstract class Enemy extends ActiveMapObject {
         }
     }
 
-    private long lastHit = System.currentTimeMillis() - 5000;
     public void hit(int damage) {
         health.atacked(damage);
         lastHit = System.currentTimeMillis();
+        drawDmg.add(new double[]{damage, 0d});
     }
 
     public void setRight(){
@@ -79,7 +79,6 @@ public abstract class Enemy extends ActiveMapObject {
     protected void drawHealth(Graphics2D g) {
         if (System.currentTimeMillis() - lastHit < 5000) {
             double proc = health.getHealth() / health.getMaxHealth();
-
             g.fillRect((int) (x + xmap), (int) (y + ymap - (height + 5) * scale), (int) (width * scale * proc), 5);
         }
     }

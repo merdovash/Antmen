@@ -1,12 +1,14 @@
 package Entity;
 
-import Entity.Items.Armor.GrabPoint;
+import Entity.Items.GrabPoint;
+import Entity.Items.Item;
 import Entity.Players.Inventory;
 import Entity.States.Health;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 
 public abstract class ActiveMapObject extends MapObject {
@@ -28,6 +30,11 @@ public abstract class ActiveMapObject extends MapObject {
 
     //points
     protected GrabPoint headPoint;
+    protected GrabPoint weaponPoint;
+
+
+    protected long atackAnimation;
+    protected long lastHit;
 
 
     protected ActiveMapObject(TileMap tm) {
@@ -43,6 +50,8 @@ public abstract class ActiveMapObject extends MapObject {
 
         gravity = 24 * GamePanel.SCALE;
         health = new Health(10);
+
+        drawDmg = new ArrayList<>();
 
     }
 
@@ -214,7 +223,22 @@ public abstract class ActiveMapObject extends MapObject {
 
         setMapPosition();
         super.draw(g);
+        drawDmg(g);
 
+    }
+
+    private void drawDmg(Graphics2D g) {
+        g.setFont(new Font("Courier New", Font.PLAIN, (int) (width / 3 * scale)));
+        for (int i = 0; i < drawDmg.size(); i++) {
+            g.setColor(new Color(1, 1, 1, (float) (1 - drawDmg.get(i)[1])));
+            g.drawString(String.format("%5d", (int) drawDmg.get(i)[0]), (int) (x + xmap + width / 2 * drawDmg.get(i)[1] * scale), (int) (y + ymap - scale * (height + width / 2 * Math.sqrt(drawDmg.get(i)[1]))));
+            System.out.println((double) delta / 100000000);
+            drawDmg.get(i)[1] += (double) delta / 300000000;
+            if (drawDmg.get(i)[1] >= 1) {
+                drawDmg.remove(i);
+                i--;
+            }
+        }
     }
 
     public void drawBorder(Graphics2D g) {
@@ -224,8 +248,53 @@ public abstract class ActiveMapObject extends MapObject {
 
     protected void drawArmory(Graphics2D g) {
         if (inventory != null) {
-            inventory.draw(g, headPoint);
+            inventory.drawHelm(g, headPoint);
+            inventory.drawWeapon(g, weaponPoint, atackAnimation);
         }
+    }
+
+    private static final int ARMOR = 0;
+    private static final int HEADSET = 1;
+    private static final int LEGS = 2;
+    private static final int ARMS = 3;
+    private static final int BUFFS = 4;
+
+    ArrayList<Double[]> resistances;
+
+    protected double[] getResistance() {
+        resistances = new ArrayList<>();
+        resistances.set(ARMOR, inventory.getArmor().getResistance());
+        resistances.set(HEADSET, inventory.getHelm().getResistance());
+        resistances.set(LEGS, inventory.getLegs().getResistance());
+        resistances.set(ARMS, inventory.getArms().getResistance());
+        //resistance.set(BUFFS, stats.getResistance());
+        double[] resistance = new double[]{0, 0, 0, 0, 0, 0};
+        for (int i = 0; i < 6; i++) {
+            for (int place = 0; place < 5; place++) {
+                resistance[i] += resistances.get(place)[i];
+            }
+        }
+        return resistance;
+    }
+
+
+    protected ArrayList<double[]> drawDmg;
+
+    public void hit(Item weapon) {
+        double realdmg;
+        if (inventory != null) {
+            if (inventory.getArmor() != null) {
+                realdmg = Item.getElementResistance(weapon.getElement(), inventory.getArmor().getElement()) * (weapon.getDamage()[0] - inventory.getDefence());
+            } else {
+                realdmg = Item.getElementResistance(weapon.getElement(), new double[]{Item.NORMAL, 1d}) * (weapon.getDamage()[0] - inventory.getDefence());
+            }
+
+        } else {
+            realdmg = weapon.getDamage()[0];
+        }
+        health.atacked((int) realdmg);
+        drawDmg.add(new double[]{(int) realdmg, 0d});
+        lastHit = System.currentTimeMillis();
     }
 }
 

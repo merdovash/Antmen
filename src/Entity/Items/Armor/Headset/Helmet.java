@@ -4,10 +4,6 @@ import Entity.Items.Armor.Boosts.HealthRegen.HealthRegen;
 
 public class Helmet extends Headset implements HealthRegen {
 
-    static {
-
-    }
-
     double heal;
 
     public Helmet() {

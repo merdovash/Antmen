@@ -2,7 +2,7 @@ package Entity.Players;
 
 import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
-import Entity.Items.Armor.GrabPoint;
+import Entity.Items.GrabPoint;
 import Entity.Spells.Spell;
 import Entity.Spells.SpellsManager;
 import Main.GamePanel;
@@ -29,6 +29,7 @@ public class Player extends ActiveMapObject {
     private boolean scratching;
     private int scratchDamage;
     private int scratchRange;
+    private boolean attack = false;
 
     // gliding
     private boolean gliding;
@@ -47,6 +48,7 @@ public class Player extends ActiveMapObject {
 
     //Stats
     public Stats stats;
+
 
     //trace
     //private Trace trace;
@@ -103,6 +105,7 @@ public class Player extends ActiveMapObject {
         inventory = new Inventory();
 
         headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
+        weaponPoint = new GrabPoint(0, 0, facingRight, (int) ((10) * GamePanel.SCALE));
 
         stats = new Stats();
 
@@ -140,20 +143,28 @@ public class Player extends ActiveMapObject {
 
     public void checkAtack(ArrayList<Enemy> enemies) {
 
-
         for (Enemy enemy : enemies) {
-            if (scratching) {
-                if (facingRight) {
-                    if (enemy.getx() > x && enemy.getx() < x + scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
-                        enemy.hit(scratchDamage);
+            if (attackAnimation) {
+                if (inventory.getWeapon() == null) {
+                    if (facingRight) {
+                        if (enemy.getx() > x && enemy.getx() < x + scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
+                            enemy.hit(scratchDamage);
+                        }
+                    } else {
+                        if (enemy.getx() < x && enemy.getx() > x - scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
+                            enemy.hit(scratchDamage);
+                        }
                     }
                 } else {
-                    if (enemy.getx() < x && enemy.getx() > x - scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
-                        enemy.hit(scratchDamage);
+                    if (attack) {
+                        if (attackPlace.intersects(enemy.getRectangle())) {
+                            enemy.hit(inventory.getWeapon());
+                            enemy.punch(inventory.getWeapon().getPower(), (int) x);
+                            attack = false;
+                        }
                     }
                 }
             }
-
             if (rectangle.intersects(enemy.getRectangle())) {
                 hit(enemy.getDamage());
             }
@@ -206,6 +217,8 @@ public class Player extends ActiveMapObject {
     }
 
 
+    private boolean attackAnimation;
+    private Rectangle attackPlace;
     public void update() {
         if (!dead) {
 
@@ -227,9 +240,33 @@ public class Player extends ActiveMapObject {
             //refill energy
             if (!boost || stats.energy.isEmpty()) stats.energy.refill(delta);
 
-            //check attack has stopped
+
+            if (scratching) {
+                attack = true;
+                attackAnimation = true;
+                scratching = false;
+            }
+            if (attackAnimation) {
+                if (inventory.getWeapon() != null) {
+                    atackAnimation += delta / inventory.getWeapon().getSpeed();
+                    if (facingRight) {
+                        attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange()), 10);
+                    } else {
+                        attackPlace = new Rectangle((weaponPoint.getX() - (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange())), weaponPoint.getY(), (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange()), 10);
+                    }
+
+                    if (atackAnimation >= 100) {
+                        atackAnimation = 0;
+                        attackAnimation = false;
+                        attackPlace = null;
+                    }
+                }
+            }
+            //check attackAnimation has stopped
             if (currentAction == SCRATCHING) {
-                if (animation.hasPlayedOnce()) scratching = false;
+                if (animation.hasPlayedOnce()) {
+                    scratching = false;
+                }
             }
             if (currentAction == FIREBALL) {
                 if (animation.hasPlayedOnce()) firing = false;
@@ -271,7 +308,11 @@ public class Player extends ActiveMapObject {
             place = 0;
         }
 
+        sendBuffs();
+    }
 
+    private void sendBuffs() {
+        //stats.getBuffs(inventory.getHelm());
     }
 
     private void updateBuffs() {
@@ -291,12 +332,15 @@ public class Player extends ActiveMapObject {
     private void setAnimation() {
         // set animation
         if (scratching) {
-            if (currentAction != SCRATCHING) {
-                currentAction = SCRATCHING;
-                animation.setFrames(sprites.get(SCRATCHING));
-                animation.setDelay(50);
-                width = 82;
+            if (inventory.getWeapon() == null) {
+                if (currentAction != SCRATCHING) {
+                    currentAction = SCRATCHING;
+                    animation.setFrames(sprites.get(SCRATCHING));
+                    animation.setDelay(50);
+                    width = 82;
+                }
             }
+
         } else if (firing) {
             if (currentAction != FIREBALL) {
                 currentAction = FIREBALL;
@@ -374,7 +418,7 @@ public class Player extends ActiveMapObject {
 
         if (!dead) {
             super.draw(g);
-            inventory.draw(g, headPoint);
+            drawArmory(g);
         }
 
         if (levelUp) {
@@ -384,10 +428,17 @@ public class Player extends ActiveMapObject {
                 place = (int) (((System.currentTimeMillis() - levelUpTime) / 20) * scale);
             }
         }
+
+        g.drawRect(weaponPoint.getX(), weaponPoint.getY(), 2, 2);
+        if (attackPlace != null) {
+            g.draw(attackPlace);
+        }
+
     }
 
     private void drawUpdateGrabPoint() {
         headPoint.update((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 42) * scale), facingRight);
+        weaponPoint.update((int) (x + xmap + (width / 2 + weaponPoint.getSide() * 30) * scale), (int) (y + ymap - (height / 2 - 15) * scale), facingRight);
     }
 
     public void drawGui(Graphics2D g) {

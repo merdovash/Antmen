@@ -1,4 +1,4 @@
-package Entity.Items.Armor;
+package Entity.Items;
 
 public class GrabPoint {
     private int x;

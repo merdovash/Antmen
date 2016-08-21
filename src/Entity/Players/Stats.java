@@ -62,6 +62,8 @@ public class Stats {
 
     private double speed;
 
+    private Inventory inventory;
+
     public Stats() {
         health = new Health(3);
         level = 1;
@@ -93,6 +95,10 @@ public class Stats {
         modifier = new double[20];
         Arrays.fill(modifier, 1d);
         calculateModifier();
+    }
+
+    public void setInventory(Inventory i) {
+        inventory = i;
     }
 
     public void addExp(int exp) {
@@ -243,4 +249,5 @@ public class Stats {
     public double getSpeed() {
         return speed;
     }
+
 }
