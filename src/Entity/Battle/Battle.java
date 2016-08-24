@@ -1,6 +1,8 @@
 package Entity.Battle;
 
-public class Battle {
+import java.io.Serializable;
+
+public class Battle implements Serializable {
 
     public static final int NORMAL = 0;
     public static final int FIRE = 1;
@@ -15,20 +17,20 @@ public class Battle {
     }
 
     public int calculateDmg(Attack a, Defence d) {
-        int dmg = a.getDamage();
+        double dmg = a.getDamage();
         double elementalResistance = 1 - d.getResistance()[a.getElement()];
         double elementalWar = getElementResistance(new double[]{a.getElement(), a.getElementPower()}, new double[]{d.getElement(), d.getElementPower()});
-        double bonusDmg = 1 + a.getBuffs(d.getElement());
+        //double bonusDmg = 1 + a.getBuffs(d.getElement());
         int def = d.getDefence();
 
-        System.out.println(dmg + " " + elementalResistance + " " + elementalWar + " " + bonusDmg);
-        dmg = (int) (dmg * (1 - (double) def / 150) * elementalWar * elementalResistance * bonusDmg);
+        System.out.println(dmg + " " + elementalResistance + " " + elementalWar + " ");
+        dmg = (dmg * (1 - (double) def / 150) * elementalWar * elementalResistance);
         System.out.println(dmg);
-        return dmg;
+        return (int) dmg;
     }
 
 
-    public static double getElementResistance(double[] weapon, double[] armor) {
+    private static double getElementResistance(double[] weapon, double[] armor) {
         if (weapon[0] == NORMAL) {
             if (armor[0] == NORMAL) return 1;
             if (armor[0] == FIRE) return 0.75;

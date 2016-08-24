@@ -1,13 +1,11 @@
 package Entity.Items.Weapons;
 
-import Entity.Buffs.WeaponModifier;
+import Entity.Buffs.Buff;
 import Entity.Items.Item;
 
-public class Weapons extends Item {
+public abstract class Weapons extends Item {
 
-    protected WeaponModifier wp;
     protected int range;
-    protected String weaponType;
     protected int speed;
 
     protected double power;
@@ -15,14 +13,7 @@ public class Weapons extends Item {
     public void init() {
         super.init();
         type = "weapon";
-    }
-
-    public WeaponModifier getWp() {
-        return wp;
-    }
-
-    public String getWeaponType() {
-        return weaponType;
+        buffType = Buff.WEAPON;
     }
 
     public int getSpeed() {

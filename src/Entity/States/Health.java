@@ -1,29 +1,39 @@
 package Entity.States;
 
+import Entity.Buffs.Buff;
+import Entity.Buffs.Buffable;
 import Main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-public class Health {
+public class Health implements Serializable, Buffable {
+
+    //health
+    private double base = 2;
     private int health;
-    private double maxHealth;
-    private double deffaultMaxHealth;
-    private double x;
+    private int maxHealth;
+    private double basicMaxHealth;
+
+    //health regen
+    private double basicRegen;
+    private double regen;
+    private double regened;
+
     public boolean dead;
-    private BufferedImage tileset;
+    transient private BufferedImage tileset;
 
     //image
     private int width;
     private int height;
 
     public Health(int size){
-        deffaultMaxHealth=size;
-        maxHealth=deffaultMaxHealth;
-        health = (int) maxHealth;
+        basicMaxHealth = size;
+        maxHealth = (int) basicMaxHealth;
+        health = maxHealth;
         dead=false;
-        x=1;
         try {
             tileset = ImageIO.read(
                     getClass().getResourceAsStream("/Sprites/Player/health.gif"));
@@ -32,7 +42,17 @@ public class Health {
         }
         width = (int) (tileset.getWidth() * GamePanel.SCALE);
         height = (int) (tileset.getHeight() * GamePanel.SCALE);
+        basicRegen = 0;
+    }
 
+    public void update(long delta) {
+        if (health < maxHealth) {
+            regened += regen * (double) delta / 1000000000d;
+            if (regened >= 1) {
+                regened -= 1;
+                heal(1);
+            }
+        }
     }
 
     public void atacked(int power){
@@ -47,38 +67,8 @@ public class Health {
             health+=size;
         }
         if (health>maxHealth){
-            health = (int) maxHealth;
+            health = maxHealth;
         }
-    }
-
-    double permaHeal;
-
-    public void heal(double healthRegen) {
-        if (health == maxHealth) {
-        } else if (health < maxHealth) {
-            permaHeal += healthRegen;
-            if (permaHeal >= 1) {
-                health++;
-                permaHeal -= 1;
-            }
-        } else if (health > maxHealth) {
-            health = (int) maxHealth;
-        }
-
-    }
-
-    public void extend(int size){
-        maxHealth+=size;
-    }
-
-    public void extendBy(double size){
-        x+=size;
-        maxHealth= (int) (deffaultMaxHealth*x);
-    }
-
-    public void extendAbs(double size) {
-        deffaultMaxHealth += size;
-        maxHealth = deffaultMaxHealth;
     }
 
     public int getHealth(){return health;}
@@ -88,21 +78,41 @@ public class Health {
     }
 
     public void draw(Graphics2D g){
-        for (int i=0;i<health;i++){
-            g.drawImage(tileset, (int) ((10 + i * 55) * GamePanel.SCALE), (int) (10 * GamePanel.SCALE), width, height, null);
+        if (maxHealth < 10) {
+            for (int i = 0; i < health; i++) {
+                g.drawImage(tileset, (int) ((10 + i * 55) * GamePanel.SCALE), (int) (10 * GamePanel.SCALE), width, height, null);
+            }
+        } else {
+            g.setColor(new Color(200, 50, 50));
+            double percent = (double) health / maxHealth;
+            g.fillRect((int) (25 * GamePanel.SCALE), (int) (25 * GamePanel.SCALE), (int) (300 * percent * GamePanel.SCALE), (int) (30 * GamePanel.SCALE));
+            g.setColor(new Color(200, 200, 200));
+            g.setFont(new Font("Courier New", Font.PLAIN, (int) (14 * GamePanel.SCALE)));
+            g.drawString(String.format("%d / %4d", health, maxHealth), (int) (60 * GamePanel.SCALE), (int) (44 * GamePanel.SCALE));
         }
     }
 
-    public void setDead() {
+
+    private void setDead() {
         dead = true;
         health = 0;
     }
 
     public void setAlive() {
         dead = false;
-        health = (int) maxHealth;
+        health = maxHealth;
     }
 
+    public void levelUp(double i) {
+        base += i;
+    }
 
+    @Override
+    public void addBuff(Buff b) {
+        basicMaxHealth = (base + b.getBuff(Buff.VIT));
+        maxHealth = (int) newValue(basicMaxHealth, Buff.HEALTH, b);
+        basicRegen = b.getBuff(Buff.VIT) / 20d;
+        regen = newValue(basicRegen, Buff.HEALTH_REGEN, b);
+    }
 }
 

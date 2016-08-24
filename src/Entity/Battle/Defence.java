@@ -1,28 +1,36 @@
 package Entity.Battle;
 
+import Entity.Buffs.Buff;
+import Entity.Buffs.Buffable;
 import Entity.Items.Item;
 
-public class Defence {
-    public static final int NORMAL = 0;
-    public static final int FIRE = 1;
-    public static final int WATER = 2;
-    public static final int WIND = 3;
-    public static final int EARTH = 4;
-    public static final int HOLY = 5;
-    public static final int SHADOW = 6;
+import java.io.Serializable;
 
-    private int deffence;
+public class Defence implements Serializable, Buffable {
+
+    private int def;
+    private double defaultDef;
+    private int basicDef;
+    private int armorDef;
 
     private int element;
     private double elementPower;
+    private double[] elementalDef;
 
     public Defence() {
-        elementalDef = new double[7];
-        element = NORMAL;
-        deffence = 0;
+        defaultDef = 0;
+        init();
     }
 
-    private double[] elementalDef;
+    public Defence(int d) {
+        defaultDef = d;
+        init();
+    }
+
+    private void init() {
+        elementalDef = new double[7];
+        element = Battle.NORMAL;
+    }
 
     public void addArmor(Item i) {
         if (i.getType().equals("armor")) {
@@ -31,34 +39,40 @@ public class Defence {
         }
         for (int j = 0; j < 7; j++) {
             elementalDef[j] += i.getElementDef()[j];
-            deffence += i.getDef();
+            armorDef += i.getDef();
         }
     }
 
     public void removeArmor(Item i) {
         if (i.getType().equals("armor")) {
-            element = NORMAL;
+            element = Battle.NORMAL;
             elementPower = 1;
         }
         for (int j = 0; j < 7; j++) {
             elementalDef[j] -= i.getElementDef()[j];
-            deffence -= i.getDef();
+            armorDef -= i.getDef();
         }
     }
 
-    public double[] getResistance() {
+    double[] getResistance() {
         return elementalDef;
     }
 
-    public int getElement() {
+    int getElement() {
         return element;
     }
 
-    public double getElementPower() {
+    double getElementPower() {
         return elementPower;
     }
 
-    public int getDefence() {
-        return deffence;
+    int getDefence() {
+        return def;
+    }
+
+    @Override
+    public void addBuff(Buff b) {
+        basicDef = (int) (defaultDef + b.getBuff(Buff.AGI) / 7);
+        def = (int) newValue(armorDef + basicDef, Buff.DEF, b);
     }
 }

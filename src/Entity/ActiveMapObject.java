@@ -60,7 +60,7 @@ public abstract class ActiveMapObject extends MapObject {
 
 
         defence = new Defence();
-        attack = new Attack();
+        attack = new Attack(Attack.TYPE_ENCHANCED);
 
     }
 
@@ -74,11 +74,7 @@ public abstract class ActiveMapObject extends MapObject {
 
     private void calculateDX() {
         if (AI) {
-            if (speedsX.get(2) != 0) {
-                fallable = false;
-            } else {
-                fallable = true;
-            }
+            fallable = speedsX.get(2) == 0;
         }
 
         double ms = delta / 100000000d;
@@ -262,10 +258,10 @@ public abstract class ActiveMapObject extends MapObject {
         g.draw(rectangle);
     }
 
-    protected void drawArmory(Graphics2D g) {
+    protected void drawArmory(Graphics2D g, long angle) {
         if (inventory != null) {
             inventory.drawHelm(g, headPoint);
-            inventory.drawWeapon(g, weaponPoint, atackAnimation);
+            inventory.drawWeapon(g, weaponPoint, angle);
         }
     }
 
@@ -275,7 +271,7 @@ public abstract class ActiveMapObject extends MapObject {
     private static final int ARMS = 3;
     private static final int BUFFS = 4;
 
-    ArrayList<Double[]> resistances;
+    private ArrayList<Double[]> resistances;
 
     protected double[] getResistance() {
         resistances = new ArrayList<>();
@@ -298,10 +294,12 @@ public abstract class ActiveMapObject extends MapObject {
 
     public void hit(Attack a) {
         Battle battle = new Battle();
-        int dmg = battle.calculateDmg(a, defence);
-        health.atacked(dmg);
-        drawDmg.add(new double[]{dmg, 0});
-        lastHit = System.currentTimeMillis();
+        if (a != null) {
+            int dmg = battle.calculateDmg(a, defence);
+            health.atacked(dmg);
+            drawDmg.add(new double[]{dmg, 0});
+            lastHit = System.currentTimeMillis();
+        }
     }
 }
 

@@ -9,9 +9,10 @@ import Main.GamePanel;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 
-public class Inventory {
+public class Inventory implements Serializable {
     private Item[][] places;
     private int[][] size;
     public int width;
@@ -26,16 +27,28 @@ public class Inventory {
     private Attack attack;
     private Defence defence;
 
+    private Stats stats;
+
+
+    public Inventory(Stats s) {
+        width = 10;
+        height = 4;
+        places = new Item[height][width];
+        size = new int[height][width];
+        stats = s;
+        attack = s.attack;
+        defence = s.defence;
+    }
 
     public Inventory(Attack a, Defence d) {
         width = 10;
         height = 4;
         places = new Item[height][width];
         size = new int[height][width];
+        stats = new Stats();
         attack = a;
         defence = d;
     }
-
     public boolean addItem(Item item) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -66,12 +79,10 @@ public class Inventory {
             if (i.getType().equals("headset")) {
                 i2 = helm;
                 helm = i;
-                defence.addArmor(i);
                 return i2;
             } else if (i.getType().equals("weapon")) {
                 i2 = weapon;
                 weapon = i;
-                attack.setWeapon(i);
                 return i2;
             }
         }

@@ -11,4 +11,9 @@ public class Branch extends Loot {
         super.init();
     }
 
+
+    @Override
+    public Object[][] getBuff() {
+        return new Object[0][];
+    }
 }

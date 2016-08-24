@@ -35,12 +35,13 @@ public class MiniBoss extends Enemy {
     public void draw(Graphics2D g) {
         super.draw(g);
 
-        drawArmory(g);
+        drawArmory(g, 0);
     }
 
     protected void drawHealth(Graphics2D g) {
         double proc = health.getHealth() / health.getMaxHealth();
 
         g.fillRect((int) (x + xmap - 25 * scale), (int) (y + ymap - (height + 40) * scale), (int) ((width + 50) * scale * proc), 10);
+        drawName(g);
     }
 }

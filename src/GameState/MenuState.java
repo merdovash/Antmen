@@ -78,7 +78,7 @@ class MenuState extends GameState {
 	
 	private void select() {
 		if(currentChoice == 0) {
-			gsm.setState(GameStateManager.LEVELSTATE);
+			gsm.setState(GameStateManager.SAVES);
 		}
 		if (currentChoice == 1){
 			gsm.setState(GameStateManager.UPDATER);

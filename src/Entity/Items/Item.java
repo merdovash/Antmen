@@ -1,33 +1,35 @@
 package Entity.Items;
 
-import Entity.Items.Armor.Boosts.BoostStats;
+import Entity.Buffs.WeaponModifier;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public abstract class Item extends BoostStats {
+public abstract class Item implements Serializable {
 
     //image stuff
     protected int width;
     protected int height;
-    private BufferedImage image;
+    transient private BufferedImage image;
     protected static String adress;
-    private BufferedImage ico;
+    transient private BufferedImage ico;
 
     //item stuff
     protected int ID;
     protected String type;
-    protected String[] description;
+    protected int buffType;
 
     //equipment stuff
-    protected double[] element;
-    protected String rare;
+    private double[] element;
 
     //weapons stuff
     public long lastUsage;
+    protected String weaponType;
+    protected WeaponModifier wp;
 
     //inventory stuff
     protected int weight;
@@ -42,7 +44,6 @@ public abstract class Item extends BoostStats {
         }
     }
 
-
     public BufferedImage getImage() {
         return image;
     }
@@ -55,8 +56,8 @@ public abstract class Item extends BoostStats {
         return type;
     }
 
-    public int getId() {
-        return ID;
+    public String getWeaponType() {
+        return weaponType;
     }
 
     public void drawDescription(Graphics2D g) {
@@ -102,19 +103,9 @@ public abstract class Item extends BoostStats {
         return new Double[]{0d, 0d, 0d, 0d, 0d, 0d, 0d};
     }
 
-
     public double[] getElement() {
         return element;
     }
-
-    public static final int NORMAL = 0;
-    public static final int FIRE = 1;
-    public static final int WATER = 2;
-    public static final int WIND = 3;
-    public static final int EARTH = 4;
-    public static final int HOLY = 5;
-    public static final int SHADOW = 6;
-
 
     public double getPower() {
         return 0;
@@ -127,6 +118,8 @@ public abstract class Item extends BoostStats {
     public double[] getElementDef() {
         return elementDef;
     }
+
+    public abstract Object[][] getBuff();
 }
 
 

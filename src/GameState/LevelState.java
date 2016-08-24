@@ -7,7 +7,6 @@ import Entity.FPS;
 import Entity.Items.ItemList;
 import Entity.Items.MapItem;
 import Entity.Players.Player;
-import Entity.Players.Stats;
 import GUI.GUI;
 import Interactive.DoorPoint;
 import Interactive.SavePoint;
@@ -18,9 +17,7 @@ import TileMap.TileMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 
 
@@ -47,14 +44,28 @@ class LevelState extends GameState {
 
     private boolean menu;
 
-    LevelState(GameStateManager gsm) {
+    private Saver save;
+    private int currentSave;
+
+    LevelState(GameStateManager gsm, Saver s) {
         this.gsm = gsm;
         menu = true;
+        save = s;
         init();
     }
 
+    FileOutputStream fos;
+    ObjectOutputStream oos;
     @Override
     public void init() {
+        currentSave = save.getCurrentSave();
+
+        try {
+            fos = new FileOutputStream("player" + currentSave + ".out");
+            oos = new ObjectOutputStream(fos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         load();
     }
 
@@ -80,12 +91,22 @@ class LevelState extends GameState {
         loadNext();
         mapLoots = new ArrayList<>();
 
-        if (!(player == null)) player.load(tileMap, px, py);
+        loadPlayer();
 
     }
 
 
     private void loadMap() {
+        try {
+            tileMap = save.loadMapSave(currentSave);
+        } catch (NullPointerException e) {
+            newMap();
+        } catch (IndexOutOfBoundsException e2) {
+            newMap();
+        }
+    }
+
+    private void newMap() {
         tileMap = new TileMap(50);
         tileMap.loadTiles("/tiles/grasstileset_x50.gif");
         tileMap.loadMap("/Maps/" + level + "/map.map");
@@ -95,6 +116,7 @@ class LevelState extends GameState {
         LevelState.HEIGHT = tileMap.getNumRows();
 
         bg = new Background("/Maps/" + level + "/bg.gif", 0.1);
+        save.create(tileMap);
     }
 
     private void loadSpawns() {
@@ -179,8 +201,14 @@ class LevelState extends GameState {
     }
 
     private void loadPlayer() {
-        player = new Player(tileMap);
-        player.setPosition(px, py);
+        try {
+            player = save.loadSave(currentSave);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("new player");
+            player = new Player(tileMap);
+            player.setPosition(px, py);
+            save.create(player);
+        }
     }
 
 
@@ -249,6 +277,7 @@ class LevelState extends GameState {
             for (Enemy enemy : enemies) {
                 enemy.setLastTime(l);
             }
+            player.stats.permaUpdate();
         }
 
 
@@ -282,6 +311,12 @@ class LevelState extends GameState {
 
         checkNextLevel();
 
+        save.save(currentSave, player, tileMap);
+        try {
+            oos.writeObject(player);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkSavePoint() {
@@ -326,16 +361,6 @@ class LevelState extends GameState {
         //enemies get attacked from spells
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).update();
-            for (int j = 0; j < player.spells.size(); j++) {
-                boolean active = player.spells.get(j).isActive();
-                if (enemies.get(i).intersects(player.spells.get(j))) {
-                    if (active) {
-                        player.spells.get(j).setHit();
-                        enemies.get(i).hit(player.spells.get(j).getAttack());
-                        enemies.get(i).punch(player.spells.get(j).getPower() * player.stats.getModifier(Stats.SPELL_POWER), player.spells.get(j).getx());
-                    }
-                }
-            }
             if (enemies.size() > 0) {
                 if (enemies.get(i).isDead()) {
                     addLoot(enemies.get(i));
@@ -358,12 +383,14 @@ class LevelState extends GameState {
     }
 
     private void menuAction() {
-        if (gui.getCurrentAction() == 3) {
+        if (gui.getCurrentAction() == 0) {
             setPause();
-        } else if (gui.getCurrentAction() == 0) {
-            gui.openInventory();
         } else if (gui.getCurrentAction() == 1) {
+            gui.openInventory();
+        } else if (gui.getCurrentAction() == 2) {
             gui.setOpenStats();
+        } else if (gui.getCurrentAction() == 4) {
+            gsm.setState(GameStateManager.MENUSTATE);
         }
     }
 
@@ -378,6 +405,7 @@ class LevelState extends GameState {
                 if (k == KeyEvent.VK_1) player.use1spell(true);
                 if (k == KeyEvent.VK_2) player.use2spell(true);
                 if (k == KeyEvent.VK_3) player.use3spell(true);
+                if (k == KeyEvent.VK_4) player.use4spell(true);
             }
         }
         if (!menu) {

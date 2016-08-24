@@ -18,7 +18,7 @@ public class GUI {
     private final Stats stats;
 
     private Rectangle[] button;
-    private String[] name = {"Inventory >", "Stats >", "Spells >", "Back to game"};
+    private String[] name = {"Back to game", "Inventory >", "Stats >", "Spells >", "Menu"};
 
     private int currentAction;
 
@@ -42,6 +42,7 @@ public class GUI {
         init();
         loadSprites();
         buttonSize = (int) (30 * scale);
+
     }
 
     private void loadSprites() {
@@ -56,9 +57,9 @@ public class GUI {
     }
 
     private void init() {
-        button = new Rectangle[4];
+        button = new Rectangle[5];
         for (int i = 0; i < button.length; i++) {
-            button[i] = new Rectangle((int) (GamePanel.WIDTH / 2 - 500 * scale), (int) ((100 + i * 150) * scale), (int) (300 * scale), (int) (100 * scale));
+            button[i] = new Rectangle((int) (GamePanel.WIDTH / 2 - 550 * scale), (int) ((100 + i * 100) * scale), (int) (200 * scale), (int) (66 * scale));
         }
         initMapItems();
     }
@@ -101,7 +102,7 @@ public class GUI {
     }
 
 
-    public void drawEquipment(Graphics2D g) {
+    private void drawEquipment(Graphics2D g) {
         //headset
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect((GamePanel.WIDTH / 2), (int) (150 * scale), size, size);
@@ -185,17 +186,18 @@ public class GUI {
         double value;
         for (int i = 0; i < explanation.length; i++) {
             g.drawString(explanation[i], (int) (GamePanel.WIDTH / 2 + 105 * scale), (int) ((180 + 20 * i) * scale));
-            value = (stats.getModifier(i) - 1) * 100;
+            value = 0;
             g.drawString("+" + String.valueOf((int) value) + "%", (int) (GamePanel.WIDTH / 2 + 280 * scale), (int) ((180 + 20 * i) * scale));
         }
+        stats.permaUpdate();
     }
 
     public void setCurrentAction(int i) {
         currentAction += i;
-        if (currentAction > 3) {
+        if (currentAction > 4) {
             currentAction = 0;
         } else if (currentAction < 0) {
-            currentAction = 3;
+            currentAction = 4;
         }
     }
 
@@ -246,11 +248,10 @@ public class GUI {
                 stats.useFreePoints(1);
             }
         }
-        stats.calculateModifier();
     }
 
     public void statsSelect() {
-        tempAdd = new int[]{0, 0, 0, 0};
+        tempAdd = new int[]{0, 0, 0, 0, 0, 0};
     }
 
     private int[] inventoryPlace = new int[]{0, 0};

@@ -2,7 +2,7 @@ package Entity.Items.Armor;
 
 import Entity.Items.Item;
 
-public class Armory extends Item {
+public abstract class Armory extends Item {
 
     protected static int def;
 

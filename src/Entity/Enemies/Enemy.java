@@ -2,6 +2,7 @@ package Entity.Enemies;
 
 
 import Entity.ActiveMapObject;
+import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
@@ -19,8 +20,11 @@ public abstract class Enemy extends ActiveMapObject {
 
     protected boolean enemy;
 
+    protected String name;
+
     //loot
     public DropList loot;
+    private int fontsize;
 
     protected Enemy(TileMap tm) {
         super(tm);
@@ -29,6 +33,7 @@ public abstract class Enemy extends ActiveMapObject {
         x=0;
         y=0;
         AI = true;
+        fontsize = (int) (10 * GamePanel.SCALE);
     }
 
     public boolean isDead(){return health.dead;}
@@ -81,7 +86,14 @@ public abstract class Enemy extends ActiveMapObject {
         if (System.currentTimeMillis() - lastHit < 5000) {
             double proc = health.getHealth() / health.getMaxHealth();
             g.fillRect((int) (x + xmap), (int) (y + ymap - (height + 5) * scale), (int) (width * scale * proc), 5);
+            drawName(g);
         }
+    }
+
+    void drawName(Graphics2D g) {
+        g.setColor(new Color(0.8f, 0.8f, 0.8f, 0.8f));
+        g.setFont(new Font("Courier New", Font.PLAIN, fontsize));
+        g.drawString(name, (int) (x + xmap + (width - name.length() * fontsize / 2)), (int) (y + ymap - (height + 10) * scale));
     }
 
 

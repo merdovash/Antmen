@@ -1,41 +1,40 @@
 package Entity.States;
 
+import Entity.Buffs.Buff;
+import Entity.Buffs.Buffable;
 import Main.GamePanel;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.io.Serializable;
 
-/**
- * Created by MERDovashkinar on 7/31/2016.
- */
-public class Energy {
+public class Energy implements Serializable, Buffable {
 
+    private double basicMaxCapacity;
     private double capacity;
     private int maxCapacity;
     private double consumption=10;
+    private double basicRefillSpeed;
     private double refillSpeed=5;
     private boolean empty;
-    private double percent;
-    public final Color GREEN_RED = new Color((int)(250-percent*2),(int)(50+percent*2),0);
-    public final Color RED_BLUE = new Color((int)(50+percent*2),0,(int)(250-percent*2));
 
-    //time
-    private long delta;
-    private long lastTime;
-    private long delay;
+    private int type;
+    public static final int ENERGY = 0;
+    public static final int MAGIC = 1;
 
-    private ArrayList<Integer> extendMax = new ArrayList<>();
+
 
 
     private final Font font = new Font("Courier New", Font.PLAIN, (int) (12 * GamePanel.SCALE));
 
-    public Energy(int capacity) {
+    public Energy(int capacity, int type) {
         maxCapacity = capacity;
-        this.capacity = maxCapacity;
+        basicMaxCapacity = capacity;
         empty=false;
-        extendMax.add(0);
-        lastTime=System.currentTimeMillis();
+        this.type = type;
 
+        this.capacity = maxCapacity;
+
+        basicRefillSpeed = 5;
     }
 
     public void consump(long delta){
@@ -54,7 +53,6 @@ public class Energy {
     public boolean use(int cost) {
         if (capacity >= cost) {
             capacity -= cost;
-            lastTime = System.currentTimeMillis();
             return true;
         }
         return false;
@@ -77,7 +75,7 @@ public class Energy {
     public void setConsumption(int value) {consumption = value;}
 
     public void draw(Graphics2D g, int number,Color c){
-        percent = capacity / maxCapacity * 100;
+        double percent = capacity / maxCapacity * 100;
         g.setColor(c);
         g.fillRect((int) (GamePanel.WIDTH - (350) * GamePanel.SCALE), (int) ((25 + number * 35) * GamePanel.SCALE), (int) ((int) percent * 3 * GamePanel.SCALE), (int) (30 * GamePanel.SCALE));
         g.setFont(font);
@@ -87,6 +85,35 @@ public class Energy {
 
     public void setRefillSpeed(double refillSpeed) {
         this.refillSpeed = refillSpeed;
+    }
+
+    @Override
+    public void addBuff(Buff b) {
+        switch (type) {
+            case ENERGY:
+                basicMaxCapacity = 100 + b.getBuff(Buff.VIT) / 2 + b.getBuff(Buff.AGI) / 6;
+                maxCapacity = (int) newValue(basicMaxCapacity, Buff.ENERGY, b);
+                basicRefillSpeed = 1 + b.getBuff(Buff.VIT) / 4 + b.getBuff(Buff.AGI) / 3;
+                refillSpeed = newValue(basicRefillSpeed, Buff.ENERGY_REFILL, b);
+                break;
+            case MAGIC:
+                basicRefillSpeed = b.getBuff(Buff.INT) / 2.5;
+                refillSpeed = newValue(basicRefillSpeed, Buff.MANA_REFILL, b);
+                basicMaxCapacity = 100 + b.getBuff(Buff.INT);
+                maxCapacity = (int) newValue(basicMaxCapacity, Buff.MANA, b);
+                break;
+        }
+
+
+    }
+
+    public boolean consumpAbs(int attackPower) {
+        if (capacity > attackPower) {
+            capacity -= attackPower;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

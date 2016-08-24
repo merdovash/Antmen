@@ -1,6 +1,8 @@
 package Entity.Buffs;
 
-public class WeaponModifier {
+import java.io.Serializable;
+
+public class WeaponModifier implements Serializable {
     public static final int NORMAL = 0;
     public static final int FIRE = 1;
     public static final int WATER = 2;

@@ -1,13 +1,15 @@
 package Entity.Players;
 
-public class Param {
+import java.io.Serializable;
+
+public class Param implements Serializable {
     private int value;
 
     Param(int value) {
         this.value = value;
     }
 
-    public int getValue() {
+    int getValue() {
         return value;
     }
 

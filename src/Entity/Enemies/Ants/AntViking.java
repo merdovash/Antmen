@@ -27,7 +27,7 @@ public class AntViking extends MiniBoss {
 
         moveSpeed = 15 * GamePanel.SCALE;
 
-        health = new Health(15);
+        health = new Health(105);
         damage = 2;
         weight = 7;
 
@@ -47,6 +47,8 @@ public class AntViking extends MiniBoss {
         loot.add(0.8, 2);
 
         exp = 75;
+
+        name = "Ant Viking";
 
         init();
     }

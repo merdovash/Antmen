@@ -2,17 +2,25 @@ package Entity.Players;
 
 import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
+import Entity.Items.Armor.Headset.Helmet;
 import Entity.Items.GrabPoint;
 import Entity.Items.Weapons.Swords.Sword;
-import Entity.Spells.Spell;
-import Entity.Spells.SpellsManager;
+import Entity.Skills.Attacking;
+import Entity.Skills.Skill;
+import Entity.Skills.SpellManageable;
+import Entity.Skills.Spells.Spell;
+import Entity.Skills.SpellsManager;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Player extends ActiveMapObject {
+public class Player extends ActiveMapObject implements Serializable {
+
+    //moving
+    private double basicmoveSpeed;
 
     //respawn
     private int respawnX;
@@ -46,6 +54,11 @@ public class Player extends ActiveMapObject {
     //Stats
     public Stats stats;
 
+    //skills
+    private boolean skill;
+    private Skill skills;
+    private boolean newSkill;
+
 
     //trace
     //private Trace trace;
@@ -67,7 +80,7 @@ public class Player extends ActiveMapObject {
         cheight = height / 2 - 15;
 
         facingRight = true;
-        moveSpeed = 20 * GamePanel.SCALE;
+        basicmoveSpeed = moveSpeed = 20 * GamePanel.SCALE;
         jumpStart = -55 * GamePanel.SCALE;
 
         spells = new ArrayList<>();
@@ -101,13 +114,14 @@ public class Player extends ActiveMapObject {
 
         inventory = new Inventory(attack, defence);
         inventory.addItem(new Sword());
+        inventory.addItem(new Helmet());
 
         headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
         weaponPoint = new GrabPoint(0, 0, facingRight, (int) ((10) * GamePanel.SCALE));
 
         stats = new Stats();
         AI = false;
-
+        stats.setInventory(inventory);
     }
 
     public void load(TileMap tm, int x, int y) {
@@ -127,23 +141,25 @@ public class Player extends ActiveMapObject {
     private boolean spell1;
     private boolean spell2;
     private boolean spell3;
+    private boolean spell4;
 
     public void use1spell(boolean b) {
         spell1 = b;
     }
-
     public void use2spell(boolean b) {
         spell2 = b;
     }
-
     public void use3spell(boolean b) {
         spell3 = b;
+    }
+
+    public void use4spell(boolean b) {
+        spell4 = b;
     }
 
     public void checkAtack(ArrayList<Enemy> enemies) {
 
         for (Enemy enemy : enemies) {
-            if (attackAnimation) {
                 if (inventory.getWeapon() == null) {
                     if (facingRight) {
                         if (enemy.getx() > x && enemy.getx() < x + scratchRange && enemy.gety() > y - height / 2 && enemy.gety() < y + height / 2) {
@@ -154,18 +170,32 @@ public class Player extends ActiveMapObject {
                             enemy.hit(scratchDamage);
                         }
                     }
-                } else {
-                    if (attacking) {
+                } else if (skills != null) {
+                    System.out.println("checking attack");
+                    if (attackPlace != null) {
                         if (attackPlace.intersects(enemy.getRectangle())) {
-                            enemy.hit(attack);
-                            enemy.punch(inventory.getWeapon().getPower(), (int) x);
-                            attacking = false;
+                            System.out.println("find enemy ");
+                            enemy.hit(skills.getAttack());
+                            enemy.punch(skills.getPower(), (int) (x));
+                            try {
+                                ((Attacking) skills).setHit();
+                            } catch (ClassCastException e) {
+                                System.out.println("set hit failed");
+                            }
+
                         }
                     }
                 }
-            }
+
             if (rectangle.intersects(enemy.getRectangle())) {
                 hit(enemy.getDamage());
+
+            }
+            for (int i = 0; i < spells.size(); i++) {
+                if (spells.get(i).getRectangle().intersects(enemy.getRectangle()) && spells.get(i).isActive()) {
+                    enemy.hit(spells.get(i).getAttack());
+                    spells.get(i).setHit();
+                }
             }
         }
     }
@@ -183,17 +213,28 @@ public class Player extends ActiveMapObject {
     }
 
     private void useSpells() {
-        Spell s = null;
+        Spell s;
+        SpellManageable smb = null;
         if (spell1 && currentAction != FIREBALL) {
-            s = sm.use(tileMap, facingRight, 0);
+            smb = sm.use(tileMap, facingRight, 0);
         } else if (spell2 && currentAction != FIREBALL) {
-            s = sm.use(tileMap, facingRight, 1);
+            smb = sm.use(tileMap, facingRight, 1);
         } else if (spell3 && currentAction != FIREBALL) {
-            s = sm.use(tileMap, facingRight, 2);
-            
+            smb = sm.use(tileMap, facingRight, 2);
+        } else if (spell4 && currentAction != FIREBALL) {
+            smb = sm.use(tileMap, facingRight, 3);
         }
-        if (s != null) useSpell(s);
-        
+        if (smb != null) {
+            if (!smb.isSkill()) {
+                s = (Spell) smb;
+                s.setAttack(stats.spellAttack(s));
+                useSpell(s);
+            } else {
+                if (skills == null) {
+                    useSkill((Skill) smb);
+                }
+            }
+        }
     }
 
     private void useSpell(Spell s) {
@@ -213,9 +254,9 @@ public class Player extends ActiveMapObject {
 
     private boolean attackAnimation;
     private Rectangle attackPlace;
+    private long atackAnimationX;
     public void update() {
         if (!dead) {
-
             if (boost && !stats.energy.isEmpty()) {
                 stats.energy.consump(delta);
                 moveSpeed = stats.getBoostSpeed();
@@ -225,8 +266,22 @@ public class Player extends ActiveMapObject {
             super.update();
 
             stats.update(delta);
-
-            updateBuffs();
+            if (skills != null) {
+                if (newSkill) {
+                    System.out.println("new skill");
+                    newSkill = false;
+                    skills.start(stats);
+                    skill = true;
+                    attackAnimation = true;
+                }
+                skills.update(delta);
+                if (!skills.getActive()) {
+                    System.out.println("skill off");
+                    skills = null;
+                    skill = false;
+                    attackAnimation = false;
+                }
+            }
 
             //trace
             //trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
@@ -235,26 +290,10 @@ public class Player extends ActiveMapObject {
             if (!boost || stats.energy.isEmpty()) stats.energy.refill(delta);
 
 
-            if (scratching) {
-                attacking = true;
-                attackAnimation = true;
-                scratching = false;
-            }
-            if (attackAnimation) {
-                if (inventory.getWeapon() != null) {
-                    atackAnimation += delta / inventory.getWeapon().getSpeed();
-                    if (facingRight) {
-                        attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange()), 10);
-                    } else {
-                        attackPlace = new Rectangle((weaponPoint.getX() - (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange())), weaponPoint.getY(), (int) ((double) (atackAnimation) / 100 * inventory.getWeapon().getRange()), 10);
-                    }
-
-                    if (atackAnimation >= 100) {
-                        atackAnimation = 0;
-                        attackAnimation = false;
-                        attackPlace = null;
-                    }
-                }
+            if (skills != null) {
+                sword(skills.getAngle());
+            } else {
+                attackPlace = null;
             }
             //check attackAnimation has stopped
             if (currentAction == SCRATCHING) {
@@ -279,6 +318,8 @@ public class Player extends ActiveMapObject {
                 if (right) facingRight = true;
                 if (left) facingRight = false;
             }
+
+
         } else {
             //time
             delta = System.nanoTime() - lastTime;
@@ -288,40 +329,37 @@ public class Player extends ActiveMapObject {
         //update firebals
         for (int i = 0; i < spells.size(); i++) {
             spells.get(i).update();
+            if (spells.get(i).getType() == 1) {
+                stats.addBuffs(spells.get(i).getBuff());
+            }
             if (spells.get(i).checkRemove()) {
                 spells.remove(i);
                 i--;
             }
+
         }
 
         setAnimation();
 
-        if (stats.getCongats()) {
+        if (stats.getCongrats()) {
             levelUp = true;
             levelUpTime = System.currentTimeMillis();
             place = 0;
         }
 
-        sendBuffs();
     }
 
-    private void sendBuffs() {
-        //stats.getBuffs(inventory.getHelm());
-    }
-
-    private void updateBuffs() {
-        try {
-            if (inventory.getHelm().lastUsage == 0) {
-                inventory.getHelm().lastUsage = System.currentTimeMillis();
-            } else if (System.currentTimeMillis() - inventory.getHelm().lastUsage >= inventory.getHelm().getSpeed()) {
-                stats.health.heal(inventory.getHelm().getHealthRegen());
-                inventory.getHelm().lastUsage = System.currentTimeMillis();
+    private void sword(long angle) {
+        if (angle > 0) {
+            if (facingRight) {
+                attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), (int) ((double) (angle) / 100 * inventory.getWeapon().getRange()), 10);
+            } else {
+                attackPlace = new Rectangle((weaponPoint.getX() - (int) ((double) (angle) / 100 * inventory.getWeapon().getRange())), weaponPoint.getY(), (int) ((double) (angle) / 100 * inventory.getWeapon().getRange()), 10);
             }
-        } catch (NullPointerException e) {
-
+        } else {
+            attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), 1, 1);
         }
     }
-
 
     private void setAnimation() {
         // set animation
@@ -405,7 +443,7 @@ public class Player extends ActiveMapObject {
 
         if (!dead) {
             super.draw(g);
-            drawArmory(g);
+            drawArmory(g, skills != null ? skills.getAngle() : 0);
         }
 
         if (levelUp) {
@@ -437,5 +475,10 @@ public class Player extends ActiveMapObject {
     public void setRespawn(int x, int y) {
         respawnX = x;
         respawnY = y;
+    }
+
+    private void useSkill(Skill s) {
+        skills = s;
+        newSkill = true;
     }
 }
