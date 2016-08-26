@@ -2,6 +2,7 @@ package Entity.Items;
 
 import Entity.Items.Armor.Headset.Helmet;
 import Entity.Items.Loot.Branch;
+import Entity.Items.Weapons.Knifes.Knife;
 import Entity.Items.Weapons.Swords.Sword;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class ItemList {
         add(1, "/Items/Loot/branch.gif", new Branch());
         add(2, "/Items/Armory/Headset/helmetIco.gif", new Helmet());
         add(3, "/Items/Weapons/Swords/swordIco.gif", new Sword());
+        add(4, "/Items/Weapons/Knifes/knifeIco.gif", new Knife());
     }
 
     private static void add(int id, String adress, Item item) {

@@ -83,19 +83,20 @@ public class SpellsManager implements Serializable {
                     System.out.println("basickAttack");
                     break;
                 case 101:
-                    s = new FireBall(tm, r, 1);
+                    s = new FireBall(1);
                     break;
                 case 102:
-                    s = new FireBall(tm, r, 2);
+                    s = new FireBall(2);
                     break;
                 case 103:
-                    s = new FireBall(tm, r, 3);
+                    s = new FireBall(3);
                     break;
                 case 202:
-                    s = new IncreasePower(tm, r, 2);
+                    s = new IncreasePower(2);
                     break;
                 case 301:
                     s = new MultiAttack(1);
+                    break;
                 default:
                     break;
             }

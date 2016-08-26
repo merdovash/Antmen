@@ -76,11 +76,18 @@ public abstract class MapObject {
 
 	// constructor
 	public MapObject(TileMap tm) {
+		if (tm != null) {
+			tileMap = tm;
+			tileSize = tm.getTileSize();
+			rectangle = getRectangle();
+		}
+		scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
+	}
+
+	protected void init(TileMap tm, boolean right) {
 		tileMap = tm;
-		tileSize = tm.getTileSize();
-		rectangle = getRectangle();
-        scale = Math.round((int) (GamePanel.SCALE * 10)) / 10d;
-    }
+		facingRight = right;
+	}
 
 
 	protected void loadSprites() {
@@ -131,6 +138,8 @@ public abstract class MapObject {
 
 
 	private void calculateCorners(double x, double y) {
+		tileSize = 50;
+
 		int leftTile = (int) ((x - 1) / (tileSize * GamePanel.SCALE));
 		int rightTile = (int) ((x + width * scale + 1) / (tileSize * GamePanel.SCALE));
 		int topTile = (int) ((y - height * scale - 1) / (tileSize * GamePanel.SCALE));
@@ -149,8 +158,9 @@ public abstract class MapObject {
         //	middleH=2;
         //}
 
-        int tl = tileMap.getType(topTile, leftTile);
-        int tr = tileMap.getType(topTile, rightTile);
+		System.out.println(tileSize + " " + (y - height * scale - 1));
+		int tl = tileMap.getType(topTile, leftTile);
+		int tr = tileMap.getType(topTile, rightTile);
 		int bl = tileMap.getType(bottomTile, leftTile);
 		int br = tileMap.getType(bottomTile, rightTile);
 

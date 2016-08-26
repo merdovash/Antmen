@@ -18,4 +18,9 @@ public class Helmet extends Headset {
                 {false, Buff.HEADSET, Buff.ATTACK_SPEED, -1, 1d}
         };
     }
+
+    @Override
+    public long[] trajectory(long X) {
+        return new long[0];
+    }
 }

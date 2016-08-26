@@ -16,4 +16,9 @@ public class Branch extends Loot {
     public Object[][] getBuff() {
         return new Object[0][];
     }
+
+    @Override
+    public long[] trajectory(long X) {
+        return new long[0];
+    }
 }

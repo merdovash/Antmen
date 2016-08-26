@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static int WIDTH = 192;
     public static int HEIGHT = 108;
     public static double SCALE = 2;
+    public static double GUI_SCALE;
 
     private Thread thread;
     private boolean running;
@@ -33,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         Dimension sSize = Toolkit.getDefaultToolkit ().getScreenSize ();
         HEIGHT = sSize.height;
         WIDTH = sSize.width;
+        GUI_SCALE = sSize.width / 1920;
         SCALE = HEIGHT / 50d / 14d;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 

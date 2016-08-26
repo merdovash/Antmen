@@ -18,7 +18,7 @@ public abstract class Skill implements SpellManageable {
     protected int cost;
 
     //ico
-    private BufferedImage ico;
+    protected BufferedImage ico;
     protected String addres;
 
     public static int SPELL = 0;
@@ -31,7 +31,8 @@ public abstract class Skill implements SpellManageable {
 
     //animation
     protected long angleX;
-    protected long angle;
+    protected long[] positionY;
+
 
 
     public abstract void start(Stats s);
@@ -79,8 +80,11 @@ public abstract class Skill implements SpellManageable {
         return cooldown;
     }
 
-    public long getAngle() {
-        return angle;
+    public long[] getPositionY() {
+        return positionY;
     }
 
+    public int getCost() {
+        return cost;
+    }
 }

@@ -72,6 +72,7 @@ public class Stats implements Serializable {
     private Param spk;
 
     private int freePoints;
+    private int skillPoints;
 
     private double boostSpeed;
 
@@ -88,6 +89,7 @@ public class Stats implements Serializable {
 
     Defence defence;
     private ArrayList<Attack> magicAttack;
+
 
 
     Stats() {
@@ -143,6 +145,7 @@ public class Stats implements Serializable {
     private void levelUp() {
         level++;
         freePoints += 2 + level / 20;
+        skillPoints += 1;
         health.levelUp(0.5);
         health.heal((int) (health.getMaxHealth()));
     }
@@ -241,6 +244,10 @@ public class Stats implements Serializable {
     }
     public int getFreePoints() {
         return freePoints;
+    }
+
+    public int getSkillPoints() {
+        return skillPoints;
     }
     public int getLevel() {
         return level;

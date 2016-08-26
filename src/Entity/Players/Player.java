@@ -4,6 +4,7 @@ import Entity.ActiveMapObject;
 import Entity.Enemies.Enemy;
 import Entity.Items.Armor.Headset.Helmet;
 import Entity.Items.GrabPoint;
+import Entity.Items.Weapons.Knifes.Knife;
 import Entity.Items.Weapons.Swords.Sword;
 import Entity.Skills.Attacking;
 import Entity.Skills.Skill;
@@ -115,6 +116,7 @@ public class Player extends ActiveMapObject implements Serializable {
         inventory = new Inventory(attack, defence);
         inventory.addItem(new Sword());
         inventory.addItem(new Helmet());
+        inventory.addItem(new Knife());
 
         headPoint = new GrabPoint((int) (x + xmap + (width / 2 + 2) * scale), (int) (y + ymap - (height - 25) * scale), facingRight, (int) ((width - 35) * GamePanel.SCALE));
         weaponPoint = new GrabPoint(0, 0, facingRight, (int) ((10) * GamePanel.SCALE));
@@ -152,7 +154,6 @@ public class Player extends ActiveMapObject implements Serializable {
     public void use3spell(boolean b) {
         spell3 = b;
     }
-
     public void use4spell(boolean b) {
         spell4 = b;
     }
@@ -171,7 +172,6 @@ public class Player extends ActiveMapObject implements Serializable {
                         }
                     }
                 } else if (skills != null) {
-                    System.out.println("checking attack");
                     if (attackPlace != null) {
                         if (attackPlace.intersects(enemy.getRectangle())) {
                             System.out.println("find enemy ");
@@ -180,7 +180,7 @@ public class Player extends ActiveMapObject implements Serializable {
                             try {
                                 ((Attacking) skills).setHit();
                             } catch (ClassCastException e) {
-                                System.out.println("set hit failed");
+                                System.out.println("setColor hit failed");
                             }
 
                         }
@@ -217,16 +217,21 @@ public class Player extends ActiveMapObject implements Serializable {
         SpellManageable smb = null;
         if (spell1 && currentAction != FIREBALL) {
             smb = sm.use(tileMap, facingRight, 0);
+            spell1 = false;
         } else if (spell2 && currentAction != FIREBALL) {
             smb = sm.use(tileMap, facingRight, 1);
+            spell2 = false;
         } else if (spell3 && currentAction != FIREBALL) {
             smb = sm.use(tileMap, facingRight, 2);
+            spell3 = false;
         } else if (spell4 && currentAction != FIREBALL) {
             smb = sm.use(tileMap, facingRight, 3);
+            spell4 = false;
         }
         if (smb != null) {
             if (!smb.isSkill()) {
                 s = (Spell) smb;
+                s.start(tileMap, facingRight);
                 s.setAttack(stats.spellAttack(s));
                 useSpell(s);
             } else {
@@ -257,44 +262,17 @@ public class Player extends ActiveMapObject implements Serializable {
     private long atackAnimationX;
     public void update() {
         if (!dead) {
-            if (boost && !stats.energy.isEmpty()) {
-                stats.energy.consump(delta);
-                moveSpeed = stats.getBoostSpeed();
-            } else {
-                moveSpeed = stats.getSpeed();
-            }
+            updateSpeed();
             super.update();
 
             stats.update(delta);
-            if (skills != null) {
-                if (newSkill) {
-                    System.out.println("new skill");
-                    newSkill = false;
-                    skills.start(stats);
-                    skill = true;
-                    attackAnimation = true;
-                }
-                skills.update(delta);
-                if (!skills.getActive()) {
-                    System.out.println("skill off");
-                    skills = null;
-                    skill = false;
-                    attackAnimation = false;
-                }
-            }
 
-            //trace
-            //trace.addPlace((int) (x + width / 2), (int) (y - 25), tileMap);
+            updateSkills();
+            useSpells();
 
             //refill energy
             if (!boost || stats.energy.isEmpty()) stats.energy.refill(delta);
 
-
-            if (skills != null) {
-                sword(skills.getAngle());
-            } else {
-                attackPlace = null;
-            }
             //check attackAnimation has stopped
             if (currentAction == SCRATCHING) {
                 if (animation.hasPlayedOnce()) {
@@ -305,15 +283,11 @@ public class Player extends ActiveMapObject implements Serializable {
                 if (animation.hasPlayedOnce()) firing = false;
             }
 
-            //spell atack;
-            useSpells();
-
-
-            //set animation
+            //setColor animation
             firing = spell1 || spell2 || spell3;
 
 
-            // set direction
+            // setColor direction
             if (currentAction != SCRATCHING && currentAction != FIREBALL) {
                 if (right) facingRight = true;
                 if (left) facingRight = false;
@@ -349,20 +323,53 @@ public class Player extends ActiveMapObject implements Serializable {
 
     }
 
-    private void sword(long angle) {
-        if (angle > 0) {
-            if (facingRight) {
-                attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), (int) ((double) (angle) / 100 * inventory.getWeapon().getRange()), 10);
-            } else {
-                attackPlace = new Rectangle((weaponPoint.getX() - (int) ((double) (angle) / 100 * inventory.getWeapon().getRange())), weaponPoint.getY(), (int) ((double) (angle) / 100 * inventory.getWeapon().getRange()), 10);
+    private void updateSpeed() {
+        if (boost && !stats.energy.isEmpty()) {
+            stats.energy.consump(delta);
+            moveSpeed = stats.getBoostSpeed();
+        } else {
+            moveSpeed = stats.getSpeed();
+        }
+    }
+
+    private void updateSkills() {
+        if (skills != null) {
+            if (newSkill) {
+                newSkill = false;
+                skills.start(stats);
+            }
+            skills.update(delta);
+            if (stats.inventory.getWeapon() != null) sword(skills.getPositionY());
+            if (!skills.getActive()) {
+                skills = null;
             }
         } else {
-            attackPlace = new Rectangle(weaponPoint.getX(), weaponPoint.getY(), 1, 1);
+            attackPlace = null;
+        }
+    }
+
+    private void sword(long[] place) {
+        if (place[0] > 0) {
+            if (facingRight) {
+                attackPlace = new Rectangle(
+                        (int) (weaponPoint.getX() + place[1] * GamePanel.SCALE),
+                        (int) (weaponPoint.getY() + place[2] * GamePanel.SCALE),
+                        (int) ((double) (place[0]) / 100 * inventory.getWeapon().getRange()),
+                        10);
+            } else {
+                attackPlace = new Rectangle(
+                        (weaponPoint.getX() - (int) ((double) (place[0]) / 100 * inventory.getWeapon().getRange() + place[1] * GamePanel.SCALE)),
+                        (int) (weaponPoint.getY() + GamePanel.SCALE),
+                        (int) ((double) (place[0]) / 100 * inventory.getWeapon().getRange()),
+                        10);
+            }
+        } else {
+            attackPlace = null;
         }
     }
 
     private void setAnimation() {
-        // set animation
+        // setColor animation
         if (scratching) {
             if (inventory.getWeapon() == null) {
                 if (currentAction != SCRATCHING) {
@@ -443,7 +450,7 @@ public class Player extends ActiveMapObject implements Serializable {
 
         if (!dead) {
             super.draw(g);
-            drawArmory(g, skills != null ? skills.getAngle() : 0);
+            drawArmory(g, skills != null ? skills.getPositionY() : new long[]{0, 0, 0});
         }
 
         if (levelUp) {
@@ -478,7 +485,9 @@ public class Player extends ActiveMapObject implements Serializable {
     }
 
     private void useSkill(Skill s) {
-        skills = s;
-        newSkill = true;
+        if (stats.energy.consumpAbs(s.getCost())) {
+            skills = s;
+            newSkill = true;
+        }
     }
 }

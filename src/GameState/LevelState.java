@@ -267,6 +267,7 @@ class LevelState extends GameState {
         fps.update();
 
         if (menu) {
+            gui.update();
             paused = true;
             return;
         }
@@ -389,6 +390,8 @@ class LevelState extends GameState {
             gui.openInventory();
         } else if (gui.getCurrentAction() == 2) {
             gui.setOpenStats();
+        } else if (gui.getCurrentAction() == 3) {
+            gui.setOpenSkills();
         } else if (gui.getCurrentAction() == 4) {
             gsm.setState(GameStateManager.MENUSTATE);
         }
@@ -425,6 +428,11 @@ class LevelState extends GameState {
                 if (k == KeyEvent.VK_D) gui.statsAdd(1);
                 if (k == KeyEvent.VK_ENTER) gui.statsSelect();
                 if (k == KeyEvent.VK_BACK_SPACE) gui.setOpenStats();
+            } else if (gui.isOpenSkills()) {
+                if (k == KeyEvent.VK_W) gui.skillMove(-1);
+                if (k == KeyEvent.VK_S) gui.skillMove(1);
+                if (k == KeyEvent.VK_ENTER) gui.skillsSelect();
+                if (k == KeyEvent.VK_BACK_SPACE) gui.setOpenSkills();
             } else {
                 if (k == KeyEvent.VK_ENTER) menuAction();
                 if (k == KeyEvent.VK_W) gui.setCurrentAction(-1);

@@ -156,6 +156,7 @@ public class TileMap {
 	
 	public int getType(int row, int col) {
 		int rc;
+		System.out.println(row + " " + col);
 		rc = map[row][col];
 		int r = rc / numTilesAcross;
 		int c = rc % numTilesAcross;

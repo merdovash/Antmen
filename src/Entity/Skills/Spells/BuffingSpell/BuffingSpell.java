@@ -1,12 +1,11 @@
 package Entity.Skills.Spells.BuffingSpell;
 
 import Entity.Skills.Spells.Spell;
-import TileMap.TileMap;
 
 abstract class BuffingSpell extends Spell {
 
-    BuffingSpell(TileMap tm, boolean right) {
-        super(tm, right);
+    BuffingSpell() {
+        super();
         type = 1;
     }
 

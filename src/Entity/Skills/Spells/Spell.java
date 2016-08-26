@@ -26,12 +26,19 @@ public abstract class Spell extends MapObject implements SpellManageable {
     protected int damage;
     protected int power;
 
+    //ico
+    protected BufferedImage ico;
+
     protected Attack attack;
 
-    public Spell(TileMap tm ,boolean right) {
-        super(tm);
+    public Spell() {
+        super(null);
         active = true;
         this.facingRight = right;
+    }
+
+    public void start(TileMap tm, boolean right) {
+        super.init(tm, right);
     }
 
     public abstract void update();
@@ -82,7 +89,7 @@ public abstract class Spell extends MapObject implements SpellManageable {
     }
 
     public BufferedImage getIco() {
-        return sprites.get(0)[0];
+        return ico;
     }
 
     public boolean isSkill() {

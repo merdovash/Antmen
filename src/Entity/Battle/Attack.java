@@ -3,6 +3,7 @@ package Entity.Battle;
 import Entity.Buffs.Buff;
 import Entity.Buffs.Buffable;
 import Entity.Items.Item;
+import Entity.Items.Weapons.Weapons;
 
 import java.io.Serializable;
 
@@ -59,9 +60,7 @@ public class Attack implements Serializable, Buffable {
         weaponDamage = weapon.getDamage();
         element = (int) weapon.getElement()[0];
         elementPower = weapon.getElement()[1];
-        if (weapon.getWeaponType().equals("sword")) {
-            weaponType = WEAPON_HEAVY;
-        }
+        weaponType = weapon.getWeaponType();
     }
 
     int getElement() {
@@ -86,8 +85,10 @@ public class Attack implements Serializable, Buffable {
         } else if (type == TYPE_PHISICAL || type == TYPE_ENCHANCED) {
             increaseDamage = b.getBuff(Buff.ATTACK_DMG, 1);
             bonusDamage = b.getBuff(Buff.ATTACK_DMG, 0);
-            if (weaponType == WEAPON_HEAVY) {
+            if (weaponType == Weapons.HEAVY) {
                 statsDamage = b.getBuff(Buff.STR) / 1 + b.getBuff(Buff.DEX) / 7;
+            } else if (weaponType == Weapons.KNIFE) {
+                statsDamage = b.getBuff(Buff.STR) / 1 + b.getBuff(Buff.DEX) / 2;
             }
         }
     }

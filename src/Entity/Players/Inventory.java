@@ -127,16 +127,18 @@ public class Inventory implements Serializable {
     }
 
 
-    public void drawWeapon(Graphics2D g, GrabPoint weaponPoint, long angle) {
+    public void drawWeapon(Graphics2D g, GrabPoint weaponPoint, long[] place) {
         if (weapon != null) {
             BufferedImage img = weapon.getImage();
-            double scale = (double) (weaponPoint.getWidth()) / img.getWidth() * GamePanel.SCALE;
-            int width = (int) (img.getWidth() * scale) * weaponPoint.getSide();
-            int height = (int) (img.getHeight() * scale);
+            int width = (weapon.getWidth()) * weaponPoint.getSide();
+            int height = (weapon.getHeight());
             Image im = img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
             AffineTransform at = new AffineTransform();
-            at.setToRotation(Math.toRadians(weaponPoint.getSide() * angle), weaponPoint.getX() - width / 2, weaponPoint.getY());
-            at.translate(weaponPoint.getX() - weaponPoint.getSide() * width / 2, weaponPoint.getY() - height);
+            try {
+                at.setToRotation(Math.toRadians(weaponPoint.getSide() * place[0]), weaponPoint.getX() - width / 2, weaponPoint.getY());
+                at.translate(weaponPoint.getX() - weaponPoint.getSide() * width / 2 + place[1] * GamePanel.SCALE, weaponPoint.getY() - height + place[2] * GamePanel.SCALE);
+            } catch (NullPointerException e) {
+            }
             g.drawImage(im, at, null);
         }
     }

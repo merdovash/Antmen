@@ -2,6 +2,7 @@ package GUI;
 
 import Entity.Players.Inventory;
 import Entity.Players.Stats;
+import Entity.Skills.SkillList;
 import Main.GamePanel;
 
 import javax.imageio.ImageIO;
@@ -34,6 +35,10 @@ public class GUI {
     //box
     private int size;
 
+    private SkillList skillList;
+    private boolean openSkills;
+    private boolean submenu;
+
     public GUI(Inventory inventory, Stats stats) {
         scale = GamePanel.SCALE;
         size = (int) (60 * scale);
@@ -42,6 +47,18 @@ public class GUI {
         init();
         loadSprites();
         buttonSize = (int) (30 * scale);
+
+        //skils
+        skillList = new SkillList();
+        skillWindow = new Window(425, 100, 1400, 880);
+        skills = new Menu[skillList.size()];
+        for (int i = 0; i < skillList.size(); i++) {
+            skills[i] = new Menu(500 + i * 55, 500, 50, 50);
+            skills[i].setImage(skillList.getImage(i));
+            skills[i].add(spellOption, Menu.LEFT);
+        }
+
+
 
     }
 
@@ -65,6 +82,12 @@ public class GUI {
     }
 
     public void update() {
+        if (openSkills) {
+            for (int i = 0; i < skillList.size(); i++) {
+                skills[i].select(i == spellCurrentPosition);
+                skills[i].activate(i == spellCurrentPosition && submenu);
+            }
+        }
 
     }
 
@@ -143,8 +166,24 @@ public class GUI {
             drawEquipment(g);
         } else if (openStats) {
             drawStats(g);
+        } else if (openSkills) {
+            drawSkills(g);
         }
 
+
+    }
+
+    private String[] spellOption = new String[]{"", "Set", "Back"};
+    private int spellCurrentPosition;
+    private Window skillWindow;
+    private Menu[] skills;
+
+
+    private void drawSkills(Graphics2D g) {
+        skillWindow.draw(g);
+        for (int i = 0; i < skills.length; i++) {
+            skills[i].draw(g);
+        }
     }
 
     private String[] s = new String[]{"str:", "int:", "dex:", "vit:", "agi:", "spk:"};
@@ -221,6 +260,14 @@ public class GUI {
         return openStats;
     }
 
+    public void setOpenSkills() {
+        openSkills = !openSkills;
+    }
+
+    public boolean isOpenSkills() {
+        return openSkills;
+    }
+
     private int place;
 
     public void statsMove(int i) {
@@ -271,7 +318,50 @@ public class GUI {
         }
     }
 
+    public void skillMove(int i) {
+        spellCurrentPosition += i;
+        if (spellCurrentPosition > skillList.size() - 1) {
+            spellCurrentPosition = 0;
+        }
+        if (spellCurrentPosition < 0) {
+            spellCurrentPosition = skillList.size() - 1;
+        }
+    }
+
     public void inventorySelect() {
         inventory.setItem(inventoryPlace[0], inventoryPlace[1], inventory.equip(inventory.getItem(inventoryPlace[0], inventoryPlace[1])));
+    }
+
+    public void skillsSelect() {
+        submenu = true;
+    }
+
+    private Integer[] move;
+    private int downBorder;
+    private int leftBorder;
+
+    public void move(int i, int j) {
+        move[0] += i;
+        move[1] += j;
+
+        if (move[0] > downBorder) move[0] = 0;
+        else if (move[0] < 0) move[0] = downBorder;
+        if (move[1] > leftBorder) move[1] = 0;
+        else if (move[1] < 0) move[1] = leftBorder;
+
+    }
+
+    private int calibrate(int what, int min, int max) {
+        if (what > max) what = min;
+        else if (what < min) what = max;
+        return what;
+    }
+
+    public void select() {
+
+    }
+
+    public void deselect() {
+
     }
 }

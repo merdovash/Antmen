@@ -28,7 +28,7 @@ public abstract class Item implements Serializable {
 
     //weapons stuff
     public long lastUsage;
-    protected String weaponType;
+    protected int weaponType;
     protected WeaponModifier wp;
 
     //inventory stuff
@@ -56,7 +56,7 @@ public abstract class Item implements Serializable {
         return type;
     }
 
-    public String getWeaponType() {
+    public int getWeaponType() {
         return weaponType;
     }
 
@@ -120,6 +120,8 @@ public abstract class Item implements Serializable {
     }
 
     public abstract Object[][] getBuff();
+
+    public abstract long[] trajectory(long X);
 }
 
 

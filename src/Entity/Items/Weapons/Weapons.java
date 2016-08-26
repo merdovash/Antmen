@@ -4,6 +4,8 @@ import Entity.Buffs.Buff;
 import Entity.Items.Item;
 
 public abstract class Weapons extends Item {
+    public static int HEAVY = 0;
+    public static int KNIFE = 1;
 
     protected int range;
     protected int speed;
@@ -35,4 +37,5 @@ public abstract class Weapons extends Item {
     public double[] getElement() {
         return new double[]{wp.getDamage()[1], wp.getDamage()[2]};
     }
+
 }

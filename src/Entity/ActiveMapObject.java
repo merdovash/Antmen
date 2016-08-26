@@ -258,10 +258,10 @@ public abstract class ActiveMapObject extends MapObject {
         g.draw(rectangle);
     }
 
-    protected void drawArmory(Graphics2D g, long angle) {
+    protected void drawArmory(Graphics2D g, long[] place) {
         if (inventory != null) {
             inventory.drawHelm(g, headPoint);
-            inventory.drawWeapon(g, weaponPoint, angle);
+            inventory.drawWeapon(g, weaponPoint, place);
         }
     }
 
@@ -279,7 +279,7 @@ public abstract class ActiveMapObject extends MapObject {
         resistances.set(HEADSET, inventory.getHelm().getResistance());
         resistances.set(LEGS, inventory.getLegs().getResistance());
         resistances.set(ARMS, inventory.getArms().getResistance());
-        //resistance.set(BUFFS, stats.getResistance());
+        //resistance.setColor(BUFFS, stats.getResistance());
         double[] resistance = new double[]{0, 0, 0, 0, 0, 0};
         for (int i = 0; i < 6; i++) {
             for (int place = 0; place < 5; place++) {

@@ -13,6 +13,7 @@ public class BasicAttack extends Skill implements Attacking {
         cooldown = 0;
         cost = 5;
         power = 25;
+        ico = loadIco(addres, 50, 50);
     }
 
     @Override
@@ -20,6 +21,8 @@ public class BasicAttack extends Skill implements Attacking {
         this.stats = s;
         active = true;
         attack = s.attack;
+        angleX = 0;
+        positionY = new long[]{0, 0, 0};
     }
 
     @Override
@@ -27,13 +30,13 @@ public class BasicAttack extends Skill implements Attacking {
         if (active) {
             if (stats.inventory.getWeapon() != null) {
                 angleX += delta / (stats.getAttackSpeed());
-                angle = (long) ((angleX > 50 ? -100 : -50) * Math.sin(angleX / 16d));
+                positionY = stats.inventory.getWeapon().trajectory(angleX);
 
                 //attackPlace = new Rectangle((weaponPoint.getX() - (int)()))
 
                 if (angleX >= 100) {
                     angleX = 0;
-                    angle = 0;
+                    positionY = new long[]{0, 0, 0};
                     active = false;
                 }
             }

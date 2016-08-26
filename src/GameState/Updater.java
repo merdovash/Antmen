@@ -217,7 +217,7 @@ class Updater extends GameState{
 
     @Override
     public void draw(Graphics2D g) {
-        //set font
+        //setColor font
         g.setFont(font);
 
         //draw bg

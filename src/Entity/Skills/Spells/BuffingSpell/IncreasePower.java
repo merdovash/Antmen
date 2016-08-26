@@ -8,13 +8,18 @@ import java.awt.*;
 
 public class IncreasePower extends BuffingSpell {
 
-    public IncreasePower(TileMap tm, boolean right, int level) {
-        super(tm, right);
+    public IncreasePower(int level) {
+        super();
         power = level;
         time = 20;
         used = true;
         manacost = 50;
         cooldown = 35000;
+    }
+
+    @Override
+    public void start(TileMap tm, boolean right) {
+        super.init(tm, right);
     }
 
     @Override
