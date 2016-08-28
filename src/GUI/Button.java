@@ -7,12 +7,14 @@ import java.awt.image.BufferedImage;
 public class Button extends GuiObject {
 
     private Color colorActive = new Color(0.7f, 0.7f, 0.7f, 0.3f);
+    private Color selectedColor = new Color(200, 75, 75);
+    private Color basicColor = new Color(150, 150, 25);
 
     private Boolean seleceted = false;
 
 
     public Button(int x, int y, int width, int height) {
-        setColor(new Color(40, 101, 101));
+        setColor(color);
         init(x, y, width, height);
     }
 
@@ -25,7 +27,7 @@ public class Button extends GuiObject {
     }
 
     public void setColor(Color NEW) {
-        color = NEW;
+        basicColor = NEW;
     }
 
     public void select(boolean b) {
@@ -33,11 +35,8 @@ public class Button extends GuiObject {
     }
 
     public void draw(Graphics2D g) {
+        color = seleceted ? selectedColor : basicColor;
         super.draw(g);
-        if (seleceted) {
-            g.setColor(colorActive);
-            g.fill(rectangle);
-        }
     }
 
 }

@@ -7,7 +7,7 @@ import Entity.FPS;
 import Entity.Items.ItemList;
 import Entity.Items.MapItem;
 import Entity.Players.Player;
-import GUI.GUI;
+import GUI.GUI2;
 import Interactive.DoorPoint;
 import Interactive.SavePoint;
 import Interactive.SpawnPoint;
@@ -40,7 +40,7 @@ class LevelState extends GameState {
 
     private ArrayList<MapItem> mapLoots;
 
-    private GUI gui;
+    private GUI2 gui;
 
     private boolean menu;
 
@@ -77,7 +77,7 @@ class LevelState extends GameState {
         loadLevel();
 
         loadPlayer();
-        gui = new GUI(player.inventory, player.stats);
+        gui = new GUI2(player.inventory, player.stats);
 
 
         menu = false;
@@ -267,7 +267,8 @@ class LevelState extends GameState {
         fps.update();
 
         if (menu) {
-            gui.update();
+            //gui.update();
+            menu = gui.isActive();
             paused = true;
             return;
         }
@@ -279,6 +280,7 @@ class LevelState extends GameState {
                 enemy.setLastTime(l);
             }
             player.stats.permaUpdate();
+
         }
 
 
@@ -380,23 +382,25 @@ class LevelState extends GameState {
     }
 
     private void setPause() {
-        menu = !menu;
+        menu = true;
+        gui.start();
     }
 
-    private void menuAction() {
-        if (gui.getCurrentAction() == 0) {
-            setPause();
-        } else if (gui.getCurrentAction() == 1) {
-            gui.openInventory();
-        } else if (gui.getCurrentAction() == 2) {
-            gui.setOpenStats();
-        } else if (gui.getCurrentAction() == 3) {
-            gui.setOpenSkills();
-        } else if (gui.getCurrentAction() == 4) {
-            gsm.setState(GameStateManager.MENUSTATE);
+    /*
+        private void menuAction() {
+            if (gui.getCurrentAction() == 0) {
+                setPause();
+            } else if (gui.getCurrentAction() == 1) {
+                gui.openInventory();
+            } else if (gui.getCurrentAction() == 2) {
+                gui.setOpenStats();
+            } else if (gui.getCurrentAction() == 3) {
+                gui.setOpenSkills();
+            } else if (gui.getCurrentAction() == 4) {
+                gsm.setState(GameStateManager.MENUSTATE);
+            }
         }
-    }
-
+    */
     public void keyPressed(int k) {
         if (!paused) {
             if (player != null) {
@@ -409,9 +413,19 @@ class LevelState extends GameState {
                 if (k == KeyEvent.VK_2) player.use2spell(true);
                 if (k == KeyEvent.VK_3) player.use3spell(true);
                 if (k == KeyEvent.VK_4) player.use4spell(true);
+                if (k == KeyEvent.VK_ESCAPE) setPause();
             }
+        } else if (menu) {
+            if (k == KeyEvent.VK_A) gui.move(0, -1);
+            if (k == KeyEvent.VK_D) gui.move(0, 1);
+            if (k == KeyEvent.VK_W) gui.move(-1, 0);
+            if (k == KeyEvent.VK_S) gui.move(1, 0);
+            if (k == KeyEvent.VK_ENTER) gui.activate();
+            if (k == KeyEvent.VK_BACK_SPACE) gui.back();
+
         }
-        if (!menu) {
+
+        /* if (!menu) {
             if (k == KeyEvent.VK_ENTER) setPause();
         } else {
             if (gui.isOpenInventory()) {
@@ -439,6 +453,8 @@ class LevelState extends GameState {
                 if (k == KeyEvent.VK_S) gui.setCurrentAction(1);
             }
         }
+        */
+
 
 
     }
