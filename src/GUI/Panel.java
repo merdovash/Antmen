@@ -5,47 +5,45 @@ import java.util.ArrayList;
 
 public class Panel {
 
-    private ArrayList<ArrayList<GuiObject>> objects;
+    private ArrayList<ArrayList<Menu>> menus;
+
+    private int[] selected = new int[]{0, 0};
 
     public Panel() {
-        objects = new ArrayList<>();
+        menus = new ArrayList<>();
     }
 
-    public void add(GuiObject o, int i) {
-        if (objects.size() - 1 < i) {
-            objects.add(new ArrayList<GuiObject>());
+
+    public void add(Menu o, int i) {
+        if (menus.size() - 1 < i) {
+            menus.add(new ArrayList<Menu>());
         }
-        objects.get(i).add(o);
+        menus.get(i).add(o);
     }
 
     public int getPanelWidth(int i) {
-        return objects.get(i).size();
+        return menus.get(i).size() - 1;
     }
 
     public int getPanelHeight() {
-        return objects.size();
+        return menus.size() - 1;
     }
 
     public void selecet(int i, int j) {
-        try {
-            ((Button) objects.get(i).get(j)).select(true);
-        } catch (ClassCastException e) {
-            System.out.println("не удалось привести к Button");
-        }
+        menus.get(selected[0]).get(selected[1]).select(false);
+        selected = new int[]{i, j};
+        menus.get(i).get(j).select(true);
     }
 
     public void activate(int i, int j) {
-        try {
-            ((Menu) objects.get(i).get(j)).activate(true);
-        } catch (ClassCastException e) {
-            System.out.println("не удалось привести к Menu");
-        }
+        menus.get(i).get(j).activate();
+
     }
 
     public void draw(Graphics2D g) {
-        for (int i = 0; i < getPanelHeight(); i++) {
-            for (int j = 0; j < getPanelWidth(i); j++) {
-                objects.get(i).get(j).draw(g);
+        for (int i = 0; i < getPanelHeight() + 1; i++) {
+            for (int j = 0; j < getPanelWidth(i) + 1; j++) {
+                menus.get(i).get(j).draw(g);
             }
         }
     }
