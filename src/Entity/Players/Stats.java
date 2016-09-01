@@ -54,7 +54,7 @@ public class Stats implements Serializable {
     protected Health health;
 
     //energy
-    public Energy mana;
+    Energy mana;
     Energy energy;
 
     //level

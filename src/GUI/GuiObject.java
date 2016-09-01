@@ -5,7 +5,7 @@ import Main.GamePanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class GuiObject {
+public class GuiObject {
 
 
     protected Integer x;
@@ -15,8 +15,8 @@ public abstract class GuiObject {
 
     protected Color color = new Color(99, 99, 99);
 
-    protected Font font = new Font("Courier New", Font.PLAIN, (int) (25 * GamePanel.GUI_SCALE));
-    protected Color fontColor = new Color(0, 150, 0);
+    protected Font font = new Font("Courier New", Font.PLAIN, (int) (14 * GamePanel.GUI_SCALE));
+    protected Color fontColor = new Color(0, 0, 0);
 
     protected Rectangle rectangle;
 

@@ -51,12 +51,12 @@ public class GUI {
         //skils
         skillList = new SkillList();
         skillWindow = new Window(425, 100, 1400, 880);
-        //skills = new GUI.GuiObjects[skillList.size()];
-        //for (int i = 0; i < skillList.size(); i++) {
-        //    skills[i] = new GUI.GuiObjects(500 + i * 55, 500, 50, 50);
-        //    skills[i].setImage(skillList.getImage(i));
-        //    skills[i].add(spellOption, GUI.GuiObjects.LEFT);
-        //}
+        skills = new Menu[skillList.size()];
+        for (int i = 0; i < skillList.size(); i++) {
+            skills[i] = new Menu(500 + i * 55, 500, 50, 50);
+            skills[i].setImage(skillList.getImage(i));
+            skills[i].add(spellOption, Menu.LEFT);
+        }
 
 
 
@@ -84,8 +84,8 @@ public class GUI {
     public void update() {
         if (openSkills) {
             for (int i = 0; i < skillList.size(); i++) {
-                //skills[i].select(i == spellCurrentPosition);
-                // skills[i].activate(i == spellCurrentPosition && submenu);
+                skills[i].select(i == spellCurrentPosition);
+                skills[i].activate(i == spellCurrentPosition && submenu);
             }
         }
 
@@ -176,14 +176,14 @@ public class GUI {
     private String[] spellOption = new String[]{"", "Set", "Back"};
     private int spellCurrentPosition;
     private Window skillWindow;
-    //private GUI.GuiObjects[] skills;
+    private Menu[] skills;
 
 
     private void drawSkills(Graphics2D g) {
         skillWindow.draw(g);
-        //for (int i = 0; i < skills.length; i++) {
-        //    skills[i].draw(g);
-        //}
+        for (int i = 0; i < skills.length; i++) {
+            skills[i].draw(g);
+        }
     }
 
     private String[] s = new String[]{"str:", "int:", "dex:", "vit:", "agi:", "spk:"};
